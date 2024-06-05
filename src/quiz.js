@@ -1,5 +1,14 @@
 /**
- * Update the name of the relevant quiz.
+ * Given a particular quiz, permanently remove the quiz.
+ * @param {integer} authUserId 
+ * @param {integer} quizId 
+ * @returns {object}
+ */
+function adminQuizRemove(authUserId, quizId) {
+    return {};
+}
+
+/** Update the name of the relevant quiz.
  *
  * @param {int} authUserId - authorised user Id
  * @param {int} quizId - quiz Id
