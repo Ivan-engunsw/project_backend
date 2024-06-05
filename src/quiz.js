@@ -1,4 +1,20 @@
 /**
+ * Provide a list of all quizzes that are owned by the currently logged in user.
+ * @param {number} authUserId - authorised user Id
+ * @returns {{quizzes}} - object containing quizId and name
+ */
+function adminQuizList(authUserId) {
+    return { quizzes: [
+        {
+          quizId: 1,
+          name: 'My Quiz',
+        }
+      ]
+    }
+}
+
+/**
+ * Update the name of the relevant quiz.
  * Given a particular quiz, permanently remove the quiz.
  * @param {integer} authUserId 
  * @param {integer} quizId 
