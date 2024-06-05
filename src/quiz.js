@@ -14,6 +14,19 @@ function adminQuizList(authUserId) {
 }
 
 /**
+ * Given basic details about a new quiz, create one for the logged in user.
+ * @param {number} authUserId - authorised user id
+ * @param {string} name - new name of quiz
+ * @param {string} description - description about the quiz
+ * @returns {{quizId}} - object containing quizId
+ */
+function adminQuizCreate(authUserId, name, description) {
+    return {
+        quizId: 2
+    }
+}
+
+/**
  * Update the name of the relevant quiz.
  * Given a particular quiz, permanently remove the quiz.
  * @param {integer} authUserId 
