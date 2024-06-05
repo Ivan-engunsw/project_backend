@@ -1,8 +1,8 @@
 /**
  * Given a particular quiz, permanently remove the quiz.
- * @param {integer} authUserId 
- * @param {integer} quizId 
- * @returns {object}
+ * @param {number} authUserId 
+ * @param {number} quizId 
+ * @returns {{}}
  */
 function adminQuizRemove(authUserId, quizId) {
     return {};
@@ -10,9 +10,9 @@ function adminQuizRemove(authUserId, quizId) {
 
 /**
  * Get all of the relevant information about the current quiz.
- * @param {integer} authUserId 
- * @param {integer} quizId 
- * @returns {object}
+ * @param {number} authUserId 
+ * @param {number} quizId 
+ * @returns {{quizInfo}}
  */
 function adminQuizInfo(authUserId, quizId) {
     return {
@@ -24,10 +24,10 @@ function adminQuizInfo(authUserId, quizId) {
     }
 }
 
-/** Update the name of the relevant quiz.
- *
- * @param {int} authUserId - authorised user Id
- * @param {int} quizId - quiz Id
+/**
+ * Update the name of the relevant quiz.
+ * @param {number} authUserId - authorised user Id
+ * @param {number} quizId - quiz Id
  * @param {string} name - new name of quiz
  * @returns {{}} - empty object
  */
@@ -38,7 +38,6 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
 
 /**
  * Update the description of the relevant quiz.
- * 
  * @param {int} authUserId - authorised user Id
  * @param {int} quizId - quiz Id
  * @param {string} description - new description of quiz
