@@ -41,3 +41,16 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
 
   }
 }
+
+/**
+ * 
+ * @param {number} authUserId - the user id of the author
+ * @param {string} oldPassword - the old password of the author
+ * @param {string} newPassword - the new password of the author
+ * @returns {{}} -empty object 
+ */
+function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+  return {
+
+  }
+}
