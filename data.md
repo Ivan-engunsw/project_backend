@@ -1,7 +1,25 @@
 ```javascript
 let data = {
-    // TODO: insert your data structure that contains 
-    // users + quizzes here
+    users: [
+        {
+            userId: '123456789',
+            name: 'Betty boop',
+            email: '123456789@unsw.edu.au',
+            password: 'hello',
+            numSuccessfulLogins: 1,
+            numFailedPasswordsSinceLastLogin: 1,
+        },
+    ],
+
+    quizzes: [
+        {
+            quizId: '123456789',
+            name: 'Betty boop quiz',
+            description: 'Quiz for Betty boop',
+            timeCreated: 1,
+            timeLastEdited: 1,
+        },
+    ],
 }
 ```
 
