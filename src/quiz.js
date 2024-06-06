@@ -29,12 +29,11 @@ function adminQuizCreate(authUserId, name, description) {
 }
 
 /**
- * Update the name of the relevant quiz.
  * Given a particular quiz, permanently remove the quiz.
  * 
- * @param {number} authUserId 
- * @param {number} quizId 
- * @returns {{}}
+ * @param {number} authUserId - authorised user Id
+ * @param {number} quizId - quiz Id
+ * @returns {{}} - return object
  */
 function adminQuizRemove(authUserId, quizId) {
     return {};
@@ -42,6 +41,7 @@ function adminQuizRemove(authUserId, quizId) {
 
 /**
  * Get all of the relevant information about the current quiz.
+ * 
  * @param {number} authUserId - authorised user Id
  * @param {number} quizId - quiz Id
  * @returns {{quizInfo}} - return object
