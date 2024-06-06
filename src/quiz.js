@@ -42,10 +42,9 @@ function adminQuizRemove(authUserId, quizId) {
 
 /**
  * Get all of the relevant information about the current quiz.
- * 
- * @param {number} authUserId 
- * @param {number} quizId 
- * @returns {{quizInfo}}
+ * @param {number} authUserId - authorised user Id
+ * @param {number} quizId - quiz Id
+ * @returns {{quizInfo}} - return object
  */
 function adminQuizInfo(authUserId, quizId) {
     return {
