@@ -1,17 +1,33 @@
+import {getData, setData} from './dataStore.js';
+
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  * 
  * @param {number} authUserId - authorised user Id
  * @returns {{quizzes}} - object containing quizId and name
  */
-function adminQuizList(authUserId) {
-    return { quizzes: [
-        {
-          quizId: 1,
-          name: 'My Quiz',
-        }
-      ]
+export function adminQuizList(authUserId) {
+
+    const currentAuthorisedUsers = getData().users;
+
+    let authUser = currentAuthorisedUsers.find(a => a.userId === authUserId);
+
+    if (authUser === undefined) {
+        return { error: 'The authUserId is not a valid user'};
     }
+
+    const currentQuizzes = getData().quizzes;
+
+    let quizList = [];
+
+    for (const quiz of currentQuizzes) {
+        quizList.push({
+            quizId: quiz.quizId,
+            name: quiz.name,
+        });
+    }
+
+    return { quizzes: quizList};
 }
 
 /**
