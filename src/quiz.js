@@ -79,7 +79,7 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
  */
 function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     // Check the description provided
-    let empty_filtered_description = description.filter((char) => char != ' ' || char != '\n');
+    let empty_filtered_description = description.filter((char) => char != ' ' && char != '\n');
     if (empty_filtered_description.length > 100) {
         return { error: `description is too long` };
     }
