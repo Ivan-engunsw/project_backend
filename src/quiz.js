@@ -105,6 +105,7 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
 
     // Update the name of the quiz and return
     quiz.name = name;
+    setData(dataStore);
     return { };
 }
 
