@@ -16,7 +16,7 @@ beforeEach(() => {
 
 describe('adminQuizList', () => {
     test('AuthUserId is non-existent', () => {
-        expect(adminQuizList(1)).toStrictEqual({ERROR});
+        expect(adminQuizList(1)).toStrictEqual(ERROR);
     });
 
     describe('After creating authorised users', () => {
@@ -26,7 +26,7 @@ describe('adminQuizList', () => {
         });
 
         test('AuthUserId is not a valid user', () => {
-            expect(adminQuizList(admin.authUserId+1)).toStrictEqual({ERROR});
+            expect(adminQuizList(admin.authUserId+1)).toStrictEqual(ERROR);
         });
 
         test('Returning the correct details', () => {
