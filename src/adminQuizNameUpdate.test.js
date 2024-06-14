@@ -46,6 +46,12 @@ describe('adminQuizNameUpdate', () => {
         test('returns an error for invalid quizId', () => {
             expect(adminQuizNameUpdate(authUser.authUserId, quiz.quizId + 1, 'New quiz1')).toStrictEqual(ERROR);
         });
+
+        test('returns an error for a quiz not owned by this user', () => {
+            const authUser2 = adminAuthRegister('norman@unsw.com', 'password1', 'Norman', 'Nile');
+            const quiz2 = adminQuizCreate(authUser2.authUserId, 'Quiz2', 'Norman\'s quiz');
+            expect(adminQuizNameUpdate(authUser.authUserId, quiz2.quizId, 'New quiz1')).toStrictEqual(ERROR);
+        });
     });
 
     describe('functionality testing', () => {
