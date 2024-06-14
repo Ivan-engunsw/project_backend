@@ -84,10 +84,12 @@ function adminQuizDescriptionUpdate (authUserId, quizId, description) {
         return { error: `description is too long` };
     }
 
+    let dataStore = getData();
+
     // Check the user exists
     let user = dataStore.users.find((user) => user.userId === authUserId);
     if (!user) {
-        return { error: `authUserId = ${autherUserId} not found` };
+        return { error: `authUserId = ${authUserId} not found` };
     }
 
     // Check the quiz exists
@@ -103,5 +105,6 @@ function adminQuizDescriptionUpdate (authUserId, quizId, description) {
 
     // Update the description of the quiz and return
     quiz.description = description;
+    setData(dataStore);
     return { };
 }
