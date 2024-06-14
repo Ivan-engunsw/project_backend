@@ -6,28 +6,14 @@ import {getData, setData} from './dataStore.js';
  * @param {number} authUserId - authorised user Id
  * @returns {{quizzes}} - object containing quizId and name
  */
-export function adminQuizList(authUserId) {
-
-    const currentAuthorisedUsers = getData().users;
-
-    let authUser = currentAuthorisedUsers.find(a => a.userId === authUserId);
-
-    if (authUser === undefined) {
-        return { error: 'The authUserId is not a valid user'};
+function adminQuizList(authUserId) {
+    return { quizzes: [
+        {
+          quizId: 1,
+          name: 'My Quiz',
+        }
+      ]
     }
-
-    const currentQuizzes = getData().quizzes;
-
-    let quizList = [];
-
-    for (const quiz of currentQuizzes) {
-        quizList.push({
-            quizId: quiz.quizId,
-            name: quiz.name,
-        });
-    }
-
-    return { quizzes: quizList};
 }
 
 /**
@@ -38,9 +24,54 @@ export function adminQuizList(authUserId) {
  * @param {string} description - description about the quiz
  * @returns {{quizId}} - object containing quizId
  */
-function adminQuizCreate(authUserId, name, description) {
+export function adminQuizCreate(authUserId, name, description) {
+
+    const currentAuthorisedUsers = getData().users;
+
+    let authUser = currentAuthorisedUsers.find(a => a.userId === authUserId);
+
+    if (authUser === undefined) {
+        return { error: 'UserId is invalid'};
+    }
+
+    if (name.length < 3 || name.length > 30) {
+        return { error: 'The length of the name of the quiz is invalid'};
+    }
+
+    for (let character of name) {
+        let ascii = name.charCodeAt(name.indexOf(character));
+        if (ascii === 32 || (ascii >= 48 && ascii <= 57) || (ascii >= 65 && ascii <= 90) || (ascii >= 97 && ascii <= 122)) {
+            continue;
+        } else {
+            return { error: 'The name contains invalid characters'};
+        }
+    }
+
+    const quizzes = getData().quizzes;
+
+    let quizWithSameName = quizzesByCurrentUser.find(a => a.name === name && a.authUserId === authUserId);
+
+    if (quizWithSameName !== undefined) {
+        return { error: 'The name is already used for another quiz by the same user'};
+    }
+
+    if (description.length > 100) {
+        return { error: 'The description should be shorter than 100 characters'};
+    }
+
+    let quizCreated = {
+        quizId: quizzes.length,
+        userId: authUserId,
+        name: name,
+        description: description,
+        timeCreated: Math.floor(Date.now() / 1000),
+        timeLastEdited: Math.floor(Date.now() / 1000),
+    }
+
+    getData().quizzes.push(quizCreated);
+
     return {
-        quizId: 2
+        quizId: quizCreated.quizId,
     }
 }
 
