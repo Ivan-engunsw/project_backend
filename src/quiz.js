@@ -96,7 +96,7 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
     }
 
     // Check if the user has another quiz with the same name
-    let userQuizzes = dataStore.quizzes.filter((quiz) => quiz.userId === userId);
+    let userQuizzes = dataStore.quizzes.filter((quiz) => quiz.userId === authUserId);
     for (let userQuiz of userQuizzes) {
         if (userQuiz.name === name) {
             return { error: `${name} is already in use by you` };
