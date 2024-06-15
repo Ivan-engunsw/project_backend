@@ -29,14 +29,14 @@ describe('adminQuizCreate', () => {
             {authUserId: admin.authUserId, name: 'He@rt quiz', description: 'Quiz for He@rt'},
             {authUserId: admin.authUserId, name: 'He##rt quiz', description: 'Quiz for He##rt'},
             {authUserId: admin.authUserId, name: 'H!@rt quiz', description: 'Quiz for H!@rt'},
-        ])('name containing invalid characters', (authUserId,name,description) => {
+        ])('name containing invalid characters "$name"', (authUserId,name,description) => {
             expect(adminQuizCreate(authUserId,name,description)).toStrictEqual(ERROR);
         });
 
         test.each([
             {authUserId: admin.authUserId, name: 'He', description: 'Quiz for He'},
             {authUserId: admin.authUserId, name: 'asdfghjkloiuytrewqzxcvbnmpoiuyt', description: 'Quiz for asdfghjkloiuytrewqzxcvbnmpoiuyt'},
-        ])('names that are of invalid length', (authUserId,name,description) => {
+        ])('names that are of invalid length "$name"', (authUserId,name,description) => {
             expect(adminQuizCreate(authUserId,name,description)).toStrictEqual(ERROR);
         });
 
