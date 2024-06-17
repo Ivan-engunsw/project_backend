@@ -1,10 +1,14 @@
 /**
+ * @module quiz
+ */
+
+/**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  * 
  * @param {number} authUserId - authorised user Id
  * @returns {{quizzes}} - object containing quizId and name
  */
-function adminQuizList(authUserId) {
+export function adminQuizList(authUserId) {
     return { quizzes: [
         {
           quizId: 1,
@@ -22,7 +26,7 @@ function adminQuizList(authUserId) {
  * @param {string} description - description about the quiz
  * @returns {{quizId}} - object containing quizId
  */
-function adminQuizCreate(authUserId, name, description) {
+export function adminQuizCreate(authUserId, name, description) {
     return {
         quizId: 2
     }
@@ -35,7 +39,7 @@ function adminQuizCreate(authUserId, name, description) {
  * @param {number} quizId - quiz Id
  * @returns {{}} - return object
  */
-function adminQuizRemove(authUserId, quizId) {
+export function adminQuizRemove(authUserId, quizId) {
     return {};
 }
 
@@ -46,7 +50,7 @@ function adminQuizRemove(authUserId, quizId) {
  * @param {number} quizId - quiz Id
  * @returns {{quizInfo}} - return object
  */
-function adminQuizInfo(authUserId, quizId) {
+export function adminQuizInfo(authUserId, quizId) {
     return {
         quizId: 1,
         name: 'My Quiz',
@@ -64,7 +68,7 @@ function adminQuizInfo(authUserId, quizId) {
  * @param {string} name - new name of quiz
  * @returns {{}} - empty object
  */
-function adminQuizNameUpdate(authUserId, quizId, name) {
+export function adminQuizNameUpdate(authUserId, quizId, name) {
     return {
     };
 }
@@ -77,7 +81,7 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
  * @param {string} description - new description of quiz
  * @returns {{}} - empty object
  */
-function adminQuizDescriptionUpdate (authUserId, quizId, description) {
+export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     return {
     };
 }

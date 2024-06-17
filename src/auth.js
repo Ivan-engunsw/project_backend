@@ -1,4 +1,8 @@
 /**
+ * @module auth
+ */
+
+/**
  * Register a user with an email, password, and names, then returns their authUserId value.
  * @param {string} email - auth email
  * @param {string} password - auth password
@@ -8,7 +12,7 @@
  * @returns {{authUserId}} - return object
  */
 
-function adminAuthRegister(email, password, nameFirst, nameLast) {
+export function adminAuthRegister(email, password, nameFirst, nameLast) {
     return {
       authUserId: 1,
     }
@@ -22,7 +26,7 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
 * @returns {{authUserId}} - return object
 */
 
-function adminAuthLogin(email, password) {
+export function adminAuthLogin(email, password) {
  return {
    authUserId: 1,
  }
@@ -36,7 +40,7 @@ function adminAuthLogin(email, password) {
  * @returns {{user}} - return object
  */
 
-function adminUserDetails(authUserId) {
+export function adminUserDetails(authUserId) {
   return { user:
     {
       userId: 1,
@@ -56,7 +60,7 @@ function adminUserDetails(authUserId) {
  * @param {string} nameLast  - the last name of the author
  * @returns {{}} - empty object
  */
-function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
+export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   return {
 
   }
@@ -69,7 +73,7 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @param {string} newPassword - the new password of the author
  * @returns {{}} -empty object 
  */
-function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   return {
 
   }
