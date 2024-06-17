@@ -37,15 +37,15 @@ function adminAuthLogin(email, password) {
  */
 
 function adminUserDetails(authUserId) {
-  return { user:
-    {
-      userId: 1,
-      name: 'Hayden Smith',
-      email: 'hayden.smith@unsw.edu.au',
-      numSuccessfulLogins: 3,
-      numFailedPasswordsSinceLastLogin: 1,
-    }
-  };
+  let dataStore = getData();
+
+  let user = dataStore.users.find((user) => user.userId === authUserId);
+  if (!user) {
+    return { error: `authUserId = ${authUserId} not found` };
+  }
+
+  delete user.oldPwords;
+  return { user };
 }
 
 /**
