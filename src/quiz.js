@@ -47,7 +47,8 @@ export function adminQuizCreate(authUserId, name, description) {
         }
     }
 
-    const quizzes = getData().quizzes;
+    const dataStore = getData();
+    const quizzes = dataStore.quizzes;
 
     let quizWithSameName = quizzesByCurrentUser.find(a => a.name === name && a.authUserId === authUserId);
 
@@ -68,7 +69,8 @@ export function adminQuizCreate(authUserId, name, description) {
         timeLastEdited: Math.floor(Date.now() / 1000),
     }
 
-    getData().quizzes.push(quizCreated);
+    quizzes.push(quizCreated);
+    setData(dataStore);
 
     return {
         quizId: quizCreated.quizId,
