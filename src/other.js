@@ -3,9 +3,7 @@
  * @returns {{}} - empty object
  */
 function clear() {
-    return {
-        
-    };
+    setState({});
 }
 
 export { clear };
