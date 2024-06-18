@@ -26,7 +26,9 @@ function adminQuizList(authUserId) {
  */
 export function adminQuizCreate(authUserId, name, description) {
 
-    const currentAuthorisedUsers = getData().users;
+    let dataStore = getData();
+
+    const currentAuthorisedUsers = dataStore.users;
 
     let authUser = currentAuthorisedUsers.find(a => a.userId === authUserId);
 
@@ -39,18 +41,15 @@ export function adminQuizCreate(authUserId, name, description) {
     }
 
     for (let character of name) {
-        let ascii = name.charCodeAt(name.indexOf(character));
-        if (ascii === 32 || (ascii >= 48 && ascii <= 57) || (ascii >= 65 && ascii <= 90) || (ascii >= 97 && ascii <= 122)) {
-            continue;
-        } else {
+        let validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+        if (!validCharacters.includes(character)) {
             return { error: 'The name contains invalid characters'};
         }
     }
 
-    const dataStore = getData();
-    const quizzes = dataStore.quizzes;
+    let quizzes = dataStore.quizzes;
 
-    let quizWithSameName = quizzesByCurrentUser.find(a => a.name === name && a.authUserId === authUserId);
+    let quizWithSameName = quizzes.find(a => a.name === name && a.userId === authUserId);
 
     if (quizWithSameName !== undefined) {
         return { error: 'The name is already used for another quiz by the same user'};

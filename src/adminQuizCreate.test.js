@@ -18,7 +18,7 @@ describe('adminQuizCreate', () => {
     describe('After creating authorised users', () => {
         let admin;
         beforeEach(() => {
-            admin = adminAuthRegister('123456789@unsw.edu.au','hello','Betty','Boop');
+            admin = adminAuthRegister('bettyBoop@gmail.com','helloWorld1','Betty','Boop');
         });
 
         test('AuthUserId is not a valid user', () => {
@@ -26,18 +26,18 @@ describe('adminQuizCreate', () => {
         });
 
         test.each([
-            {authUserId: admin.authUserId, name: 'He@rt quiz', description: 'Quiz for He@rt'},
-            {authUserId: admin.authUserId, name: 'He##rt quiz', description: 'Quiz for He##rt'},
-            {authUserId: admin.authUserId, name: 'H!@rt quiz', description: 'Quiz for H!@rt'},
-        ])('name containing invalid characters "$name"', (authUserId,name,description) => {
-            expect(adminQuizCreate(authUserId,name,description)).toStrictEqual(ERROR);
+            {name: 'He@rt quiz', description: 'Quiz for He@rt'},
+            {name: 'He##rt quiz', description: 'Quiz for He##rt'},
+            {name: 'H!@rt quiz', description: 'Quiz for H!@rt'},
+        ])('name containing invalid characters "$name"', ({name,description}) => {
+            expect(adminQuizCreate(admin.authUserId,name,description)).toStrictEqual(ERROR);
         });
 
         test.each([
-            {authUserId: admin.authUserId, name: 'He', description: 'Quiz for He'},
-            {authUserId: admin.authUserId, name: 'asdfghjkloiuytrewqzxcvbnmpoiuyt', description: 'Quiz for asdfghjkloiuytrewqzxcvbnmpoiuyt'},
-        ])('names that are of invalid length "$name"', (authUserId,name,description) => {
-            expect(adminQuizCreate(authUserId,name,description)).toStrictEqual(ERROR);
+            {name: 'He', description: 'Quiz for He'},
+            {name: 'asdfghjkloiuytrewqzxcvbnmpoiuyt', description: 'Quiz for asdfghjkloiuytrewqzxcvbnmpoiuyt'},
+        ])('names that are of invalid length "$name"', ({name,description}) => {
+            expect(adminQuizCreate(admin.authUserId,name,description)).toStrictEqual(ERROR);
         });
 
         test('name already used for another quiz', () => {
