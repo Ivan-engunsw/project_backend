@@ -28,9 +28,9 @@ describe("adminQuizInfo", () => {
     });
 
     test("Successfully view one quiz", () => {
-        expect(adminQuizInfo(authUserId2, quizId3)).toStrictEqual({
+        expect(adminQuizInfo(authUserId1, quizId1)).toStrictEqual({
             quizId: expect.any(Number),
-            name: "name",
+            name: "first",
             timeCreated: expect.any(Number),
             timeLastEdited: expect.any(Number),
             description: "desc"
