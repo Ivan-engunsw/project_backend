@@ -1,6 +1,5 @@
 import { clear } from './other.js'
-import { adminAuthRegister, adminQuizCreate } from './auth.js'
-
+import { adminAuthRegister } from './auth.js'
 
 const ERROR = { error: expect.any(String) };
 
@@ -29,7 +28,7 @@ describe('adminAuthRegister', () => {
         });
 
         test('nameFirst < 2 char or nameFirst > 20 char', () => {
-            let auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'A', 'Sui');
+            let auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Aaa', 'Sui');
             let auth2 = adminAuthRegister('valid.email.2@gmail.com', 'password1!',
                                           'Abcdefghijklmnopqrstu', 'Sui');
             expect(auth).toStrictEqual(ERROR);
@@ -68,22 +67,16 @@ describe('adminAuthRegister', () => {
     });
 
     describe('Functionality Testing', () => {
-        let auth;
-        beforeEach(() => {
-            // Reset state of data so tests can be run independently
-            clear();
-            auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Ronaldo', 'Sui');
-        }); 
-
         test('Has the correct return type', () => {
-            expect(auth).toStrictEqual( { authUserId: expect.any(Number) } )
+            let auth4 = adminAuthRegister('validemail4@gmail.com', 'password1!', 'Ronaldo', 'Sui');
+            expect(auth4).toStrictEqual( { authUserId: expect.any(Number) } )
         });
 
         test('successfully register 2 unique userIds', () => {
-            let auth2 = adminAuthRegister('valid.email2@gmail.com', 'password1!', 'Bobby', 'Bob');
-
-            expect(auth).toStrictEqual( { authUserId: expect.any(Number) } );
-            expect(auth.authId).not.toStrictEqual(auth2.authId);
+            let auth5 = adminAuthRegister('validemail5@gmail.com', 'password1!', 'Bobby', 'Bob');
+            let auth6 = adminAuthRegister('validemail6@gmail.com', 'password1!', 'Bobby', 'Bob');
+            expect(auth5).toStrictEqual( { authUserId: expect.any(Number) } );
+            expect(auth5.authUserId).not.toStrictEqual(auth6.authUserId);
         });
 
        /* test('successfully register multiple users', () => {
