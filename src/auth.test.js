@@ -25,6 +25,8 @@ describe('adminAuthLogin', () => {
            login = adminAuthLogin('validemail@gmail.com', 'wrongPword1!');
            expect(login).toStrictEqual(ERROR);
         });
+
+        expect(login.numFailedPasswordsSinceLastLogin).toStrictEqual( {} );
     });
 
     describe('Functionality testing', () => {
@@ -37,11 +39,22 @@ describe('adminAuthLogin', () => {
         });
 
         test('Successfully log in multiple users', () => {
+            let auth2 = adminAuthRegister('validemail2@gmail.com', 'password1!', 'Ronaldo', 'Sui');
             let login2 = adminAuthLogin('validemail2@gmail.com', 'password1!');
             
             expect(login).toStrictEqual( {authUserId: expect.any(Number) } );
             expect(login).not.toStrictEqual(login2);
         });
+
+        /*test('Successfully count numSuccessfullLogins', () => {
+            expect(login).toStrictEqual();
+        });
+
+        test('Successfully updates numFailedPasswords', () => {
+            let auth3 = adminAuthRegister('validemail3@gmail.com', 'password1!', 'Ronaldo', 'Sui');
+            let login3 = adminAuthLogin('validemail3@gmail.com', 'wrongPword1');
+            expect(login3.numSuccessfulLogins);
+        });*/
     });
 });
 
