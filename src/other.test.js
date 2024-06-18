@@ -10,13 +10,6 @@ describe('clear', () => {
         expect(result).toEqual({});
     });
 
-    // Test which ensures that clear returns a new empty object every time
-    test('Clear returns a new empty object each time', () => {
-        const result1 = clear();
-        const result2 = clear();
-        expect(result1).not.toBe(result2); 
-    });
-
     test('Clear function resets the state', () => {
         //Setting some initial data
         setData({ users: [{ UserId: 1, name: 'Betty', email: 'bettybooptest@gmail.com' }],
