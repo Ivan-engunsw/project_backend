@@ -1,7 +1,3 @@
-/**
- * @module quiz
- */
-
 import { getData, setData } from "./dataStore";
 
 /**
@@ -10,7 +6,7 @@ import { getData, setData } from "./dataStore";
  * @param {number} authUserId - authorised user Id
  * @returns {{quizzes}} - object containing quizId and name
  */
-export function adminQuizList(authUserId) {
+function adminQuizList(authUserId) {
     return { quizzes: [
         {
           quizId: 1,
@@ -28,7 +24,7 @@ export function adminQuizList(authUserId) {
  * @param {string} description - description about the quiz
  * @returns {{quizId}} - object containing quizId
  */
-export function adminQuizCreate(authUserId, name, description) {
+function adminQuizCreate(authUserId, name, description) {
     return {
         quizId: 2
     }
@@ -41,7 +37,7 @@ export function adminQuizCreate(authUserId, name, description) {
  * @param {number} quizId - quiz Id
  * @returns {{}} - return object
  */
-export function adminQuizRemove(authUserId, quizId) {
+function adminQuizRemove(authUserId, quizId) {
     const data = getData();
 
     if (!data.users.some((user) => user.authUserId === authUserId))
@@ -69,7 +65,7 @@ export function adminQuizRemove(authUserId, quizId) {
  * @param {number} quizId - quiz Id
  * @returns {{quizInfo}} - return object
  */
-export function adminQuizInfo(authUserId, quizId) {
+function adminQuizInfo(authUserId, quizId) {
     return {
         quizId: 1,
         name: 'My Quiz',
@@ -87,7 +83,7 @@ export function adminQuizInfo(authUserId, quizId) {
  * @param {string} name - new name of quiz
  * @returns {{}} - empty object
  */
-export function adminQuizNameUpdate(authUserId, quizId, name) {
+function adminQuizNameUpdate(authUserId, quizId, name) {
     return {
     };
 }
@@ -100,7 +96,12 @@ export function adminQuizNameUpdate(authUserId, quizId, name) {
  * @param {string} description - new description of quiz
  * @returns {{}} - empty object
  */
-export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
+function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     return {
     };
 }
+
+export {
+    adminQuizList, adminQuizCreate, adminQuizRemove,
+    adminQuizInfo, adminQuizNameUpdate, adminQuizDescriptionUpdate
+};
