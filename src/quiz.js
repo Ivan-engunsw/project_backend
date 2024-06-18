@@ -94,4 +94,4 @@ function adminQuizDescriptionUpdate (authUserId, quizId, description) {
 export {
     adminQuizList, adminQuizCreate, adminQuizRemove,
     adminQuizInfo, adminQuizNameUpdate, adminQuizDescriptionUpdate
-}
+};

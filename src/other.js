@@ -6,5 +6,5 @@ import { setData } from "./dataStore";
  */
 export function clear() {
     setData({ users: [], courses: [] });
-    return {}
+    return {};
 }
