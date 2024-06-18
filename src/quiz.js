@@ -2,6 +2,8 @@
  * @module quiz
  */
 
+import { getData, setData } from "./dataStore";
+
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  * 
@@ -40,6 +42,23 @@ export function adminQuizCreate(authUserId, name, description) {
  * @returns {{}} - return object
  */
 export function adminQuizRemove(authUserId, quizId) {
+    const data = getData();
+
+    if (!data.users.some((user) => user.authUserId === authUserId))
+        return { error: "Invalid author ID" };
+
+    if (!data.quizzes.some((quiz) => quiz.quizId === quizId))
+        return { error: "Invalid quiz ID" };
+
+    let i = data.quizzes.findIndex((i) => data.quizzes[i].quizId === quizId);
+    
+    if (data.quizzes[i].authUserId !== authUserId)
+        return { error: "Unauthorised access to quiz" };
+
+    delete data.quizzes[i];
+
+    setData(data);
+
     return {};
 }
 
