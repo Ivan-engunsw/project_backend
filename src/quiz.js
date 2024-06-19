@@ -78,30 +78,6 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
  * @returns {{}} - empty object
  */
 function adminQuizDescriptionUpdate (authUserId, quizId, description) {
-    // Check the description provided
-    let empty_filtered_description = description.filter((char) => char != ' ' || char != '\n');
-    if (empty_filtered_description.length > 100) {
-        return { error: `description is too long` };
-    }
-
-    // Check the user exists
-    let user = dataStore.users.find((user) => user.userId === authUserId);
-    if (!user) {
-        return { error: `authUserId = ${autherUserId} not found` };
-    }
-
-    // Check the quiz exists
-    let quiz = dataStore.quizzes.find((quiz) => quiz.quizId === quizId);
-    if (!quiz) {
-        return { error: `quizId = ${quizId} not found` };
-    }
-
-    // Check the quiz belonds to the user
-    if (quiz.userId != authUserId) {
-        return { error: `quizId = ${quizId} does not belong to you` };
-    }
-
-    // Update the description of the quiz and return
-    quiz.description = description;
-    return { };
+    return {
+    };
 }
