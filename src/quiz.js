@@ -1,4 +1,4 @@
-import { getData } from "./dataStore"
+import { getData, setData} from "./dataStore"
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -39,8 +39,54 @@ function adminQuizList(authUserId) {
  * @returns {{quizId}} - object containing quizId
  */
 function adminQuizCreate(authUserId, name, description) {
+
+    let dataStore = getData();
+
+    const currentAuthorisedUsers = dataStore.users;
+
+    let authUser = currentAuthorisedUsers.find(a => a.userId === authUserId);
+
+    if (authUser === undefined) {
+        return { error: 'UserId is invalid'};
+    }
+
+    if (name.length < 3 || name.length > 30) {
+        return { error: 'The length of the name of the quiz is invalid'};
+    }
+
+    for (let character of name) {
+        let validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+        if (!validCharacters.includes(character)) {
+            return { error: 'The name contains invalid characters'};
+        }
+    }
+
+    let quizzes = dataStore.quizzes;
+
+    let quizWithSameName = quizzes.find(a => a.name === name && a.userId === authUserId);
+
+    if (quizWithSameName !== undefined) {
+        return { error: 'The name is already used for another quiz by the same user'};
+    }
+
+    if (description.length > 100) {
+        return { error: 'The description should be shorter than 100 characters'};
+    }
+
+    let quizCreated = {
+        quizId: quizzes.length,
+        userId: authUserId,
+        name: name,
+        description: description,
+        timeCreated: Math.floor(Date.now() / 1000),
+        timeLastEdited: Math.floor(Date.now() / 1000),
+    }
+
+    quizzes.push(quizCreated);
+    setData(dataStore);
+
     return {
-        quizId: 2
+        quizId: quizCreated.quizId,
     }
 }
 
