@@ -1,4 +1,5 @@
-import { getData, setData } from './dataStore.js' 
+import isEmail from 'validator/lib/isEmail';
+import { getData, setData } from './dataStore.js'
 
 /**
  * Register a user with an email, password, and names, then returns their authUserId value.
@@ -11,10 +12,43 @@ import { getData, setData } from './dataStore.js'
  */
 
 export function adminAuthRegister(email, password, nameFirst, nameLast) {
-    return {
-      authUserId: 1,
-    }
+  let data = getData();
+  
+  let regexName = /^[a-zA-Z' -]{2,20}$/
+  let regexPass = /^(?=.*?[a-zA-Z])(?=.*?[0-9]).{8,}$/
+
+  let isValidName = (name) => regexName.test(name);
+  let isValidPass = (pass) => regexPass.test(pass);
+  
+  if (!isEmail(email))
+    return { error: 'Invalid email' }
+  if (data.users.some((user) => user.email === email))
+    return { error: 'Email already registered' };
+  
+  if (!isValidName(nameFirst))
+    return { error: 'Invalid first name' }
+  if (!isValidName(nameLast))
+    return { error: 'Invalid last name' }
+
+  if (!isValidPass(password)) 
+    return { error: 'Invalid password' }
+
+
+  let authUserId = data.users.length;
+  data.users.push({
+    userId: authUserId,
+    name: nameFirst + ' ' + nameLast,
+    email: email,
+    password: password,
+    numSuccessfulLogins: 1,
+    numFailedPasswordsSinceLastLogin: 0,
+  });
+
+  setData(data);
+  
+  return { authUserId: authUserId }
 }
+
 
 /**
 * Given a registered user's email and password returns their authUserId value.
@@ -26,21 +60,14 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
 
 export function adminAuthLogin(email, password) {
   let data = getData();
-  let user;
+  let user = data.users.find((user) => email === user.email);
     
-  if (!data.users.some((user) => email === user.email)) {
+  if (!user) {
     return { error: 'Email does not exist' };
   }
 
-  for (let user of data.users) {
-    if (email === data.users.email) {
-      user = data.users.user;
-      break;
-    }
-  }
-
   if (password !== user.password) {
-    user.numFailedPasswordsSinceLastLogin = user.numFailedPasswordsSinceLastLogin++;
+    user.numFailedPasswordsSinceLastLogin++;
     setData(data);
     return {error: 'Password is incorrect'};
   }
@@ -50,7 +77,7 @@ export function adminAuthLogin(email, password) {
 
   setData(data);
 
-  return { authUserId: user.authUserId }
+  return { authUserId: user.userId }
 }
 
 /**
@@ -62,15 +89,16 @@ export function adminAuthLogin(email, password) {
  */
 
 export function adminUserDetails(authUserId) {
-  return { user:
-    {
-      userId: 1,
-      name: 'Hayden Smith',
-      email: 'hayden.smith@unsw.edu.au',
-      numSuccessfulLogins: 3,
-      numFailedPasswordsSinceLastLogin: 1,
-    }
-  };
+  let dataStore = getData();
+
+  let user = dataStore.users.find((user) => user.userId === authUserId);
+  if (!user) {
+    return { error: `authUserId = ${authUserId} not found` };
+  }
+
+  delete user.password;
+  delete user.oldPwords;
+  return { user };
 }
 
 /**
@@ -81,7 +109,7 @@ export function adminUserDetails(authUserId) {
  * @param {string} nameLast  - the last name of the author
  * @returns {{}} - empty object
  */
-function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
+export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   return {
 
   }
@@ -94,7 +122,7 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @param {string} newPassword - the new password of the author
  * @returns {{}} -empty object 
  */
-function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   return {
 
   }
