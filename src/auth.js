@@ -59,9 +59,25 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
 */
 
 export function adminAuthLogin(email, password) {
- return {
-   authUserId: 1,
- }
+  let data = getData();
+  let user = data.users.find((user) => email === user.email);
+    
+  if (!user) {
+    return { error: 'Email does not exist' };
+  }
+
+  if (password !== user.password) {
+    user.numFailedPasswordsSinceLastLogin++;
+    setData(data);
+    return {error: 'Password is incorrect'};
+  }
+
+    user.numFailedPasswordsSinceLastLogin = 0,
+    user.numSuccessfulLogins++;
+
+  setData(data);
+
+  return { authUserId: user.userId }
 }
 
 /**
