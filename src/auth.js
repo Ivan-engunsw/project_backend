@@ -72,7 +72,7 @@ export function adminAuthLogin(email, password) {
  * @returns {{user}} - return object
  */
 
-function adminUserDetails(authUserId) {
+export function adminUserDetails(authUserId) {
   let dataStore = getData();
 
   let user = dataStore.users.find((user) => user.userId === authUserId);
@@ -80,6 +80,7 @@ function adminUserDetails(authUserId) {
     return { error: `authUserId = ${authUserId} not found` };
   }
 
+  delete user.password;
   delete user.oldPwords;
   return { user };
 }
