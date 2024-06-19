@@ -1,3 +1,5 @@
+import { getData, setData } from './dataStore.js' 
+
 /**
  * Register a user with an email, password, and names, then returns their authUserId value.
  * @param {string} email - auth email
@@ -22,10 +24,27 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
 * @returns {{authUserId}} - return object
 */
 
-function adminAuthLogin(email, password) {
- return {
-   authUserId: 1,
- }
+export function adminAuthLogin(email, password) {
+  let data = getData();
+    
+  if (!data.users.some((user) => email === user.email)) 
+    return { error: 'Email does not exist' }
+  
+  if (password !== data.users.user.password) {
+    data.users.user.push({
+      numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin++,
+    })
+    return {error: 'Password is incorrect'}
+  }
+
+  data.users.user.push({
+    numFailedPasswordsSinceLastLogin: 0,
+    numSuccessfulLogins: user.numSuccessfulLogins++,
+  });
+
+  setData(data);
+
+  return { authUserId: user.authUserId }
 }
 
 /**
