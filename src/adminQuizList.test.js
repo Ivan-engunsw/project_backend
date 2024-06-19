@@ -36,6 +36,8 @@ describe('adminQuizList', () => {
         });
 
         describe('After creating quizzes', () => {
+            let quiz1;
+            let quizDetails1;
             beforeEach(() => {
                 quiz1 = adminQuizCreate(admin.authUserId,'quiz 1','Mathematics Quiz');
                 quizDetails1 = adminQuizInfo(admin.authUserId,quiz1.quizId);
@@ -52,8 +54,8 @@ describe('adminQuizList', () => {
             });
 
             test('Returning the correct details when multiple quizzes is created', () => {
-                quiz2 = adminQuizCreate(admin.authUserId,'quiz 2','English Quiz');
-                quizDetails2 = adminQuizInfo(admin.authUserId,quiz2.quizId);
+                let quiz2 = adminQuizCreate(admin.authUserId,'quiz 2','English Quiz');
+                let quizDetails2 = adminQuizInfo(admin.authUserId,quiz2.quizId);
                 let list1 = new Set();
                 list1.add({
                     quizId: quiz1.quizId,

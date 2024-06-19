@@ -1,4 +1,4 @@
-import {getData, setData} from './dataStore.js';
+import { getData } from "./dataStore"
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -6,7 +6,7 @@ import {getData, setData} from './dataStore.js';
  * @param {number} authUserId - authorised user Id
  * @returns {{quizzes}} - object containing quizId and name
  */
-export function adminQuizList(authUserId) {
+function adminQuizList(authUserId) {
 
     const currentAuthorisedUsers = getData().users;
 
@@ -63,13 +63,20 @@ function adminQuizRemove(authUserId, quizId) {
  * @returns {{quizInfo}} - return object
  */
 function adminQuizInfo(authUserId, quizId) {
-    return {
-        quizId: 1,
-        name: 'My Quiz',
-        timeCreated: 1683125870,
-        timeLastEdited: 1683125871,
-        description: 'This is my quiz',
-    }
+    const data = getData();
+
+    if (!data.users.some((user) => user.authUserId === authUserId))
+        return { error: "Invalid author ID" };
+
+    if (!data.quizzes.some((quiz) => quiz.quizId === quizId))
+        return { error: "Invalid quiz ID" };
+
+    let quiz = data.quizzes.find((quiz) => quiz.quizId === quizId);
+    
+    if (quiz.authUserId !== authUserId)
+        return { error: "Unauthorised access to quiz" };
+
+    return { quiz };
 }
 
 /**
@@ -97,3 +104,8 @@ function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     return {
     };
 }
+
+export {
+    adminQuizList, adminQuizCreate, adminQuizRemove,
+    adminQuizInfo, adminQuizNameUpdate, adminQuizDescriptionUpdate
+};
