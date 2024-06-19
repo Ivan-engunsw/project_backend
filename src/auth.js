@@ -13,7 +13,6 @@ import { getData, setData } from './dataStore.js'
 
 export function adminAuthRegister(email, password, nameFirst, nameLast) {
   let data = getData();
-
   
   let regexName = /^[a-zA-Z' -]{2,20}$/
   let regexPass = /^(?=.*?[a-zA-Z])(?=.*?[0-9]).{8,}$/
@@ -34,14 +33,16 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
   if (!isValidPass(password)) 
     return { error: 'Invalid password' }
 
+
   let authUserId = data.users.length;
-  
   data.users.push({
     userId: authUserId,
     name: nameFirst + ' ' + nameLast,
     email: email,
     password: password,
-  })
+    numSuccessfulLogins: 1,
+    numFailedPasswordsSinceLastLogin: 0,
+  });
 
   setData(data);
   
