@@ -10,7 +10,7 @@ import { getData, setData } from './dataStore.js'
  * @returns {{authUserId}} - return object
  */
 
-function adminAuthRegister(email, password, nameFirst, nameLast) {
+export function adminAuthRegister(email, password, nameFirst, nameLast) {
     return {
       authUserId: 1,
     }
@@ -26,18 +26,26 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
 
 export function adminAuthLogin(email, password) {
   let data = getData();
+  let user;
     
-  if (!data.users.some((user) => email === user.email)) 
-    return { error: 'Email does not exist' }
-  
-  if (password !== data.users.user.password) {
-    data.users.user.push({
-      numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin++,
-    })
-    return {error: 'Password is incorrect'}
+  if (!data.users.some((user) => email === user.email))
+    return { error: 'Email does not exist' };
+
+  for (let user of data.users) {
+    if (email === data.users.email) {
+      user = data.users.user;
+      break;
+    }
   }
 
-  data.users.user.push({
+  if (password !== user.password) {
+    user.push({
+      numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin++,
+    })
+    return {error: 'Password is incorrect'};
+  }
+
+  user.push({
     numFailedPasswordsSinceLastLogin: 0,
     numSuccessfulLogins: user.numSuccessfulLogins++,
   });
@@ -55,7 +63,7 @@ export function adminAuthLogin(email, password) {
  * @returns {{user}} - return object
  */
 
-function adminUserDetails(authUserId) {
+export function adminUserDetails(authUserId) {
   return { user:
     {
       userId: 1,
