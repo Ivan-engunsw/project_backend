@@ -1,17 +1,20 @@
 import { clear } from './other.js'
-import { adminAuthRegister, adminAuthLogin} from './auth.js'
+import { adminAuthRegister, adminAuthLogin, adminAuthDetails} from './auth.js'
 
 const ERROR = { error: expect.any(String) };
 
 describe('adminAuthLogin', () => {
     let login;
+    let login2;
     let auth;
+    let auth2;
+    let details;
     
     describe('Error Testing', () => {
         beforeEach(() => {
-            auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Ronaldo', 'Sui');
             clear();
-        })
+            auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Ronaldo', 'Sui');
+        });
 
         test('Email address does not exist', () => {
             login = adminAuthLogin('NotTheSame@gmail.com', 'password1!');
@@ -22,41 +25,40 @@ describe('adminAuthLogin', () => {
            login = adminAuthLogin('validemail@gmail.com', 'wrongPword1!');
            expect(login).toStrictEqual(ERROR);
         });
-        
     });
 
     describe('Functionality testing', () => {
         beforeEach(() => {
+            clear();
             auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Ronaldo', 'Sui');
             login = adminAuthLogin('validemail@gmail.com', 'password1!');
-            clear();
+            details = adminAuthDetails(auth.authUserId);
         });
         
         test('Has the correct return type', () => {
-            expect(login).toStrictEqual( {authUserId: expect.any(Number) } );
+            expect(login).toStrictEqual( { authUserId: expect.any(Number) } );
         });
 
         test('Successfully log in multiple users', () => {
-            let auth2 = adminAuthRegister('validemail2@gmail.com', 'password1!', 'Ronaldo', 'Sui');
-            let login2 = adminAuthLogin('validemail2@gmail.com', 'password1!');
+            auth2 = adminAuthRegister('validemail2@gmail.com', 'password1!', 'Ronaldo', 'Sui');
+            login2 = adminAuthLogin('validemail2@gmail.com', 'password1!');
             
-            expect(login).toStrictEqual( {authUserId: expect.any(Number) } );
+            expect(login).toStrictEqual( { authUserId: expect.any(Number) } );
             expect(login).not.toStrictEqual(login2);
         });
 
-        /*test('Successfully count numSuccessfullLogins', () => {
-            expect(login).toStrictEqual();
+        test('Successfully count numSuccessfullLogins', () => {
+            expect(details.user.numSuccessfulLogins).toStrictEqual(2);
         });
 
         test('Successfully count numFailedPasswordsSinceLastLogin', () => {
-            expect(login.numFailedPasswordsSinceLastLogin).toStrictEqual( {} );
+            auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Ronaldo', 'Sui');
+            login = adminAuthLogin('validemail@gmail.com', 'wrongP');
+            details = adminAuthDetails(auth.authUserId);
+            expect(details.user.numFailedPasswordsSinceLastLogin).toStrictEqual(1);
         });
 
-        test('Successfully updates numFailedPasswords', () => {
-            let auth3 = adminAuthRegister('validemail3@gmail.com', 'password1!', 'Ronaldo', 'Sui');
-            let login3 = adminAuthLogin('validemail3@gmail.com', 'wrongPword1');
-            expect(login3.numSuccessfulLogins);
-        });*/
+
     });
 });
 
