@@ -4,7 +4,7 @@
     "description": "[TOC]",
     "type": "module",
     "scripts": {
-        "test": "jest --verbose"
+        "test": "jest"
     },
     "dependencies": {
         "validator": "^13.7.0"
