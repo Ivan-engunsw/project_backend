@@ -28,7 +28,7 @@ describe('adminAuthRegister', () => {
         });
 
         test('nameFirst < 2 char or nameFirst > 20 char', () => {
-            let auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Aaa', 'Sui');
+            let auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'A', 'Sui');
             let auth2 = adminAuthRegister('valid.email.2@gmail.com', 'password1!',
                                           'Abcdefghijklmnopqrstu', 'Sui');
             expect(auth).toStrictEqual(ERROR);
@@ -77,25 +77,6 @@ describe('adminAuthRegister', () => {
             let auth6 = adminAuthRegister('validemail6@gmail.com', 'password1!', 'Bobby', 'Bob');
             expect(auth5).toStrictEqual( { authUserId: expect.any(Number) } );
             expect(auth5.authUserId).not.toStrictEqual(auth6.authUserId);
-        });
-
-       /* test('successfully register multiple users', () => {
-            let auth2 = adminAuthRegister('valid.email2@gmail.com', 'password1!', 'Bobby', 'Bob');
-            let auth3 = adminAuthRegister('valid.email3@gmail.com', 'password1!', 'Billy', 'Brown');
-            expect(adminUserDetails(auth)).toStrictEqual(
-            [{
-              authId: 1,
-              name: auth1
-            },
-            {
-              authId: 2,
-              name: auth2
-            },
-            {
-              authId: 3,
-              name: auth3
-            }]);
-        });*/
-    
+        });        
     });
 });

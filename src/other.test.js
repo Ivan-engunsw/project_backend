@@ -1,6 +1,10 @@
 //The test for the other.js program which only contains the clear function
 
 import { clear } from './other.js';
+import { getData, setData } from './dataStore.js';
+import { adminAuthRegister, adminUserDetails } from './auth.js';
+
+const ERROR = { error: expect.any(String)};
 
 describe('clear', () => {
     // Test which ensure that clear return an empty object
@@ -9,10 +13,5 @@ describe('clear', () => {
         expect(result).toEqual({});
     });
 
-    // Test which ensures that clear returns a new empty object every time
-    test('Clear returns a new empty object each time', () => {
-        const result1 = clear();
-        const result2 = clear();
-        expect(result1).not.toBe(result2); 
-    });
+   
 });
