@@ -1,5 +1,5 @@
 import { clear } from './other.js'
-import { adminAuthRegister } from './auth.js'
+import { adminAuthRegister, adminUserDetails } from './auth.js'
 
 const ERROR = { error: expect.any(String) };
 
@@ -79,23 +79,16 @@ describe('adminAuthRegister', () => {
             expect(auth5.authUserId).not.toStrictEqual(auth6.authUserId);
         });
 
-       /* test('successfully register multiple users', () => {
-            let auth2 = adminAuthRegister('valid.email2@gmail.com', 'password1!', 'Bobby', 'Bob');
-            let auth3 = adminAuthRegister('valid.email3@gmail.com', 'password1!', 'Billy', 'Brown');
-            expect(adminUserDetails(auth)).toStrictEqual(
-            [{
-              authId: 1,
-              name: auth1
-            },
-            {
-              authId: 2,
-              name: auth2
-            },
-            {
-              authId: 3,
-              name: auth3
-            }]);
-        });*/
-    
+        test('successfully update numSuccessfulLogins', () => {
+            let auth7 = adminAuthRegister('validemail7@gmail.com', 'password1!', 'Bobby', 'Bob');
+            let details = adminUserDetails(auth7.authUserId);
+            expect(details.user.numSuccessfulLogins).toStrictEqual(1);
+        });
+
+        test('successfully create numFailedPasswordsSinceLastLogin', () => {
+            let auth8 = adminAuthRegister('validemail8@gmail.com', 'password1!', 'Bobby', 'Bob');
+            let details = adminUserDetails(auth8.authUserId);
+            expect(details.user.numFailedPasswordsSinceLastLogin).toStrictEqual(0);
+        });
     });
 });
