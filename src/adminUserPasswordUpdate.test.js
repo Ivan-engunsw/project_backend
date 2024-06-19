@@ -36,7 +36,8 @@ describe('adminUserPasswordUpdate', () => {
         test('Case when new password has already been used before', () => {
             const { authUserId } = adminAuthRegister('originalemail@gmail.com', '1234zyx#@', 'Betty', 'Boop');
             adminUserPasswordUpdate(authUserId, '1234zyx#@', 'newpass1');
-            const changed = adminUserPasswordUpdate(authUserId, 'newpass1', 'newpass1');
+            adminUserPasswordUpdate(authUserId, 'newpass1', '12345abc');
+            const changed = adminUserPasswordUpdate(authUserId, '12345abc', 'newpass1');
             expect(changed).toStrictEqual({ error: 'New Password has already been used before by this user.' });
         });
     
