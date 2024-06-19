@@ -28,8 +28,9 @@ export function adminAuthLogin(email, password) {
   let data = getData();
   let user;
     
-  if (!data.users.some((user) => email === user.email))
+  if (!data.users.some((user) => email === user.email)) {
     return { error: 'Email does not exist' };
+  }
 
   for (let user of data.users) {
     if (email === data.users.email) {
@@ -39,16 +40,13 @@ export function adminAuthLogin(email, password) {
   }
 
   if (password !== user.password) {
-    user.push({
-      numFailedPasswordsSinceLastLogin: user.numFailedPasswordsSinceLastLogin++,
-    })
+    user.numFailedPasswordsSinceLastLogin = user.numFailedPasswordsSinceLastLogin++;
+    setData(data);
     return {error: 'Password is incorrect'};
   }
 
-  user.push({
-    numFailedPasswordsSinceLastLogin: 0,
-    numSuccessfulLogins: user.numSuccessfulLogins++,
-  });
+    user.numFailedPasswordsSinceLastLogin = 0,
+    user.numSuccessfulLogins++;
 
   setData(data);
 

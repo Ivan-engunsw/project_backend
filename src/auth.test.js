@@ -1,5 +1,5 @@
 import { clear } from './other.js'
-import { adminAuthRegister, adminAuthLogin, adminAuthDetails} from './auth.js'
+import { adminAuthRegister, adminAuthLogin, adminUserDetails} from './auth.js'
 
 const ERROR = { error: expect.any(String) };
 
@@ -32,7 +32,7 @@ describe('adminAuthLogin', () => {
             clear();
             auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Ronaldo', 'Sui');
             login = adminAuthLogin('validemail@gmail.com', 'password1!');
-            details = adminAuthDetails(auth.authUserId);
+            details = adminUserDetails(auth.authUserId);
         });
         
         test('Has the correct return type', () => {
@@ -54,11 +54,9 @@ describe('adminAuthLogin', () => {
         test('Successfully count numFailedPasswordsSinceLastLogin', () => {
             auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Ronaldo', 'Sui');
             login = adminAuthLogin('validemail@gmail.com', 'wrongP');
-            details = adminAuthDetails(auth.authUserId);
+            details = adminUserDetails(auth.authUserId);
             expect(details.user.numFailedPasswordsSinceLastLogin).toStrictEqual(1);
         });
-
-
     });
 });
 
