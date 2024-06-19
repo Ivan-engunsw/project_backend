@@ -24,7 +24,7 @@ function adminQuizList(authUserId) {
  * @param {string} description - description about the quiz
  * @returns {{quizId}} - object containing quizId
  */
-export function adminQuizCreate(authUserId, name, description) {
+function adminQuizCreate(authUserId, name, description) {
 
     let dataStore = getData();
 
@@ -129,3 +129,5 @@ function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     return {
     };
 }
+
+export {adminQuizList,adminQuizCreate,adminQuizInfo,adminQuizRemove,adminQuizDescriptionUpdate,adminQuizNameUpdate};
