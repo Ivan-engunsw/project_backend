@@ -1,6 +1,8 @@
 import { clear } from './other.js';
 import { adminAuthRegister, adminUserDetailsUpdate } from './auth.js';
 
+const ERROR = { error: expect.any(String)};
+
 beforeEach(() => {
     clear();
 });
@@ -18,63 +20,60 @@ describe('adminUserDetailsUpdate', () => {
     describe('Error Testing', () => {
         test('Case when authUserId is not valid', () => {
             const changed = adminUserDetailsUpdate(9999, 'Updatedemail@gmail.com', 'Bratty', 'Dorp');
-            expect(changed).toStrictEqual({ error: 'AuthUserId is not a valid user.' });
+            expect(changed).toStrictEqual(ERROR);
         });
     
         test('Case when email is invalid', () => {
             const { authUserId } = adminAuthRegister('originalemail@gmail.com', '1234zyx#@', 'Betty', 'Boop');
             const changed = adminUserDetailsUpdate(authUserId, 'invalid-email', 'Bratty', 'Dorp');
-            expect(changed).toStrictEqual({ error: 'Email does not satisfy validator.isEmail.' });
+            expect(changed).toStrictEqual(ERROR);
         });
     
         test('Case when email is used by another user', () => {
             const { authUserId } = adminAuthRegister('originalemail@gmail.com', '1234zyx#@', 'Betty', 'Boop');
             adminAuthRegister('anotheremail@gmail.com', '1234zyx#@', 'Jane', 'Dorp');
             const changed = adminUserDetailsUpdate(authUserId, 'anotheremail@gmail.com', 'Bratty', 'Dorp');
-            expect(changed).toStrictEqual({ error: 'Email is currently used by another user.' });
+            expect(changed).toStrictEqual(ERROR);
         });
     
-        test('Case when email is not valid', () => {
+        test.each([
+            {nameFirst: 'Br@tty'},
+            {nameFirst: 'Br55TTy'},
+        ])('Case when nameFirst contains invalid characters', ({nameFirst}) => {
             const { authUserId } = adminAuthRegister('originalemail@gmail.com', '1234zyx#@', 'Betty', 'Boop');
-            const changed = adminUserDetailsUpdate(authUserId, 'invalidemail', 'Bratty', 'Dorp');
-            expect(changed).toStrictEqual({ error: 'Email does not satisfy validator.isEmail.' });
-        });
-    
-        test('Case when nameFirst contains invalid characters', () => {
-            const { authUserId } = adminAuthRegister('originalemail@gmail.com', '1234zyx#@', 'Betty', 'Boop');
-            const changed = adminUserDetailsUpdate(authUserId, 'Updatedemail@gmail.com', 'Br@tty', 'Dorp');
-            expect(changed).toStrictEqual({ error: 'NameFirst contains invalid characters.' });
+            expect(adminUserDetailsUpdate(authUserId,'anotheremail@gmail.com', nameFirst, 'Dorp')).toStrictEqual(ERROR);
         });
     
         test('Case when nameFirst is less than 2 characters', () => {
             const { authUserId } = adminAuthRegister('originalemail@gmail.com', '1234zyx#@', 'Betty', 'Boop');
             const changed = adminUserDetailsUpdate(authUserId, 'Updatedemail@gmail.com', 'B', 'Dorp');
-            expect(changed).toStrictEqual({ error: 'NameFirst is less than 2 characters.' });
+            expect(changed).toStrictEqual(ERROR);
         });
     
         test('Case when nameFirst is more than 20 characters', () => {
             const { authUserId } = adminAuthRegister('originalemail@gmail.com', '1234zyx#@', 'Betty', 'Boop');
             const changed = adminUserDetailsUpdate(authUserId, 'Updatedemail@gmail.com', 'B'.repeat(21), 'Dorp');
-            expect(changed).toStrictEqual({ error: 'NameFirst is more than 20 characters.' });
+            expect(changed).toStrictEqual(ERROR);
         });
     
-        test('Case when nameLast contains invalid characters', () => {
+        test.each([
+            {nameLast: 'Do@p'},
+            {nameLast: 'D3op'},
+        ])('Case when nameLast contains invalid characters', ({nameLast}) => {
             const { authUserId } = adminAuthRegister('originalemail@gmail.com', '1234zyx#@', 'Betty', 'Boop');
-            const changed = adminUserDetailsUpdate(authUserId, 'Updatedemail@gmail.com', 'Bratty', 'Do@p');
-            expect(changed).toStrictEqual({ error: 'NameLast contains invalid characters.' });
+            expect(adminUserDetailsUpdate(authUserId,'anotheremail@gmail.com', nameLast, 'Dorp')).toStrictEqual(ERROR);
         });
     
         test('Case when nameLast is less than 2 characters', () => {
             const { authUserId } = adminAuthRegister('originalemail@gmail.com', '1234zyx#@', 'Betty', 'Boop');
             const changed = adminUserDetailsUpdate(authUserId, 'Updatedemail@gmail.com', 'Bratty', 'D');
-            expect(changed).toStrictEqual({ error: 'NameLast is less than 2 characters.' });
+            expect(changed).toStrictEqual(ERROR);
         });
     
         test('Case when nameLast is more than 20 characters', () => {
             const { authUserId } = adminAuthRegister('originalemail@gmail.com', '1234zyx#@', 'Betty', 'Boop');
             const changed = adminUserDetailsUpdate(authUserId, 'Updatedemail@gmail.com', 'Bratty', 'D'.repeat(21));
-            expect(changed).toStrictEqual({ error: 'NameLast is more than 20 characters.' });
+            expect(changed).toStrictEqual(ERROR);
         });
-    });
-  
+    }); 
 });

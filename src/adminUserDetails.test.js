@@ -15,14 +15,14 @@ describe('adminUserDetails', () => {
     });
 
     describe('error testing', () => {
-        test('returns an error for invalid authUserId', () => {
-            expect(adminUserDetails(authUser.userId + 1)).toStrictEqual(ERROR);
+        test('returns an error for invalid aut.authUserId', () => {
+            expect(adminUserDetails(authUser.authUserId + 1)).toStrictEqual(ERROR);
         });
     })
 
     describe('functionality testing', () => {
         test('has the correct return type', () => {
-            expect(adminUserDetails(authUser.userId)).toStrictEqual({
+            expect(adminUserDetails(authUser.authUserId)).toStrictEqual({
                 user : {
                     userId: expect.any(Number),
                     name: expect.any(String),
@@ -34,9 +34,9 @@ describe('adminUserDetails', () => {
         });
 
         test('correctly returns the user details of 1 user', () => {
-            expect(adminUserDetails(authUser.userId)).toStrictEqual({
+            expect(adminUserDetails(authUser.authUserId)).toStrictEqual({
                 user: {
-                    userId: authUser.userId,
+                    userId: authUser.authUserId,
                     name: 'Betty Boop',
                     email: 'betty@unsw.com',
                     numSuccessfulLogins: expect.any(Number),
@@ -47,18 +47,18 @@ describe('adminUserDetails', () => {
 
         test('correctly returns the user details of multiple users', () => {
             const authUser2 = adminAuthRegister('norman@unsw.com', 'password1', 'Norman', 'Nile');
-            expect(adminUserDetails(authUser.userId)).toStrictEqual({
+            expect(adminUserDetails(authUser.authUserId)).toStrictEqual({
                 user: {
-                    userId: authUser.userId,
+                    userId: authUser.authUserId,
                     name: 'Betty Boop',
                     email: 'betty@unsw.com',
                     numSuccessfulLogins: expect.any(Number),
                     numFailedPasswordsSinceLastLogin: expect.any(Number),
                 }
             });
-            expect(adminUserDetails(authUser2.userId)).toStrictEqual({
+            expect(adminUserDetails(authUser2.authUserId)).toStrictEqual({
                 user: {
-                    userId: authUser2.userId,
+                    userId: authUser2.authUserId,
                     name: 'Norman Nile',
                     email: 'norman@unsw.com',
                     numSuccessfulLogins: expect.any(Number),

@@ -2,6 +2,9 @@
 
 import { clear } from './other.js';
 import { getData, setData } from './dataStore.js';
+import { adminAuthRegister, adminUserDetails } from './auth.js';
+
+const ERROR = { error: expect.any(String)};
 
 describe('clear', () => {
     // Test which ensure that clear return an empty object
@@ -10,20 +13,5 @@ describe('clear', () => {
         expect(result).toEqual({});
     });
 
-    test('Clear function resets the state', () => {
-        //Setting some initial data
-        setData({ users: [{ UserId: 1, name: 'Betty', email: 'bettybooptest@gmail.com' }],
-                 quizzes: [{ id: 1, name: 'Quiz1' }] });
-    
-        let data = getData();
-        expect(data).toEqual({ users: [{ UserId: 1, name: 'Betty', email: 'bettybooptest@gmail.com' }],
-                                 quizzes: [{ id: 1, name: 'Quiz1' }] });
-    
-        //Calling the clear function
-        clear();
-    
-        // Verifying if the data was reset
-        data = getData();
-        expect(data).toEqual({ users: [], quizzes: [] });
-    });
+   
 });

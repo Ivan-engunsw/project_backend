@@ -1,3 +1,5 @@
+import {getData, setData} from './dataStore.js';
+
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
  * 
@@ -23,8 +25,54 @@ function adminQuizList(authUserId) {
  * @returns {{quizId}} - object containing quizId
  */
 function adminQuizCreate(authUserId, name, description) {
+
+    let dataStore = getData();
+
+    const currentAuthorisedUsers = dataStore.users;
+
+    let authUser = currentAuthorisedUsers.find(a => a.userId === authUserId);
+
+    if (authUser === undefined) {
+        return { error: 'UserId is invalid'};
+    }
+
+    if (name.length < 3 || name.length > 30) {
+        return { error: 'The length of the name of the quiz is invalid'};
+    }
+
+    for (let character of name) {
+        let validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+        if (!validCharacters.includes(character)) {
+            return { error: 'The name contains invalid characters'};
+        }
+    }
+
+    let quizzes = dataStore.quizzes;
+
+    let quizWithSameName = quizzes.find(a => a.name === name && a.userId === authUserId);
+
+    if (quizWithSameName !== undefined) {
+        return { error: 'The name is already used for another quiz by the same user'};
+    }
+
+    if (description.length > 100) {
+        return { error: 'The description should be shorter than 100 characters'};
+    }
+
+    let quizCreated = {
+        quizId: quizzes.length,
+        userId: authUserId,
+        name: name,
+        description: description,
+        timeCreated: Math.floor(Date.now() / 1000),
+        timeLastEdited: Math.floor(Date.now() / 1000),
+    }
+
+    quizzes.push(quizCreated);
+    setData(dataStore);
+
     return {
-        quizId: 2
+        quizId: quizCreated.quizId,
     }
 }
 
@@ -78,30 +126,8 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
  * @returns {{}} - empty object
  */
 function adminQuizDescriptionUpdate (authUserId, quizId, description) {
-    // Check the description provided
-    let empty_filtered_description = description.filter((char) => char != ' ' || char != '\n');
-    if (empty_filtered_description.length > 100) {
-        return { error: `description is too long` };
-    }
-
-    // Check the user exists
-    let user = dataStore.users.find((user) => user.userId === authUserId);
-    if (!user) {
-        return { error: `authUserId = ${autherUserId} not found` };
-    }
-
-    // Check the quiz exists
-    let quiz = dataStore.quizzes.find((quiz) => quiz.quizId === quizId);
-    if (!quiz) {
-        return { error: `quizId = ${quizId} not found` };
-    }
-
-    // Check the quiz belonds to the user
-    if (quiz.userId != authUserId) {
-        return { error: `quizId = ${quizId} does not belong to you` };
-    }
-
-    // Update the description of the quiz and return
-    quiz.description = description;
-    return { };
+    return {
+    };
 }
+
+export {adminQuizList,adminQuizCreate,adminQuizInfo,adminQuizRemove,adminQuizDescriptionUpdate,adminQuizNameUpdate};
