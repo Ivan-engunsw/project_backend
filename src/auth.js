@@ -111,9 +111,46 @@ function adminUserDetails(authUserId) {
  * @returns {{}} - empty object
  */
 export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-  return {
+    let dataStore = getData();
+    let user = dataStore.users.find((user) => user.userId === authUserId);
 
-  }
+    //Conditions for checking if the input is correct
+    if (!user) {
+        return { error: 'AuthUserId is not a valid user.' };
+    }
+    if (data.users.some(user => user.email === email && user.id !== authUserId)) {
+        return { error: 'Email is currently used by another user.' };
+    }
+    if (!validator.isEmail(email)) {
+        return { error: 'Email does not satisfy validator.isEmail.' };
+    }
+    if (!/^[a-zA-Z\s'-]+$/.test(nameFirst)) {
+        return { error: 'NameFirst contains invalid characters.' };
+    }
+    if (nameFirst.length < 2) {
+        return { error: 'NameFirst is less than 2 characters.' };
+    }
+    if (nameFirst.length > 20) {
+        return { error: 'NameFirst is more than 20 characters.' };
+    }
+    if (!/^[a-zA-Z\s'-]+$/.test(nameLast)) {
+        return { error: 'NameLast contains invalid characters.' };
+    }
+    if (nameLast.length < 2) {
+        return { error: 'NameLast is less than 2 characters.' };
+    }
+    if (nameLast.length > 20) {
+        return { error: 'NameLast is more than 20 characters.' };
+    }
+
+    // Updating the user details
+    user.email = email;
+    user.nameFirst = nameFirst;
+    user.nameLast = nameLast;
+    setData(data);
+
+  return {
+  };
 }
 
 /**
