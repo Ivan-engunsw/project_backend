@@ -28,7 +28,7 @@ describe('adminAuthRegister', () => {
         });
 
         test('nameFirst < 2 char or nameFirst > 20 char', () => {
-            let auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Aaa', 'Sui');
+            let auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'A', 'Sui');
             let auth2 = adminAuthRegister('valid.email.2@gmail.com', 'password1!',
                                           'Abcdefghijklmnopqrstu', 'Sui');
             expect(auth).toStrictEqual(ERROR);
