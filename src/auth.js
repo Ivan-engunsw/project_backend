@@ -1,3 +1,6 @@
+import isEmail from 'validator/lib/isEmail';
+import { getData, setData } from './dataStore.js'
+
 /**
  * Register a user with an email, password, and names, then returns their authUserId value.
  * @param {string} email - auth email
@@ -8,11 +11,44 @@
  * @returns {{authUserId}} - return object
  */
 
-function adminAuthRegister(email, password, nameFirst, nameLast) {
-    return {
-      authUserId: 1,
-    }
+export function adminAuthRegister(email, password, nameFirst, nameLast) {
+  let data = getData();
+  
+  let regexName = /^[a-zA-Z' -]{2,20}$/
+  let regexPass = /^(?=.*?[a-zA-Z])(?=.*?[0-9]).{8,}$/
+
+  let isValidName = (name) => regexName.test(name);
+  let isValidPass = (pass) => regexPass.test(pass);
+  
+  if (!isEmail(email))
+    return { error: 'Invalid email' }
+  if (data.users.some((user) => user.email === email))
+    return { error: 'Email already registered' };
+  
+  if (!isValidName(nameFirst))
+    return { error: 'Invalid first name' }
+  if (!isValidName(nameLast))
+    return { error: 'Invalid last name' }
+
+  if (!isValidPass(password)) 
+    return { error: 'Invalid password' }
+
+
+  let authUserId = data.users.length;
+  data.users.push({
+    userId: authUserId,
+    name: nameFirst + ' ' + nameLast,
+    email: email,
+    password: password,
+    numSuccessfulLogins: 1,
+    numFailedPasswordsSinceLastLogin: 0,
+  });
+
+  setData(data);
+  
+  return { authUserId: authUserId }
 }
+
 
 /**
 * Given a registered user's email and password returns their authUserId value.
@@ -22,7 +58,7 @@ function adminAuthRegister(email, password, nameFirst, nameLast) {
 * @returns {{authUserId}} - return object
 */
 
-function adminAuthLogin(email, password) {
+export function adminAuthLogin(email, password) {
  return {
    authUserId: 1,
  }
@@ -36,7 +72,7 @@ function adminAuthLogin(email, password) {
  * @returns {{user}} - return object
  */
 
-function adminUserDetails(authUserId) {
+export function adminUserDetails(authUserId) {
   let dataStore = getData();
 
   let user = dataStore.users.find((user) => user.userId === authUserId);
@@ -56,7 +92,7 @@ function adminUserDetails(authUserId) {
  * @param {string} nameLast  - the last name of the author
  * @returns {{}} - empty object
  */
-function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
+export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
   return {
 
   }
@@ -69,7 +105,7 @@ function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @param {string} newPassword - the new password of the author
  * @returns {{}} -empty object 
  */
-function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
+export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   return {
 
   }
