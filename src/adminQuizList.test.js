@@ -22,7 +22,7 @@ describe('adminQuizList', () => {
     describe('After creating authorised users', () => {
         let admin;
         beforeEach(() => {
-            admin = adminAuthRegister('123456789@unsw.edu.au','hello','Betty','Boop');
+            admin = adminAuthRegister('bettyBoop@gmail.com','helloWorld1','Betty','Boop');
         });
 
         test('AuthUserId is not a valid user', () => {
