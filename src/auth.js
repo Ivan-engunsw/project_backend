@@ -80,6 +80,7 @@ export function adminUserDetails(authUserId) {
     return { error: `authUserId = ${authUserId} not found` };
   }
 
+  delete user.password;
   delete user.oldPwords;
   return { user };
 }
