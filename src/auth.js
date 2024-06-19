@@ -161,7 +161,36 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @returns {{}} -empty object 
  */
 export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
-  return {
+  let dataStore = getData();
+  let user = dataStore.users.find((user) => user.userId === authUserId);
 
+  //Conditions for checking if the input is correct
+  if (!user) {
+      return { error: 'AuthUserId is not a valid user.' };
   }
+  if (user.password !== oldPassword) {
+      return { error: 'Old Password is not the correct old password.' };
+  }
+  if (oldPassword === newPassword) {
+      return { error: 'Old Password and New Password match exactly.' };
+  }
+  if (user.oldPasswords && user.oldPasswords.includes(newPassword)) {
+    return { error: 'New Password has already been used before by this user.' };
+  }
+  if (newPassword.length < 8) {
+      return { error: 'New Password is less than 8 characters.' };
+  }
+  if (!/\d/.test(newPassword) || !/[a-zA-Z]/.test(newPassword)) {
+      return { error: 'New Password does not contain at least one number and at least one letter.' };
+  }
+  
+
+  // Updating the Password
+  user.password = newPassword;
+  user.oldPasswords = user.oldPasswords || [];
+  user.oldPasswords.push(newPassword);
+  setData(dataStore);
+
+  return {
+  };
 }
