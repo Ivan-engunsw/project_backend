@@ -1,21 +1,18 @@
 import { clear } from './other.js'
-import { adminAuthRegister, adminQuizCreate, adminAuthLogin} from './auth.js'
+import { adminAuthRegister, adminAuthLogin} from './auth.js'
 
 const ERROR = { error: expect.any(String) };
-
-beforeEach(() => {
-    // Reset state of data so tests can be run independently
-    clear();
-});
 
 describe('adminAuthLogin', () => {
     let login;
     let auth;
-    beforeEach(() => {
-        auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Ronaldo', 'Sui');
-    })
-
+    
     describe('Error Testing', () => {
+        beforeEach(() => {
+            auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Ronaldo', 'Sui');
+            clear();
+        })
+
         test('Email address does not exist', () => {
             login = adminAuthLogin('NotTheSame@gmail.com', 'password1!');
             expect(login).toStrictEqual(ERROR);
@@ -25,13 +22,14 @@ describe('adminAuthLogin', () => {
            login = adminAuthLogin('validemail@gmail.com', 'wrongPword1!');
            expect(login).toStrictEqual(ERROR);
         });
-
-        expect(login.numFailedPasswordsSinceLastLogin).toStrictEqual( {} );
+        
     });
 
     describe('Functionality testing', () => {
         beforeEach(() => {
+            auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Ronaldo', 'Sui');
             login = adminAuthLogin('validemail@gmail.com', 'password1!');
+            clear();
         });
         
         test('Has the correct return type', () => {
@@ -48,6 +46,10 @@ describe('adminAuthLogin', () => {
 
         /*test('Successfully count numSuccessfullLogins', () => {
             expect(login).toStrictEqual();
+        });
+
+        test('Successfully count numFailedPasswordsSinceLastLogin', () => {
+            expect(login.numFailedPasswordsSinceLastLogin).toStrictEqual( {} );
         });
 
         test('Successfully updates numFailedPasswords', () => {
