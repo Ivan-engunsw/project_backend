@@ -118,10 +118,10 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
     if (!user) {
         return { error: 'AuthUserId is not a valid user.' };
     }
-    if (data.users.some(user => user.email === email && user.id !== authUserId)) {
+    if (dataStore.users.some(user => user.email === email && user.userId !== authUserId)) {
         return { error: 'Email is currently used by another user.' };
     }
-    if (!validator.isEmail(email)) {
+    if (!isEmail(email)) {
         return { error: 'Email does not satisfy validator.isEmail.' };
     }
     if (!/^[a-zA-Z\s'-]+$/.test(nameFirst)) {
@@ -147,7 +147,7 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
     user.email = email;
     user.nameFirst = nameFirst;
     user.nameLast = nameLast;
-    setData(data);
+    setData(dataStore);
 
   return {
   };
