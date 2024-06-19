@@ -110,9 +110,46 @@ export function adminUserDetails(authUserId) {
  * @returns {{}} - empty object
  */
 export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-  return {
+    let dataStore = getData();
+    let user = dataStore.users.find((user) => user.userId === authUserId);
 
-  }
+    //Conditions for checking if the input is correct
+    if (!user) {
+        return { error: 'AuthUserId is not a valid user.' };
+    }
+    if (dataStore.users.some(user => user.email === email && user.userId !== authUserId)) {
+        return { error: 'Email is currently used by another user.' };
+    }
+    if (!isEmail(email)) {
+        return { error: 'Email does not satisfy validator.isEmail.' };
+    }
+    if (!/^[a-zA-Z\s'-]+$/.test(nameFirst)) {
+        return { error: 'NameFirst contains invalid characters.' };
+    }
+    if (nameFirst.length < 2) {
+        return { error: 'NameFirst is less than 2 characters.' };
+    }
+    if (nameFirst.length > 20) {
+        return { error: 'NameFirst is more than 20 characters.' };
+    }
+    if (!/^[a-zA-Z\s'-]+$/.test(nameLast)) {
+        return { error: 'NameLast contains invalid characters.' };
+    }
+    if (nameLast.length < 2) {
+        return { error: 'NameLast is less than 2 characters.' };
+    }
+    if (nameLast.length > 20) {
+        return { error: 'NameLast is more than 20 characters.' };
+    }
+
+    // Updating the user details
+    user.email = email;
+    user.nameFirst = nameFirst;
+    user.nameLast = nameLast;
+    setData(dataStore);
+
+  return {
+  };
 }
 
 /**
@@ -123,7 +160,36 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @returns {{}} -empty object 
  */
 export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
-  return {
+  let dataStore = getData();
+  let user = dataStore.users.find((user) => user.userId === authUserId);
 
+  //Conditions for checking if the input is correct
+  if (!user) {
+      return { error: 'AuthUserId is not a valid user.' };
   }
+  if (user.password !== oldPassword) {
+      return { error: 'Old Password is not the correct old password.' };
+  }
+  if (oldPassword === newPassword) {
+      return { error: 'Old Password and New Password match exactly.' };
+  }
+  if (user.oldPasswords && user.oldPasswords.includes(newPassword)) {
+    return { error: 'New Password has already been used before by this user.' };
+  }
+  if (newPassword.length < 8) {
+      return { error: 'New Password is less than 8 characters.' };
+  }
+  if (!/\d/.test(newPassword) || !/[a-zA-Z]/.test(newPassword)) {
+      return { error: 'New Password does not contain at least one number and at least one letter.' };
+  }
+  
+
+  // Updating the Password
+  user.password = newPassword;
+  user.oldPasswords = user.oldPasswords || [];
+  user.oldPasswords.push(newPassword);
+  setData(dataStore);
+
+  return {
+  };
 }
