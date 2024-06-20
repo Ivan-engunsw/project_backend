@@ -19,8 +19,8 @@ describe('adminQuizDescriptionUpdate', () => {
 
     describe('error testing', () => {
         test('returns an error for a description that is too long', () => {
-            let very_long_string = '10charlong :)' * 10;
-            expect(adminQuizDescriptionUpdate(authUser.authUserId, quiz,quizId, very_long_string)).toStrictEqual(ERROR);
+            let very_long_string = '10charlong :)'.repeat(10);
+            expect(adminQuizDescriptionUpdate(authUser.authUserId, quiz.quizId, very_long_string)).toStrictEqual(ERROR);
         });
 
         test('returns an error for invalid authUserId', () => {

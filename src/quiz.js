@@ -198,7 +198,7 @@ export function adminQuizNameUpdate(authUserId, quizId, name) {
  * @param {string} description - new description of quiz
  * @returns {{}} - empty object
  */
-function adminQuizDescriptionUpdate (authUserId, quizId, description) {
+export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     // Check the description provided
     if (description.length > 100) {
         return { error: `description is too long` };
