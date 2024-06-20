@@ -151,8 +151,43 @@ export function adminQuizInfo(authUserId, quizId) {
  * @returns {{}} - empty object
  */
 export function adminQuizNameUpdate(authUserId, quizId, name) {
-    return {
-    };
+    // Check the name provided
+    let regexName = /^[a-zA-Z0-9 ]{3,30}$/
+    if(!(regexName.test(name))) {
+        return { error: `${name} is not alphanumeric`};
+    }
+
+    let dataStore = getData();
+
+    // Check the user exists
+    let user = dataStore.users.find((user) => user.userId === authUserId);
+    if (!user) {
+        return { error: `authUserId = ${authUserId} not found` };
+    }
+
+    // Check the quiz exists
+    let quiz = dataStore.quizzes.find((quiz) => quiz.quizId === quizId);
+    if (!quiz) {
+        return { error: `quizId = ${quizId} not found` };
+    }
+
+    // Check the quiz belongs to the user
+    if (quiz.userId != authUserId) {
+        return { error: `quizId = ${quizId} does not belong to you` };
+    }
+
+    // Check if the user has another quiz with the same name
+    let userQuizzes = dataStore.quizzes.filter((quiz) => quiz.userId === authUserId);
+    for (let userQuiz of userQuizzes) {
+        if (userQuiz.name === name) {
+            return { error: `${name} is already in use by you` };
+        }
+    }
+
+    // Update the name of the quiz and return
+    quiz.name = name;
+    setData(dataStore);
+    return { };
 }
 
 /**
