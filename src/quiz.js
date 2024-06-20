@@ -112,18 +112,18 @@ export function adminQuizRemove(authUserId, quizId) {
 export function adminQuizInfo(authUserId, quizId) {
     const data = getData();
 
-    if (!data.users.some((user) => user.authUserId === authUserId))
+    if (!data.users.find(user => user.userId === authUserId))
         return { error: "Invalid author ID" };
 
-    if (!data.quizzes.some((quiz) => quiz.quizId === quizId))
-        return { error: "Invalid quiz ID" };
-
-    let quiz = data.quizzes.find((quiz) => quiz.quizId === quizId);
+    const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+    if (!quiz) return { error: "Invalid quiz ID" };
     
-    if (quiz.authUserId !== authUserId)
+    if (quiz.userId !== authUserId)
         return { error: "Unauthorised access to quiz" };
 
-    return { quiz };
+    delete quiz.userId;
+
+    return quiz;
 }
 
 /**
