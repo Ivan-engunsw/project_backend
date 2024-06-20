@@ -1,4 +1,4 @@
-import { getData, setData} from "./dataStore"
+import {getData, setData} from './dataStore.js';
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -97,7 +97,22 @@ function adminQuizCreate(authUserId, name, description) {
  * @param {number} quizId - quiz Id
  * @returns {{}} - return object
  */
-function adminQuizRemove(authUserId, quizId) {
+export function adminQuizRemove(authUserId, quizId) {
+    const data = getData();
+
+    if (!data.users.find(user => user.userId === authUserId))
+        return { error: "Invalid author ID" };
+
+    const i = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
+    if (i === -1) return { error: "Invalid quiz ID" };
+    
+    if (data.quizzes[i].userId !== authUserId)
+        return { error: "Unauthorised access to quiz" };
+
+    data.quizzes.splice(i, 1);
+
+    setData(data);
+
     return {};
 }
 
@@ -108,21 +123,21 @@ function adminQuizRemove(authUserId, quizId) {
  * @param {number} quizId - quiz Id
  * @returns {{quizInfo}} - return object
  */
-function adminQuizInfo(authUserId, quizId) {
+export function adminQuizInfo(authUserId, quizId) {
     const data = getData();
 
-    if (!data.users.some((user) => user.authUserId === authUserId))
+    if (!data.users.find(user => user.userId === authUserId))
         return { error: "Invalid author ID" };
 
-    if (!data.quizzes.some((quiz) => quiz.quizId === quizId))
-        return { error: "Invalid quiz ID" };
-
-    let quiz = data.quizzes.find((quiz) => quiz.quizId === quizId);
+    const quiz = data.quizzes.find(quiz => quiz.quizId === quizId);
+    if (!quiz) return { error: "Invalid quiz ID" };
     
-    if (quiz.authUserId !== authUserId)
+    if (quiz.userId !== authUserId)
         return { error: "Unauthorised access to quiz" };
 
-    return { quiz };
+    delete quiz.userId;
+
+    return quiz;
 }
 
 /**
@@ -133,7 +148,7 @@ function adminQuizInfo(authUserId, quizId) {
  * @param {string} name - new name of quiz
  * @returns {{}} - empty object
  */
-function adminQuizNameUpdate(authUserId, quizId, name) {
+export function adminQuizNameUpdate(authUserId, quizId, name) {
     return {
     };
 }
@@ -146,12 +161,7 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
  * @param {string} description - new description of quiz
  * @returns {{}} - empty object
  */
-function adminQuizDescriptionUpdate (authUserId, quizId, description) {
+export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     return {
     };
 }
-
-export {
-    adminQuizList, adminQuizCreate, adminQuizRemove,
-    adminQuizInfo, adminQuizNameUpdate, adminQuizDescriptionUpdate
-};
