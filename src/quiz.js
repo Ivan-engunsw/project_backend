@@ -7,13 +7,29 @@ import {getData, setData} from './dataStore.js';
  * @returns {{quizzes}} - object containing quizId and name
  */
 export function adminQuizList(authUserId) {
-    return { quizzes: [
-        {
-          quizId: 1,
-          name: 'My Quiz',
-        }
-      ]
+
+    const currentAuthorisedUsers = getData().users;
+
+    let authUser = currentAuthorisedUsers.find(a => a.userId === authUserId);
+
+    if (authUser === undefined) {
+        return { error: 'The authUserId is not a valid user'};
     }
+
+    const currentQuizzes = getData().quizzes;
+
+    let quizList = [];
+
+    for (const quiz of currentQuizzes) {
+        if (quiz.userId === authUserId) {
+            quizList.push({
+                quizId: quiz.quizId,
+                name: quiz.name,
+            });
+        }
+    }
+
+    return { quizzes: quizList};
 }
 
 /**
@@ -121,9 +137,9 @@ export function adminQuizInfo(authUserId, quizId) {
     if (quiz.userId !== authUserId)
         return { error: "Unauthorised access to quiz" };
 
-    delete quiz.userId;
+    const { userId, ...filtered } = quiz
 
-    return quiz;
+    return filtered;
 }
 
 /**
