@@ -21,10 +21,13 @@ export function adminQuizList(authUserId) {
     let quizList = [];
 
     for (const quiz of currentQuizzes) {
-        quizList.push({
-            quizId: quiz.quizId,
-            name: quiz.name,
-        });
+        console.log(quiz);
+        if (quiz.userId === authUserId) {
+            quizList.push({
+                quizId: quiz.quizId,
+                name: quiz.name,
+            });
+        }
     }
 
     return { quizzes: quizList};

@@ -56,6 +56,8 @@ describe('adminQuizList', () => {
             test('Returning the correct details when multiple quizzes is created', () => {
                 let quiz2 = adminQuizCreate(admin.authUserId,'quiz 2','English Quiz');
                 let quizDetails2 = adminQuizInfo(admin.authUserId,quiz2.quizId);
+                let admin2 = adminAuthRegister('ronaldoSuiii@gmail.com','helloWorld5','Ronaldo','Suiii');
+                adminQuizCreate(admin2.authUserId,'quiz 1','English Quiz');
                 let list1 = new Set();
                 list1.add({
                     quizId: quiz1.quizId,
