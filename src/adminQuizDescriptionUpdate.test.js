@@ -44,8 +44,8 @@ describe('adminQuizDescriptionUpdate', () => {
             expect(adminQuizDescriptionUpdate(authUser.authUserId, quiz.quizId, 'Norman\'s quiz')).toStrictEqual({ });
         });
 
-        test('correctly returns for an empty description of length 100', () => {
-            let empty_string = ' ' * 100;
+        test('correctly returns for an empty string', () => {
+            let empty_string = '';
             expect(adminQuizDescriptionUpdate(authUser.authUserId, quiz.quizId, empty_string)).toStrictEqual({ });
         });
 
