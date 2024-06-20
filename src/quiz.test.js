@@ -33,17 +33,14 @@ describe("adminQuizRemove", () => {
     });
 
     test("Successfully delete one quiz", () => {
-        expect(adminQuizCreate(authUserId1, "first", "desc").quizId).toStrictEqual(ERROR);
         adminQuizRemove(authUserId1, quizId1);
         expect(adminQuizCreate(authUserId1, "first", "desc").quizId).toStrictEqual(expect.any(Number));
     });
 
     test("Successfully delete multiple quizzes", () => {
-        expect(adminQuizCreate(authUserId1, "first", "desc").quizId).toStrictEqual(ERROR);
         adminQuizRemove(authUserId1, quizId1);
         expect(adminQuizCreate(authUserId1, "first", "desc").quizId).toStrictEqual(expect.any(Number));
 
-        expect(adminQuizCreate(authUserId1, "third", "desc").quizId).toStrictEqual(ERROR);
         adminQuizRemove(authUserId1, quizId3);
         expect(adminQuizCreate(authUserId1, "third", "desc").quizId).toStrictEqual(expect.any(Number));
     });

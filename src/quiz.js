@@ -24,7 +24,7 @@ export function adminQuizList(authUserId) {
  * @param {string} description - description about the quiz
  * @returns {{quizId}} - object containing quizId
  */
-function adminQuizCreate(authUserId, name, description) {
+export function adminQuizCreate(authUserId, name, description) {
 
     let dataStore = getData();
 
@@ -86,18 +86,16 @@ function adminQuizCreate(authUserId, name, description) {
 export function adminQuizRemove(authUserId, quizId) {
     const data = getData();
 
-    if (!data.users.some((user) => user.authUserId === authUserId))
+    if (!data.users.find(user => user.userId === authUserId))
         return { error: "Invalid author ID" };
 
-    if (!data.quizzes.some((quiz) => quiz.quizId === quizId))
-        return { error: "Invalid quiz ID" };
-
-    let i = data.quizzes.findIndex((i) => data.quizzes[i].quizId === quizId);
+    const i = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
+    if (i === -1) return { error: "Invalid quiz ID" };
     
-    if (data.quizzes[i].authUserId !== authUserId)
+    if (data.quizzes[i].userId !== authUserId)
         return { error: "Unauthorised access to quiz" };
 
-    delete data.quizzes[i];
+    data.quizzes.splice(i, 1);
 
     setData(data);
 
@@ -146,5 +144,3 @@ export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     return {
     };
 }
-
-export {adminQuizList,adminQuizCreate,adminQuizInfo,adminQuizRemove,adminQuizDescriptionUpdate,adminQuizNameUpdate};
