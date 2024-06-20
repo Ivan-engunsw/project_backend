@@ -199,6 +199,32 @@ export function adminQuizNameUpdate(authUserId, quizId, name) {
  * @returns {{}} - empty object
  */
 export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
-    return {
-    };
+    // Check the description provided
+    if (description.length > 100) {
+        return { error: `description is too long` };
+    }
+
+    let dataStore = getData();
+
+    // Check the user exists
+    let user = dataStore.users.find((user) => user.userId === authUserId);
+    if (!user) {
+        return { error: `authUserId = ${authUserId} not found` };
+    }
+
+    // Check the quiz exists
+    let quiz = dataStore.quizzes.find((quiz) => quiz.quizId === quizId);
+    if (!quiz) {
+        return { error: `quizId = ${quizId} not found` };
+    }
+
+    // Check the quiz belongs to the user
+    if (quiz.userId != authUserId) {
+        return { error: `quizId = ${quizId} does not belong to you` };
+    }
+
+    // Update the description of the quiz and return
+    quiz.description = description;
+    setData(dataStore);
+    return { };
 }
