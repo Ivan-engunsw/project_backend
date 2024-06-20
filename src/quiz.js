@@ -6,7 +6,7 @@ import {getData, setData} from './dataStore.js';
  * @param {number} authUserId - authorised user Id
  * @returns {{quizzes}} - object containing quizId and name
  */
-function adminQuizList(authUserId) {
+export function adminQuizList(authUserId) {
 
     const currentAuthorisedUsers = getData().users;
 
@@ -38,7 +38,7 @@ function adminQuizList(authUserId) {
  * @param {string} description - description about the quiz
  * @returns {{quizId}} - object containing quizId
  */
-function adminQuizCreate(authUserId, name, description) {
+export function adminQuizCreate(authUserId, name, description) {
 
     let dataStore = getData();
 

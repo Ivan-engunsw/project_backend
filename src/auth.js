@@ -11,7 +11,7 @@ import { getData, setData } from './dataStore.js'
  * @returns {{authUserId}} - return object
  */
 
-function adminAuthRegister(email, password, nameFirst, nameLast) {
+export function adminAuthRegister(email, password, nameFirst, nameLast) {
   let data = getData();
   
   let regexName = /^[a-zA-Z' -]{2,20}$/
