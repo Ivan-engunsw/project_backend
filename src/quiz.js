@@ -137,7 +137,7 @@ export function adminQuizInfo(authUserId, quizId) {
     if (quiz.userId !== authUserId)
         return { error: "Unauthorised access to quiz" };
 
-    let { userId, ...filtered } = quiz
+    const { userId, ...filtered } = quiz
 
     return filtered;
 }
