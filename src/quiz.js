@@ -90,7 +90,7 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
         return { error: `quizId = ${quizId} not found` };
     }
 
-    // Check the quiz belonds to the user
+    // Check the quiz belongs to the user
     if (quiz.userId != authUserId) {
         return { error: `quizId = ${quizId} does not belong to you` };
     }
