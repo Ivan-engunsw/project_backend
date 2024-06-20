@@ -1,4 +1,4 @@
-import { getData } from "./dataStore"
+import {getData, setData} from './dataStore.js';
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -6,7 +6,7 @@ import { getData } from "./dataStore"
  * @param {number} authUserId - authorised user Id
  * @returns {{quizzes}} - object containing quizId and name
  */
-function adminQuizList(authUserId) {
+export function adminQuizList(authUserId) {
     return { quizzes: [
         {
           quizId: 1,
@@ -24,9 +24,55 @@ function adminQuizList(authUserId) {
  * @param {string} description - description about the quiz
  * @returns {{quizId}} - object containing quizId
  */
-function adminQuizCreate(authUserId, name, description) {
+export function adminQuizCreate(authUserId, name, description) {
+
+    let dataStore = getData();
+
+    const currentAuthorisedUsers = dataStore.users;
+
+    let authUser = currentAuthorisedUsers.find(a => a.userId === authUserId);
+
+    if (authUser === undefined) {
+        return { error: 'UserId is invalid'};
+    }
+
+    if (name.length < 3 || name.length > 30) {
+        return { error: 'The length of the name of the quiz is invalid'};
+    }
+
+    for (let character of name) {
+        let validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
+        if (!validCharacters.includes(character)) {
+            return { error: 'The name contains invalid characters'};
+        }
+    }
+
+    let quizzes = dataStore.quizzes;
+
+    let quizWithSameName = quizzes.find(a => a.name === name && a.userId === authUserId);
+
+    if (quizWithSameName !== undefined) {
+        return { error: 'The name is already used for another quiz by the same user'};
+    }
+
+    if (description.length > 100) {
+        return { error: 'The description should be shorter than 100 characters'};
+    }
+
+    let quizCreated = {
+        quizId: quizzes.length,
+        userId: authUserId,
+        name: name,
+        description: description,
+        timeCreated: Math.floor(Date.now() / 1000),
+        timeLastEdited: Math.floor(Date.now() / 1000),
+    }
+
+    quizzes.push(quizCreated);
+    setData(dataStore);
+
     return {
-        quizId: 2
+        quizId: quizCreated.quizId,
     }
 }
 
@@ -37,7 +83,22 @@ function adminQuizCreate(authUserId, name, description) {
  * @param {number} quizId - quiz Id
  * @returns {{}} - return object
  */
-function adminQuizRemove(authUserId, quizId) {
+export function adminQuizRemove(authUserId, quizId) {
+    const data = getData();
+
+    if (!data.users.find(user => user.userId === authUserId))
+        return { error: "Invalid author ID" };
+
+    const i = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
+    if (i === -1) return { error: "Invalid quiz ID" };
+    
+    if (data.quizzes[i].userId !== authUserId)
+        return { error: "Unauthorised access to quiz" };
+
+    data.quizzes.splice(i, 1);
+
+    setData(data);
+
     return {};
 }
 
@@ -48,7 +109,7 @@ function adminQuizRemove(authUserId, quizId) {
  * @param {number} quizId - quiz Id
  * @returns {{quizInfo}} - return object
  */
-function adminQuizInfo(authUserId, quizId) {
+export function adminQuizInfo(authUserId, quizId) {
     const data = getData();
 
     if (!data.users.some((user) => user.authUserId === authUserId))
@@ -73,7 +134,7 @@ function adminQuizInfo(authUserId, quizId) {
  * @param {string} name - new name of quiz
  * @returns {{}} - empty object
  */
-function adminQuizNameUpdate(authUserId, quizId, name) {
+export function adminQuizNameUpdate(authUserId, quizId, name) {
     return {
     };
 }
@@ -86,12 +147,7 @@ function adminQuizNameUpdate(authUserId, quizId, name) {
  * @param {string} description - new description of quiz
  * @returns {{}} - empty object
  */
-function adminQuizDescriptionUpdate (authUserId, quizId, description) {
+export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
     return {
     };
 }
-
-export {
-    adminQuizList, adminQuizCreate, adminQuizRemove,
-    adminQuizInfo, adminQuizNameUpdate, adminQuizDescriptionUpdate
-};
