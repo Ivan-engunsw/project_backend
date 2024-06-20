@@ -1,18 +1,13 @@
 import { clear } from './other.js';
-import { adminQuizList, adminQuizInfo, adminQuizNameUpdate } from './quiz.js';
-import { adminAuthRegister, adminQuizCreate } from './auth.js';
+import { adminQuizList, adminQuizCreate, adminQuizInfo, adminQuizNameUpdate } from './quiz.js';
+import { adminAuthRegister } from './auth.js';
+import { getData, setData } from './dataStore'
 
 const ERROR = { error: expect.any(String) };
 
 beforeEach(() => {
     // Reset state of data so tests can be run independently
     clear();
-});
-
-describe('clear', () => {
-    test('has the correct return type', () => {
-        expect(clear()).toStrictEqual({ });
-    });
 });
 
 describe('adminQuizNameUpdate', () => {
