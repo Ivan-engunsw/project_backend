@@ -150,25 +150,19 @@ export function adminQuizInfo(authUserId, quizId) {
  * @param {string} name - new name of quiz
  * @returns {{}} - empty object
  */
-
-function adminQuizNameUpdate(authUserId, quizId, name) {
+export function adminQuizNameUpdate(authUserId, quizId, name) {
     // Check the name provided
-    if (name.length < 3 || name.length > 30) {
-        return { error: `${name} is of invalid length` };
+    let regexName = /^[a-zA-Z0-9 ]{3,30}$/
+    if(!(regexName.test(name))) {
+        return { error: `${name} is not alphanumeric`};
     }
 
-    for (let char of name) {
-        if ( !((char > 'a' && char < 'z') || (char > 'A' && char < 'Z') || (char > '0' && char < '9')) ) {
-            return { error: `${name} is not alphanumeric` }
-        }
-    }
-
-    let dataStore = getdata();
+    let dataStore = getData();
 
     // Check the user exists
     let user = dataStore.users.find((user) => user.userId === authUserId);
     if (!user) {
-        return { error: `authUserId = ${autherUserId} not found` };
+        return { error: `authUserId = ${authUserId} not found` };
     }
 
     // Check the quiz exists
