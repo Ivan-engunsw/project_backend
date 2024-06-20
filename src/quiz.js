@@ -21,7 +21,6 @@ export function adminQuizList(authUserId) {
     let quizList = [];
 
     for (const quiz of currentQuizzes) {
-        console.log(quiz);
         if (quiz.userId === authUserId) {
             quizList.push({
                 quizId: quiz.quizId,
@@ -138,9 +137,9 @@ export function adminQuizInfo(authUserId, quizId) {
     if (quiz.userId !== authUserId)
         return { error: "Unauthorised access to quiz" };
 
-    delete quiz.userId;
+    let { userId, ...filtered } = quiz
 
-    return quiz;
+    return filtered;
 }
 
 /**
