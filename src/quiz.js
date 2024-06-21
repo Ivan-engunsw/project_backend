@@ -226,6 +226,7 @@ export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
 
     // Update the description of the quiz and return
     quiz.description = description;
+    quiz.timeLastEdited = Math.floor(Date.now() / 1000);
     setData(dataStore);
     return { };
 }
