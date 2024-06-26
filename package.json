@@ -1,4 +1,8 @@
 {
+    "name": "major",
+    "version": "1.0.0",
+    "description": "[TOC]",
+    "type": "module",
     "scripts": {
         "test": "jest",
         "tsc": "tsc --project tsconfig.json",
