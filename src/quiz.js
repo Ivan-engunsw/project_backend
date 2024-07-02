@@ -56,11 +56,9 @@ export function adminQuizCreate(authUserId, name, description) {
         return { error: 'The length of the name of the quiz is invalid'};
     }
 
-    for (let character of name) {
-        let validCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
-        if (!validCharacters.includes(character)) {
-            return { error: 'The name contains invalid characters'};
-        }
+    let regexName = /^[a-zA-Z0-9_ ]*$/;
+    if (!(regexName.test(name))) {
+        return { error: 'The name contains invalid characters'};
     }
 
     let quizzes = dataStore.quizzes;

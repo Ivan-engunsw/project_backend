@@ -72,7 +72,7 @@ export function adminAuthLogin(email, password) {
     return {error: 'Password is incorrect'};
   }
 
-    user.numFailedPasswordsSinceLastLogin = 0,
+    user.numFailedPasswordsSinceLastLogin = 0;
     user.numSuccessfulLogins++;
 
   setData(data);
@@ -144,8 +144,7 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
 
     // Updating the user details
     user.email = email;
-    user.nameFirst = nameFirst;
-    user.nameLast = nameLast;
+    user.name = nameFirst + " " + nameLast;
     setData(dataStore);
 
   return {
