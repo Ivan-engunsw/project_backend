@@ -4,12 +4,7 @@ import { setData } from './dataStore.js'
  * @returns {{}} - empty object
  */
 
-function clear() {
-    setData({users: [],
-             quizzes: [],
-    });
-    return {      
-    };
+export function clear() {
+    setData({ users: [], quizzes: []});
+    return {};
 }
-
-export { clear };

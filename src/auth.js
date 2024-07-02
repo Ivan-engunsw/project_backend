@@ -96,9 +96,9 @@ export function adminUserDetails(authUserId) {
     return { error: `authUserId = ${authUserId} not found` };
   }
 
-  delete user.password;
-  delete user.oldPwords;
-  return { user };
+  const { password, oldPwords, ...filtered } = user
+
+  return { user: filtered };
 }
 
 /**
@@ -173,7 +173,7 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   if (oldPassword === newPassword) {
       return { error: 'Old Password and New Password match exactly.' };
   }
-  if (user.oldPasswords && user.oldPasswords.includes(newPassword)) {
+  if (user.oldPwords && user.oldPwords.includes(newPassword)) {
     return { error: 'New Password has already been used before by this user.' };
   }
   if (newPassword.length < 8) {
@@ -185,11 +185,10 @@ export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
   
 
   // Updating the Password
+  (user.oldPwords) ? user.oldPwords.push(oldPassword)
+                   : user.oldPwords = [oldPassword];
   user.password = newPassword;
-  user.oldPasswords = user.oldPasswords || [];
-  user.oldPasswords.push(newPassword);
   setData(dataStore);
 
-  return {
-  };
+  return {};
 }
