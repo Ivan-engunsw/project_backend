@@ -144,8 +144,7 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
 
     // Updating the user details
     user.email = email;
-    user.nameFirst = nameFirst;
-    user.nameLast = nameLast;
+    user.name = nameFirst + " " + nameLast;
     setData(dataStore);
 
   return {
