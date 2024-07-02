@@ -35,7 +35,7 @@ describe('adminQuizCreate', () => {
 
         test.each([
             {name: 'He', description: 'Quiz for He'},
-            {name: 'asdfghjkloiuytrewqzxcvbnmpoiuyt', description: 'Quiz for asdfghjkloiuytrewqzxcvbnmpoiuyt'},
+            {name: 'a'.repeat(31), description: 'a'.repeat(31)},
         ])('names that are of invalid length "$name"', ({name,description}) => {
             expect(adminQuizCreate(admin.authUserId,name,description)).toStrictEqual(ERROR);
         });
@@ -47,7 +47,7 @@ describe('adminQuizCreate', () => {
 
         test('description is more than 100 characters in length', () => {
             expect(adminQuizCreate(admin.authUserId,'Betty boop quiz',
-                'Quiz for Betty boop alfjskladjflksadfjklsajfskladfjskldjfjsdjfjskaldfjjasfklsajfjsasdfjksadfksajfklskjdhfkjsajkdfjksadklfshadfkljskldafklaskjdfjklsadjfksjafjl')).toStrictEqual(ERROR);
+                `Quiz for Betty boop ${'a'.repeat(101)}`)).toStrictEqual(ERROR);
         });
 
         test('Correctly created a quiz', () => {
