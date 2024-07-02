@@ -72,7 +72,7 @@ export function adminAuthLogin(email, password) {
     return {error: 'Password is incorrect'};
   }
 
-    user.numFailedPasswordsSinceLastLogin = 0,
+    user.numFailedPasswordsSinceLastLogin = 0;
     user.numSuccessfulLogins++;
 
   setData(data);
