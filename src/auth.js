@@ -1,5 +1,6 @@
-import isEmail from 'validator/lib/isEmail';
-import { getData, setData } from './dataStore.js';
+import { getData } from './dataStore.js';
+import { errEmailInvalid, errEmailNotFound, errEmailTaken, errFirstNameInvalid, errLastNameInvalid, errUserIdNotFound, errUserPassCurrIncorrect, errUserPassCurrInvalid, errUserPassNewInvalid, errUserPassNewNotNew, errUserPassOldIncorrect } from './errors.js';
+import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, validUserPass } from './helper.js';
 
 /**
  * Register a user with an email, password, and names, then returns their authUserId value.
@@ -14,21 +15,14 @@ import { getData, setData } from './dataStore.js';
 export function adminAuthRegister(email, password, nameFirst, nameLast) {
   const data = getData();
 
-  const regexName = /^[a-zA-Z' -]{2,20}$/;
-  const regexPass = /^(?=.*?[a-zA-Z])(?=.*?[0-9]).{8,}$/;
-
-  const isValidName = (name) => regexName.test(name);
-  const isValidPass = (pass) => regexPass.test(pass);
-
-  if (!isEmail(email)) { return { error: 'Invalid email' }; }
-  if (data.users.some((user) => user.email === email)) { return { error: 'Email already registered' }; }
-
-  if (!isValidName(nameFirst)) { return { error: 'Invalid first name' }; }
-  if (!isValidName(nameLast)) { return { error: 'Invalid last name' }; }
-
-  if (!isValidPass(password)) { return { error: 'Invalid password' }; }
+  if (!validEmail(email)) { return errEmailInvalid(email); }
+  if (takenEmail(data, email)) { return errEmailTaken(email); }
+  if (!validUserName(nameFirst)) { return errFirstNameInvalid(nameFirst); }
+  if (!validUserName(nameLast)) { return errLastNameInvalid(nameLast); }
+  if (!validUserPass(password)) { return errUserPassCurrInvalid(); }
 
   const authUserId = data.users.length;
+
   data.users.push({
     userId: authUserId,
     name: nameFirst + ' ' + nameLast,
@@ -37,8 +31,6 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
     numSuccessfulLogins: 1,
     numFailedPasswordsSinceLastLogin: 0,
   });
-
-  setData(data);
 
   return { authUserId: authUserId };
 }
@@ -53,22 +45,17 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
 
 export function adminAuthLogin(email, password) {
   const data = getData();
-  const user = data.users.find((user) => email === user.email);
 
-  if (!user) {
-    return { error: 'Email does not exist' };
-  }
+  const user = getUserByEmail(data, email);
+  if (!user) { return errEmailNotFound(email); }
 
   if (password !== user.password) {
     user.numFailedPasswordsSinceLastLogin++;
-    setData(data);
-    return { error: 'Password is incorrect' };
+    return errUserPassCurrIncorrect();
   }
 
   user.numFailedPasswordsSinceLastLogin = 0;
   user.numSuccessfulLogins++;
-
-  setData(data);
 
   return { authUserId: user.userId };
 }
@@ -82,16 +69,14 @@ export function adminAuthLogin(email, password) {
  */
 
 export function adminUserDetails(authUserId) {
-  const dataStore = getData();
+  const data = getData();
 
-  const user = dataStore.users.find((user) => user.userId === authUserId);
-  if (!user) {
-    return { error: `authUserId = ${authUserId} not found` };
-  }
+  const user = getUserById(data, authUserId);
+  if (!user) { return errUserIdNotFound(authUserId); }
 
-  delete user.password;
-  delete user.oldPwords;
-  return { user };
+  const { password, oldPwords, ...filtered } = user;
+
+  return { user: filtered };
 }
 
 /**
@@ -103,45 +88,24 @@ export function adminUserDetails(authUserId) {
  * @returns {{}} - empty object
  */
 export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-  const dataStore = getData();
-  const user = dataStore.users.find((user) => user.userId === authUserId);
+  const data = getData();
+
+  const user = getUserById(data, authUserId);
+  if (!user) { return errUserIdNotFound(authUserId); }
+
+  const userWithEmail = getUserByEmail(data, email);
+  if (userWithEmail && userWithEmail.userId !== authUserId) { return errEmailTaken(email); }
 
   // Conditions for checking if the input is correct
-  if (!user) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-  if (dataStore.users.some(user => user.email === email && user.userId !== authUserId)) {
-    return { error: 'Email is currently used by another user.' };
-  }
-  if (!isEmail(email)) {
-    return { error: 'Email does not satisfy validator.isEmail.' };
-  }
-  if (!/^[a-zA-Z\s'-]+$/.test(nameFirst)) {
-    return { error: 'NameFirst contains invalid characters.' };
-  }
-  if (nameFirst.length < 2) {
-    return { error: 'NameFirst is less than 2 characters.' };
-  }
-  if (nameFirst.length > 20) {
-    return { error: 'NameFirst is more than 20 characters.' };
-  }
-  if (!/^[a-zA-Z\s'-]+$/.test(nameLast)) {
-    return { error: 'NameLast contains invalid characters.' };
-  }
-  if (nameLast.length < 2) {
-    return { error: 'NameLast is less than 2 characters.' };
-  }
-  if (nameLast.length > 20) {
-    return { error: 'NameLast is more than 20 characters.' };
-  }
+  if (!validEmail(email)) { return errEmailInvalid(email); }
+  if (!validUserName(nameFirst)) { return errFirstNameInvalid(nameFirst); }
+  if (!validUserName(nameLast)) { return errLastNameInvalid(nameLast); }
 
   // Updating the user details
   user.email = email;
   user.name = nameFirst + ' ' + nameLast;
-  setData(dataStore);
 
-  return {
-  };
+  return {};
 }
 
 /**
@@ -152,35 +116,20 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @returns {{}} -empty object
  */
 export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
-  const dataStore = getData();
-  const user = dataStore.users.find((user) => user.userId === authUserId);
+  const data = getData();
+
+  const user = getUserById(data, authUserId);
+  if (!user) { return errUserIdNotFound(authUserId); }
 
   // Conditions for checking if the input is correct
-  if (!user) {
-    return { error: 'AuthUserId is not a valid user.' };
-  }
-  if (user.password !== oldPassword) {
-    return { error: 'Old Password is not the correct old password.' };
-  }
-  if (oldPassword === newPassword) {
-    return { error: 'Old Password and New Password match exactly.' };
-  }
-  if (user.oldPasswords && user.oldPasswords.includes(newPassword)) {
-    return { error: 'New Password has already been used before by this user.' };
-  }
-  if (newPassword.length < 8) {
-    return { error: 'New Password is less than 8 characters.' };
-  }
-  if (!/\d/.test(newPassword) || !/[a-zA-Z]/.test(newPassword)) {
-    return { error: 'New Password does not contain at least one number and at least one letter.' };
-  }
+  if (user.password !== oldPassword) { return errUserPassOldIncorrect(); }
+  if (oldPassword === newPassword) { return errUserPassNewNotNew(); }
+  if (user.oldPwords && user.oldPwords.includes(newPassword)) { return errUserPassNewNotNew(); }
+  if (!validUserPass(newPassword)) { return errUserPassNewInvalid(); }
 
   // Updating the Password
+  (user.oldPwords) ? user.oldPwords.push(oldPassword) : user.oldPwords = [oldPassword];
   user.password = newPassword;
-  user.oldPasswords = user.oldPasswords || [];
-  user.oldPasswords.push(newPassword);
-  setData(dataStore);
 
-  return {
-  };
+  return {};
 }

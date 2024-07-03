@@ -59,6 +59,7 @@ describe('adminAuthLogin', () => {
 
     test('Successfully count numFailedPasswordsSinceLastLogin', () => {
       login = adminAuthLogin('validemail@gmail.com', 'wrongP!');
+      details = adminUserDetails(auth.authUserId);
       expect(details.user.numFailedPasswordsSinceLastLogin).toStrictEqual(1);
     });
   });
