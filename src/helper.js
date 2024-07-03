@@ -14,7 +14,7 @@ export const validEmail = email => isEmail(email);
 export const takenEmail = (data, email) => data.users.some(user => user.email === email);
 
 // quiz
-export const validQuizName = name => /^[a-zA-Z0-9_ ]{3,30}$/.test(name);
+export const validQuizName = name => /^[a-zA-Z0-9 ]{3,30}$/.test(name);
 export const validQuizDesc = desc => desc.length <= 100;
 export const takenQuizName = (data, uId, qName) => data.quizzes.some(quiz => quiz.name === qName && quiz.userId === uId);
 export const getQuizById = (data, id) => data.quizzes.find(quiz => id === quiz.quizId);
