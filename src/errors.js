@@ -1,27 +1,30 @@
+// error
+const err = str => ({ error: str });
+
 // id
-export const errUserIdNotFound = id => ({ error: `The user ID '${id}' was not found` });
-export const errQuizIdNotFound = id => ({ error: `The quiz ID '${id}' was not found` });
+export const errUserIdNotFound = id => err(`The user ID '${id}' was not found`);
+export const errQuizIdNotFound = id => err(`The quiz ID '${id}' was not found`);
 
 // email
-export const errEmailInvalid = email => ({ error: `The email '${email}' is invalid` });
-export const errEmailTaken = email => ({ error: `The email '${email}' is already registered` });
-export const errEmailNotFound = email => ({ error: `The email '${email}' is not registered` });
+export const errEmailInvalid = email => err(`The email '${email}' is invalid`);
+export const errEmailTaken = email => err(`The email '${email}' is already registered`);
+export const errEmailNotFound = email => err(`The email '${email}' is not registered`);
 
 // name
-export const errFirstNameInvalid = Fname => ({ error: `The first name '${Fname}' is invalid` });
-export const errLastNameInvalid = Lname => ({ error: `The last name '${Lname}' is invalid` });
-export const errQuizNameInvalid = name => ({ error: `The quiz name '${name}' is invalid` });
-export const errQuizNameTaken = name => ({ error: `The quiz name '${name}' is already in use` });
+export const errFirstNameInvalid = Fname => err(`The first name '${Fname}' is invalid`);
+export const errLastNameInvalid = Lname => err(`The last name '${Lname}' is invalid`);
+export const errQuizNameInvalid = Qname => err(`The quiz name '${Qname}' is invalid`);
+export const errQuizNameTaken = Qname => err(`The quiz name '${Qname}' is already in use`);
 
 // password
-export const errUserPassCurrInvalid = () => ({ error: 'The password is invalid' });
-export const errUserPassCurrIncorrect = () => ({ error: 'The password is incorrect' });
-export const errUserPassOldIncorrect = () => ({ error: 'The old password is incorrect' });
-export const errUserPassNewInvalid = () => ({ error: 'The new password is invalid' });
-export const errUserPassNewNotNew = () => ({ error: 'The new password has already been used' });
+export const errUserPassCurrInvalid = () => err('The password is invalid');
+export const errUserPassCurrIncorrect = () => err('The password is incorrect');
+export const errUserPassOldIncorrect = () => err('The old password is incorrect');
+export const errUserPassNewInvalid = () => err('The new password is invalid');
+export const errUserPassNewNotNew = () => err('The new password has already been used');
 
 // description
-export const errQuizDescInvalid = () => ({ error: 'The quiz description is too long' });
+export const errQuizDescInvalid = () => err('The quiz description is too long');
 
 // author
-export const errQuizUnauthorised = id => ({ error: `The quiz with ID '${id}' does not belong to you` });
+export const errQuizUnauthorised = id => err(`The quiz with ID '${id}' does not belong to you`);

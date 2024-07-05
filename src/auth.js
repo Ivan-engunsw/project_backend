@@ -1,6 +1,6 @@
 import { getData } from './dataStore.js';
-import { errEmailInvalid, errEmailNotFound, errEmailTaken, errFirstNameInvalid, errLastNameInvalid, errUserIdNotFound, errUserPassCurrIncorrect, errUserPassCurrInvalid, errUserPassNewInvalid, errUserPassNewNotNew, errUserPassOldIncorrect } from './errors.js';
-import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, validUserPass } from './helper.js';
+import { errEmailInvalid, errEmailNotFound, errEmailTaken, errFirstNameInvalid, errLastNameInvalid, errUserIdNotFound, errUserPassCurrIncorrect, errUserPassCurrInvalid, errUserPassNewInvalid, errUserPassNewNotNew, errUserPassOldIncorrect } from './errors.ts';
+import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, validUserPass } from './helper.ts';
 
 /**
  * Register a user with an email, password, and names, then returns their authUserId value.
