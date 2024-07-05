@@ -1,28 +1,5 @@
 import isEmail from 'validator/lib/isEmail';
-
-type User = {
-    userId: number;
-    name: string;
-    email: string;
-    password: string;
-    oldPwords: string[];
-    numSuccessfulLogins: number;
-    numFailedPasswordsSinceLastLogin: number;
-}
-
-type Quiz = {
-    quizId: number;
-    userId: number;
-    name: string;
-    description: string;
-    timeCreated: number;
-    timeLastEdited: number;
-}
-
-type Data = {
-    users: User[];
-    quizzes: Quiz[];
-}
+import { Data } from './dataStore';
 
 // time
 export const timeNow = () => Math.floor(Date.now() / 1000);

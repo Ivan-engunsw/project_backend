@@ -1,6 +1,6 @@
-import { getData } from './dataStore.js';
-import { errQuizDescInvalid, errQuizIdNotFound, errQuizNameInvalid, errQuizNameTaken, errQuizUnauthorised, errUserIdNotFound } from './errors.ts';
-import { getQuizById, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper.ts';
+import { getData } from './dataStore';
+import { errQuizDescInvalid, errQuizIdNotFound, errQuizNameInvalid, errQuizNameTaken, errQuizUnauthorised, errUserIdNotFound } from './errors';
+import { getQuizById, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper';
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
