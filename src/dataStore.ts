@@ -1,3 +1,5 @@
+import { ExperimentalSpecifierResolution } from "ts-node";
+
 export interface User {
   userId: number;
   name: string;
@@ -72,7 +74,7 @@ function setData(newData: Data) {
 function generateToken(authUserId: number): { token: string } {
   var randomBytes = require('randombytes');
   let tokenId = randomBytes(16).toString('base64url');
-  while (tokenData.tokens.find((token) => token.tokenId === tokenId) !== undefined) {
+  while (tokenData.tokens.find((token) => token.tokenId === tokenId)) {
     tokenId = randomBytes(16).toString('base64url');
   }
 
@@ -86,12 +88,12 @@ function generateToken(authUserId: number): { token: string } {
   return { token: tokenId };
 }
 
-function validToken(token: { token: string }): false | Token { // Have it just take in a string ??? since it will always be passed as a string when capturing information 
+function validToken(token: { token: string }): {error: string} | Token { // Have it just take in a string ??? since it will always be passed as a string when capturing information 
   let tokenToFind;
   if ((tokenToFind = tokenData.tokens.find((tokenA) => tokenA.tokenId === token.token))) {
     return tokenToFind;
   } else {
-    return false;
+    return {error: "Token is invalid."};
   }
 }
 

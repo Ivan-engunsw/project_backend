@@ -52,12 +52,10 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
-  const {name, description} = req.body;
-  const tokenId = req.query.token as string;
-  const authUser = validToken({token: tokenId});
-  if (authUser === false) {
-    const ERROR = {error: "Token is invalid."};
-    return res.status(401).json(ERROR);
+  const {token, name, description} = req.body;
+  const authUser = validToken({token: token});
+  if ('error' in authUser) {
+    return res.status(401).json(authUser);
   }
   const result = adminQuizCreate(authUser.authUserId, name, description);
   if ('error' in result) {
