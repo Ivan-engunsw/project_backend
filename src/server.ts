@@ -1,6 +1,6 @@
 import express, { json, Request, Response } from 'express';
 import { echo } from './newecho';
-import morgan from 'morgan';
+import morgan, { token } from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import YAML from 'yaml';
@@ -8,6 +8,10 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+import { generateToken,validToken } from './dataStore';
+import { clear } from './other';
+import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
+import {adminQuizCreate, adminQuizList, adminQuizDescriptionUpdate, adminQuizInfo, adminQuizNameUpdate, adminQuizRemove} from './quiz';
 
 // Set up web app
 const app = express();
@@ -38,6 +42,35 @@ app.get('/echo', (req: Request, res: Response) => {
 
   return res.json(result);
 });
+
+app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
+  const { email, password, nameFirst, nameLast } = req.body;
+  const result = adminAuthRegister(email, password, nameFirst, nameLast);
+
+  const token = generateToken(result.authUserId);
+  res.json(token);
+});
+
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
+  const {name, description} = req.body;
+  const tokenId = req.query.token as string;
+  const authUser = validToken({token: tokenId});
+  if (authUser === false) {
+    const ERROR = {error: "Token is invalid."};
+    return res.status(401).json(ERROR);
+  }
+  const result = adminQuizCreate(authUser.authUserId, name, description);
+  if ('error' in result) {
+    res.status(400).json(result);
+  }
+  res.json(result);
+});
+
+app.delete('/v1/clear', (req: Request, res: Response) => {
+  const result = clear();
+  res.json(result);
+});
+
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
