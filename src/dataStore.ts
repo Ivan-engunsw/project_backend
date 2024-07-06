@@ -1,5 +1,4 @@
-import { ExperimentalSpecifierResolution } from "ts-node";
-
+// YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
 export interface User {
   userId: number;
   name: string;
@@ -37,7 +36,6 @@ let tokenData: TokenData = {
   tokens: [],
 }
 
-// YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
 let data: Data = {
   users: [],
   quizzes: [],
