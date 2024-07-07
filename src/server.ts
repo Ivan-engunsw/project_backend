@@ -1,6 +1,6 @@
 import express, { json, Request, Response } from 'express';
 import { echo } from './newecho';
-import morgan, { token } from 'morgan';
+import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
 import YAML from 'yaml';
@@ -8,10 +8,10 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { generateToken,validToken } from './dataStore';
+import { generateToken, validToken } from './dataStore';
 import { clear } from './other';
-import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
-import {adminQuizCreate, adminQuizList, adminQuizDescriptionUpdate, adminQuizInfo, adminQuizNameUpdate, adminQuizRemove} from './quiz';
+import { adminAuthRegister } from './auth';
+import { adminQuizCreate } from './quiz';
 
 // Set up web app
 const app = express();
@@ -46,14 +46,16 @@ app.get('/echo', (req: Request, res: Response) => {
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
-
+  if ('error' in result) {
+    return res.status(400).json(result);
+  }
   const token = generateToken(result.authUserId);
   res.json(token);
 });
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
-  const {token, name, description} = req.body;
-  const authUser = validToken({token: token});
+  const { token, name, description } = req.body;
+  const authUser = validToken({ token: token });
   if ('error' in authUser) {
     return res.status(401).json(authUser);
   }
@@ -68,7 +70,6 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
   const result = clear();
   res.json(result);
 });
-
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================

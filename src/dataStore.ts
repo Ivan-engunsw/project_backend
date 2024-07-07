@@ -1,26 +1,26 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
-export interface User {
+export interface Data {
+  users: user[];
+  quizzes: quiz[];
+}
+
+export interface user {
   userId: number;
   name: string;
   email: string;
   password: string;
-  oldPwords: string[];
+  oldPwords?: string[];
   numSuccessfulLogins: number;
-  numFailedPasswordsSinceLastLogin: number;
+  numFailedPasswordsSinceLastLogin?: number;
 }
 
-export interface Quiz {
+export interface quiz {
   quizId: number;
   userId: number;
   name: string;
   description: string;
   timeCreated: number;
-  timeLastEdited: number;
-}
-
-export interface Data {
-  users: User[];
-  quizzes: Quiz[];
+  timeLastEdited?: number;
 }
 
 export interface TokenData {
@@ -32,9 +32,9 @@ export interface Token {
   authUserId: number;
 }
 
-let tokenData: TokenData = {
+const tokenData: TokenData = {
   tokens: [],
-}
+};
 
 let data: Data = {
   users: [],
@@ -70,34 +70,34 @@ function setData(newData: Data) {
 }
 
 function generateToken(authUserId: number): { token: string } {
-  var randomBytes = require('randombytes');
+  const randomBytes = require('randombytes');
   let tokenId = randomBytes(16).toString('base64url');
   while (tokenData.tokens.find((token) => token.tokenId === tokenId)) {
     tokenId = randomBytes(16).toString('base64url');
   }
 
-  let token = {
+  const token = {
     tokenId: tokenId,
     authUserId: authUserId,
-  }
+  };
 
   tokenData.tokens.push(token);
 
   return { token: tokenId };
 }
 
-function validToken(token: { token: string }): {error: string} | Token { // Have it just take in a string ??? since it will always be passed as a string when capturing information 
+function validToken(token: { token: string }): {error: string} | Token { // Have it just take in a string ??? since it will always be passed as a string when capturing information
   let tokenToFind;
   if ((tokenToFind = tokenData.tokens.find((tokenA) => tokenA.tokenId === token.token))) {
     return tokenToFind;
   } else {
-    return {error: "Token is invalid."};
+    return { error: 'Token is invalid.' };
   }
 }
 
 function removeToken(token: { token: string }): boolean {
   let index;
-  if ((index = tokenData.tokens.findIndex((tokenA) => tokenA.tokenId === token.token)) != -1) {
+  if ((index = tokenData.tokens.findIndex((tokenA) => tokenA.tokenId === token.token)) !== -1) {
     tokenData.tokens.splice(index, 1);
     return true;
   } else {
@@ -106,4 +106,3 @@ function removeToken(token: { token: string }): boolean {
 }
 
 export { getData, setData, generateToken, validToken, removeToken };
-
