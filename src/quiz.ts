@@ -8,7 +8,7 @@ import { getQuizById, getUserById, takenQuizName, timeNow, validQuizDesc, validQ
  * @param {number} authUserId - authorised user Id
  * @returns {{quizzes}} - object containing quizId and name
  */
-export function adminQuizList(authUserId: number): { quizzes: object[] } | { error: string } {
+export function adminQuizList(authUserId: number): { quizzes: object[] } | { error: string, errorCode: number  } {
   const data = getData();
 
   const user = getUserById(data, authUserId);
@@ -28,7 +28,7 @@ export function adminQuizList(authUserId: number): { quizzes: object[] } | { err
  * @param {string} description - description about the quiz
  * @returns {{quizId}} - object containing quizId
  */
-export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | { error: string } {
+export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | { error: string, errorCode: number  } {
   const data = getData();
 
   const user = getUserById(data, authUserId);
@@ -59,7 +59,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
  * @param {number} quizId - quiz Id
  * @returns {{}} - return object
  */
-export function adminQuizRemove(authUserId: number, quizId: number): Record<string, never> | {error: string} {
+export function adminQuizRemove(authUserId: number, quizId: number): Record<string, never> | {error: string, errorCode: number } {
   const data = getData();
 
   const user = getUserById(data, authUserId);
@@ -106,7 +106,7 @@ export function adminQuizInfo(authUserId: number, quizId: number) {
  * @param {string} name - new name of quiz
  * @returns {{}} - empty object
  */
-export function adminQuizNameUpdate(authUserId: number, quizId: number, name: string): Record<string, never> | { error: string } {
+export function adminQuizNameUpdate(authUserId: number, quizId: number, name: string): Record<string, never> | { error: string, errorCode: number  } {
   const data = getData();
 
   // Check the name provided
@@ -141,7 +141,7 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
  * @param {string} description - new description of quiz
  * @returns {{}} - empty object
  */
-export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, description: string): Record<string, never> | { error: string } {
+export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, description: string): Record<string, never> | { error: string, errorCode: number  } {
   const data = getData();
 
   // Check the description provided

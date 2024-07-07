@@ -50,7 +50,7 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
   if ('error' in result) {
-    return res.status(400).json(result);
+    return errorFunction(result,res);
   }
   const token = generateToken(result.authUserId);
   res.json(token);
@@ -64,7 +64,7 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   }
   const result = adminQuizCreate(authUser.authUserId, name, description);
   if ('error' in result) {
-    res.status(400).json(result);
+    return errorFunction(result,res);
   }
   res.json(result);
 });
