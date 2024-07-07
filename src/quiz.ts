@@ -1,6 +1,8 @@
-import { getData } from './dataStore';
+import { getData, Data, User, Quiz } from './dataStore';
 import { errQuizDescInvalid, errQuizIdNotFound, errQuizNameInvalid, errQuizNameTaken, errQuizUnauthorised, errUserIdNotFound } from './errors';
 import { getQuizById, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper';
+
+type ERR = { error: string };
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -8,14 +10,14 @@ import { getQuizById, getUserById, takenQuizName, timeNow, validQuizDesc, validQ
  * @param {number} authUserId - authorised user Id
  * @returns {{quizzes}} - object containing quizId and name
  */
-export function adminQuizList(authUserId) {
-  const data = getData();
+export function adminQuizList(authUserId: number): { quizzes: { quizId: number, name: string }[] } | ERR {
+  const data: Data = getData();
 
-  const user = getUserById(data, authUserId);
+  const user: User = getUserById(data, authUserId);
   if (!user) { return errUserIdNotFound(authUserId); }
 
-  const quizList = data.quizzes.reduce((arr, { quizId, name, userId }) =>
-    (userId === authUserId) ? arr.push({ quizId, name }) && arr : arr, []);
+  const quizList: { quizId: number, name: string }[] =
+    data.quizzes.reduce((arr, { quizId, name, userId }) => (userId === authUserId) ? arr.push({ quizId, name }) && arr : arr, []);
 
   return { quizzes: quizList };
 }
@@ -28,17 +30,17 @@ export function adminQuizList(authUserId) {
  * @param {string} description - description about the quiz
  * @returns {{quizId}} - object containing quizId
  */
-export function adminQuizCreate(authUserId, name, description) {
-  const data = getData();
+export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | ERR {
+  const data: Data = getData();
 
-  const user = getUserById(data, authUserId);
+  const user: User = getUserById(data, authUserId);
   if (!user) { return errUserIdNotFound(authUserId); }
 
   if (!validQuizName(name)) { return errQuizNameInvalid(name); }
   if (takenQuizName(data, authUserId, name)) { return errQuizNameTaken(name); }
   if (!validQuizDesc(description)) { return errQuizDescInvalid(); }
 
-  const quizId = data.quizzes.length;
+  const quizId: number = data.quizzes.length;
 
   data.quizzes.push({
     quizId: quizId,
@@ -59,13 +61,13 @@ export function adminQuizCreate(authUserId, name, description) {
  * @param {number} quizId - quiz Id
  * @returns {{}} - return object
  */
-export function adminQuizRemove(authUserId, quizId) {
-  const data = getData();
+export function adminQuizRemove(authUserId: number, quizId: number): Record<string, never> | ERR {
+  const data: Data = getData();
 
-  const user = getUserById(data, authUserId);
+  const user: User = getUserById(data, authUserId);
   if (!user) { return errUserIdNotFound(authUserId); }
 
-  const i = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
+  const i: number = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
   if (i === -1) return errQuizIdNotFound(quizId);
 
   if (data.quizzes[i].userId !== authUserId) { return errQuizUnauthorised(quizId); }
@@ -82,13 +84,13 @@ export function adminQuizRemove(authUserId, quizId) {
  * @param {number} quizId - quiz Id
  * @returns {{quizInfo}} - return object
  */
-export function adminQuizInfo(authUserId, quizId) {
-  const data = getData();
+export function adminQuizInfo(authUserId: number, quizId: number): Omit<Quiz, 'userId' > | ERR {
+  const data: Data = getData();
 
-  const user = getUserById(data, authUserId);
+  const user: User = getUserById(data, authUserId);
   if (!user) { return errUserIdNotFound(authUserId); }
 
-  const quiz = getQuizById(data, quizId);
+  const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return errQuizIdNotFound(quizId);
 
   if (quiz.userId !== authUserId) { return errQuizUnauthorised(quizId); }
@@ -106,18 +108,18 @@ export function adminQuizInfo(authUserId, quizId) {
  * @param {string} name - new name of quiz
  * @returns {{}} - empty object
  */
-export function adminQuizNameUpdate(authUserId, quizId, name) {
-  const data = getData();
+export function adminQuizNameUpdate(authUserId: number, quizId: number, name: string): Record<string, never> | ERR {
+  const data: Data = getData();
 
   // Check the name provided
   if (!validQuizName(name)) { return errQuizNameInvalid(name); }
 
   // Check the user exists
-  const user = getUserById(data, authUserId);
+  const user: User = getUserById(data, authUserId);
   if (!user) { return errUserIdNotFound(authUserId); }
 
   // Check the quiz exists
-  const quiz = getQuizById(data, quizId);
+  const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return errQuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
@@ -141,18 +143,18 @@ export function adminQuizNameUpdate(authUserId, quizId, name) {
  * @param {string} description - new description of quiz
  * @returns {{}} - empty object
  */
-export function adminQuizDescriptionUpdate (authUserId, quizId, description) {
-  const data = getData();
+export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, description: string): Record<string, never> | ERR {
+  const data: Data = getData();
 
   // Check the description provided
   if (!validQuizDesc(description)) { return errQuizDescInvalid(); }
 
   // Check the user exists
-  const user = getUserById(data, authUserId);
+  const user: User = getUserById(data, authUserId);
   if (!user) { return errUserIdNotFound(authUserId); }
 
   // Check the quiz exists
-  const quiz = getQuizById(data, quizId);
+  const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return errQuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
