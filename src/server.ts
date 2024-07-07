@@ -34,8 +34,8 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // ====================================================================
 
 // Example get request
-const errorFunction = (errorObject: {error: string, errorCode: number}, res: Response) => 
-  res.status(errorObject.errorCode).json({error: errorObject.error});
+const errorFunction = (errorObject: {error: string, errorCode: number}, res: Response) =>
+  res.status(errorObject.errorCode).json({ error: errorObject.error });
 
 app.get('/echo', (req: Request, res: Response) => {
   const result = echo(req.query.echo as string);
@@ -50,7 +50,7 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
   if ('error' in result) {
-    return errorFunction(result,res);
+    return errorFunction(result, res);
   }
   const token = generateToken(result.authUserId);
   res.json(token);
@@ -64,7 +64,7 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   }
   const result = adminQuizCreate(authUser.authUserId, name, description);
   if ('error' in result) {
-    return errorFunction(result,res);
+    return errorFunction(result, res);
   }
   res.json(result);
 });

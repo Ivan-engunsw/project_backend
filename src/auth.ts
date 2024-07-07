@@ -42,7 +42,7 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
 * @returns {{authUserId}} - return object
 */
 
-export function adminAuthLogin(email: string, password: string): { authUserId: number } | { error: string, errorCode: number  } {
+export function adminAuthLogin(email: string, password: string): { authUserId: number } | { error: string, errorCode: number } {
   const data = getData();
   const user = getUserByEmail(data, email);
   if (!user) { return errEmailNotFound(email); }
@@ -66,7 +66,7 @@ export function adminAuthLogin(email: string, password: string): { authUserId: n
  * @returns {{user}} - return object
  */
 
-export function adminUserDetails(authUserId: number): { user: object } | { error: string, errorCode: number  } {
+export function adminUserDetails(authUserId: number): { user: object } | { error: string, errorCode: number } {
   const data = getData();
 
   const user = getUserById(data, authUserId);
@@ -113,7 +113,7 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
  * @param {string} newPassword - the new password of the author
  * @returns {{}} -empty object
  */
-export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): Record<string, never> | { error: string, errorCode: number  } {
+export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): Record<string, never> | { error: string, errorCode: number } {
   const data = getData();
 
   const user = getUserById(data, authUserId);
