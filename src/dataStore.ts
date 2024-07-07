@@ -1,4 +1,8 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
+export interface ErrorObject{
+  error: string;
+}
+
 export interface User {
   userId: number;
   name: string;
@@ -32,9 +36,9 @@ export interface Token {
   authUserId: number;
 }
 
-let tokenData: TokenData = {
+const tokenData: TokenData = {
   tokens: [],
-}
+};
 
 let data: Data = {
   users: [],
@@ -70,34 +74,34 @@ function setData(newData: Data) {
 }
 
 function generateToken(authUserId: number): { token: string } {
-  var randomBytes = require('randombytes');
+  const randomBytes = require('randombytes');
   let tokenId = randomBytes(16).toString('base64url');
   while (tokenData.tokens.find((token) => token.tokenId === tokenId)) {
     tokenId = randomBytes(16).toString('base64url');
   }
 
-  let token = {
+  const token = {
     tokenId: tokenId,
     authUserId: authUserId,
-  }
+  };
 
   tokenData.tokens.push(token);
 
   return { token: tokenId };
 }
 
-function validToken(token: { token: string }): {error: string} | Token { // Have it just take in a string ??? since it will always be passed as a string when capturing information 
+function validToken(token: { token: string }): {error: string} | Token {
   let tokenToFind;
   if ((tokenToFind = tokenData.tokens.find((tokenA) => tokenA.tokenId === token.token))) {
     return tokenToFind;
   } else {
-    return {error: "Token is invalid."};
+    return { error: 'Token is invalid.' };
   }
 }
 
 function removeToken(token: { token: string }): boolean {
   let index;
-  if ((index = tokenData.tokens.findIndex((tokenA) => tokenA.tokenId === token.token)) != -1) {
+  if ((index = tokenData.tokens.findIndex((tokenA) => tokenA.tokenId === token.token)) !== -1) {
     tokenData.tokens.splice(index, 1);
     return true;
   } else {
@@ -106,4 +110,3 @@ function removeToken(token: { token: string }): boolean {
 }
 
 export { getData, setData, generateToken, validToken, removeToken };
-

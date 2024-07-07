@@ -1,4 +1,4 @@
-import { getData } from './dataStore';
+import { getData, Quiz, ErrorObject } from './dataStore';
 import { errQuizDescInvalid, errQuizIdNotFound, errQuizNameInvalid, errQuizNameTaken, errQuizUnauthorised, errUserIdNotFound } from './errors';
 import { getQuizById, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper';
 
@@ -28,7 +28,7 @@ export function adminQuizList(authUserId) {
  * @param {string} description - description about the quiz
  * @returns {{quizId}} - object containing quizId
  */
-export function adminQuizCreate(authUserId, name, description) {
+export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number} | ErrorObject {
   const data = getData();
 
   const user = getUserById(data, authUserId);
