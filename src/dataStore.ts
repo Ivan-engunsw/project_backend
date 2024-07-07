@@ -1,10 +1,10 @@
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
 export interface Data {
-  users: user[];
-  quizzes: quiz[];
+  users: User[];
+  quizzes: Quiz[];
 }
 
-export interface user {
+export interface User {
   userId: number;
   name: string;
   email: string;
@@ -14,7 +14,7 @@ export interface user {
   numFailedPasswordsSinceLastLogin?: number;
 }
 
-export interface quiz {
+export interface Quiz {
   quizId: number;
   userId: number;
   name: string;
