@@ -11,7 +11,7 @@ import process from 'process';
 import { generateToken, validToken } from './dataStore';
 import { clear } from './other';
 import { adminAuthRegister } from './auth';
-import { adminQuizCreate } from './quiz';
+import { adminQuizCreate, adminQuizInfo, adminQuizList } from './quiz';
 
 // Set up web app
 const app = express();
@@ -63,6 +63,33 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
     return res.status(401).json(authUser);
   }
   const result = adminQuizCreate(authUser.authUserId, name, description);
+  if ('error' in result) {
+    return errorFunction(result, res);
+  }
+  res.json(result);
+});
+
+app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
+  const token = req.query.token as string;
+  const authUser = validToken({ token: token });
+  if ('error' in authUser) {
+    return res.status(401).json(authUser);
+  }
+  const result = adminQuizList(authUser.authUserId);
+  if ('error' in result) {
+    return errorFunction(result, res);
+  }
+  res.json(result);
+});
+
+app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const token = req.query.token as string;
+  const authUser = validToken({ token: token });
+  if ('error' in authUser) {
+    return res.status(401).json(authUser);
+  }
+  const result = adminQuizInfo(authUser.authUserId, quizId);
   if ('error' in result) {
     return errorFunction(result, res);
   }

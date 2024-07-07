@@ -1,6 +1,6 @@
 import request from 'sync-request-curl';
 import { port, url } from './config.json';
-import { quiz } from './dataStore';
+import { Quiz } from './dataStore';
 
 const ERROR = { error: expect.any(String) };
 const SERVER_URL = `${url}:${port}`;
@@ -50,7 +50,7 @@ describe('GET /v1/admin/quiz/list', () => {
 
     describe('After creating quizzes', () => {
       let quiz1: { quizId: number};
-      let quizDetails1: quiz;
+      let quizDetails1: Quiz;
       beforeEach(() => {
         const res1 = request('POST', SERVER_URL + '/v1/admin/quiz',
           {
