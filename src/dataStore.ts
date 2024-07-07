@@ -91,7 +91,7 @@ function validToken(token: { token: string }): {error: string} | Token { // Have
   if ((tokenToFind = tokenData.tokens.find((tokenA) => tokenA.tokenId === token.token))) {
     return tokenToFind;
   } else {
-    return { error: 'Token is invalid.' };
+    return { error: 'Token is invalid' };
   }
 }
 
