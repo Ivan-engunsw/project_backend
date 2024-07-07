@@ -1,7 +1,7 @@
 // The test for the other.js program which only contains the clear function
 
-import { clear } from './other.js';
-import { adminAuthRegister, adminUserDetails } from './auth.js';
+import { clear } from './other';
+import { adminAuthRegister, adminUserDetails } from './auth';
 
 const ERROR = { error: expect.any(String) };
 

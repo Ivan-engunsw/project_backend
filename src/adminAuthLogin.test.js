@@ -1,5 +1,5 @@
-import { clear } from './other.js';
-import { adminAuthRegister, adminAuthLogin, adminUserDetails } from './auth.js';
+import { clear } from './other';
+import { adminAuthRegister, adminAuthLogin, adminUserDetails } from './auth';
 
 const ERROR = { error: expect.any(String) };
 

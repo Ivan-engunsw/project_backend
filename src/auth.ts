@@ -1,6 +1,8 @@
-import { getData } from './dataStore';
+import { getData, Data, User } from './dataStore';
 import { errEmailInvalid, errEmailNotFound, errEmailTaken, errFirstNameInvalid, errLastNameInvalid, errUserIdNotFound, errUserPassCurrIncorrect, errUserPassCurrInvalid, errUserPassNewInvalid, errUserPassNewNotNew, errUserPassOldIncorrect } from './errors';
 import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, validUserPass } from './helper';
+
+type ERR = { error: string };
 
 /**
  * Register a user with an email, password, and names, then returns their authUserId value.
@@ -12,8 +14,8 @@ import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, val
  * @returns {{authUserId}} - return object
  */
 
-export function adminAuthRegister(email, password, nameFirst, nameLast) {
-  const data = getData();
+export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } | ERR {
+  const data: Data = getData();
 
   if (!validEmail(email)) { return errEmailInvalid(email); }
   if (takenEmail(data, email)) { return errEmailTaken(email); }
@@ -21,7 +23,7 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
   if (!validUserName(nameLast)) { return errLastNameInvalid(nameLast); }
   if (!validUserPass(password)) { return errUserPassCurrInvalid(); }
 
-  const authUserId = data.users.length;
+  const authUserId: number = data.users.length;
 
   data.users.push({
     userId: authUserId,
@@ -43,10 +45,10 @@ export function adminAuthRegister(email, password, nameFirst, nameLast) {
 * @returns {{authUserId}} - return object
 */
 
-export function adminAuthLogin(email, password) {
-  const data = getData();
+export function adminAuthLogin(email: string, password: string): { authUserId: number } | ERR {
+  const data: Data = getData();
 
-  const user = getUserByEmail(data, email);
+  const user: User = getUserByEmail(data, email);
   if (!user) { return errEmailNotFound(email); }
 
   if (password !== user.password) {
@@ -68,10 +70,10 @@ export function adminAuthLogin(email, password) {
  * @returns {{user}} - return object
  */
 
-export function adminUserDetails(authUserId) {
-  const data = getData();
+export function adminUserDetails(authUserId: number): { user: Omit<User, 'password' | 'oldPwords' > } | ERR {
+  const data: Data = getData();
 
-  const user = getUserById(data, authUserId);
+  const user: User = getUserById(data, authUserId);
   if (!user) { return errUserIdNotFound(authUserId); }
 
   const { password, oldPwords, ...filtered } = user;
@@ -87,13 +89,13 @@ export function adminUserDetails(authUserId) {
  * @param {string} nameLast  - the last name of the author
  * @returns {{}} - empty object
  */
-export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
-  const data = getData();
+export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string): Record<string, never> | ERR {
+  const data: Data = getData();
 
-  const user = getUserById(data, authUserId);
+  const user: User = getUserById(data, authUserId);
   if (!user) { return errUserIdNotFound(authUserId); }
 
-  const userWithEmail = getUserByEmail(data, email);
+  const userWithEmail: User = getUserByEmail(data, email);
   if (userWithEmail && userWithEmail.userId !== authUserId) { return errEmailTaken(email); }
 
   // Conditions for checking if the input is correct
@@ -115,10 +117,10 @@ export function adminUserDetailsUpdate(authUserId, email, nameFirst, nameLast) {
  * @param {string} newPassword - the new password of the author
  * @returns {{}} -empty object
  */
-export function adminUserPasswordUpdate(authUserId, oldPassword, newPassword) {
-  const data = getData();
+export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): Record<string, never> | ERR {
+  const data: Data = getData();
 
-  const user = getUserById(data, authUserId);
+  const user: User = getUserById(data, authUserId);
   if (!user) { return errUserIdNotFound(authUserId); }
 
   // Conditions for checking if the input is correct

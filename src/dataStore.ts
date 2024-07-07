@@ -3,7 +3,7 @@ export interface User {
   name: string;
   email: string;
   password: string;
-  oldPwords: string[];
+  oldPwords?: string[];
   numSuccessfulLogins: number;
   numFailedPasswordsSinceLastLogin: number;
 }

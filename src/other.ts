@@ -4,7 +4,7 @@ import { setData } from './dataStore';
  * @returns {{}} - empty object
  */
 
-export function clear() {
+export function clear(): Record<string, never> {
   setData({ users: [], quizzes: [] });
   return {};
 }
