@@ -10,7 +10,8 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister } from './auth';
-import { generateToken } from './dataStore';
+import { generateToken, validToken } from './dataStore';
+import { adminQuizCreate } from './quiz';
 
 // Set up web app
 const app = express();
@@ -58,6 +59,19 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
 
   const token = generateToken(result.authUserId);
   res.json(token);
+});
+
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
+  const { token, name, description } = req.body;
+  const authUser = validToken({ token: token });
+  if ('error' in authUser) {
+    return res.status(401).json(authUser);
+  }
+  const result = adminQuizCreate(authUser.authUserId, name, description);
+  if ('error' in result) {
+    return errorFunction(result, res);
+  }
+  res.json(result);
 });
 
 // ====================================================================

@@ -86,12 +86,12 @@ function generateToken(authUserId: number): { token: string } {
   return { token: tokenId };
 }
 
-function validToken(token: { token: string }): false | Token {
+function validToken(token: { token: string }): {error: string} | Token {
   let tokenToFind;
   if ((tokenToFind = tokenData.tokens.find((tokenA) => tokenA.tokenId === token.token))) {
     return tokenToFind;
   } else {
-    return false;
+    return { error: 'Token is invalid' };
   }
 }
 

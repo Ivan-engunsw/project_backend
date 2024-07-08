@@ -2,7 +2,7 @@ import { clear } from './other';
 import { adminQuizCreate, adminQuizInfo, adminQuizDescriptionUpdate } from './quiz';
 import { adminAuthRegister } from './auth';
 
-const ERROR = { error: expect.any(String) };
+const ERROR = { error: expect.any(String), errorCode: expect.any(Number) };
 
 beforeEach(() => {
   // Reset state of data so tests can be run independently
