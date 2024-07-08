@@ -2,7 +2,7 @@ import { getData, Data, User } from './dataStore';
 import { errEmailInvalid, errEmailNotFound, errEmailTaken, errFirstNameInvalid, errLastNameInvalid, errUserIdNotFound, errUserPassCurrIncorrect, errUserPassCurrInvalid, errUserPassNewInvalid, errUserPassNewNotNew, errUserPassOldIncorrect } from './errors';
 import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, validUserPass } from './helper';
 
-type ERR = { error: string };
+type ERR = { error: string, errorCode: number };
 
 /**
  * Register a user with an email, password, and names, then returns their authUserId value.
