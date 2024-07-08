@@ -5,9 +5,6 @@ const SERVER_URL = `${config.url}:${config.port}`
 const TIMEOUT_MS = 5 * 1000;
 const ERROR = { error: expect.any(String) };
 
-import { adminQuizCreate, adminQuizInfo } from '../quiz';
-import { adminAuthRegister } from '../auth';
-
 describe('GET /v1/admin/quiz/:quizid', () => {
   describe('adminQuizInfo HTTP tests', () => {
     beforeEach(() => {
