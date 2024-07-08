@@ -31,6 +31,8 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // ====================================================================
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
+const errorFunction = (errorObject: {error: string, errorCode: number}, res: Response) =>
+  res.status(errorObject.errorCode).json({ error: errorObject.error });
 
 // Example get request
 app.get('/echo', (req: Request, res: Response) => {
@@ -51,7 +53,7 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
   if ('error' in result) {
-    return res.status(400).json(result);
+    return errorFunction(result, res);
   }
 
   const token = generateToken(result.authUserId);
