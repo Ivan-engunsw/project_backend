@@ -11,7 +11,7 @@ export interface User {
   password: string;
   oldPwords?: string[];
   numSuccessfulLogins: number;
-  numFailedPasswordsSinceLastLogin?: number;
+  numFailedPasswordsSinceLastLogin: number;
 }
 
 export interface Quiz {
