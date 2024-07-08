@@ -25,18 +25,7 @@ export interface Quiz {
   timeLastEdited: number;
 }
 
-export interface TokenData {
-  tokens: Token[];
-}
-
-export interface Token {
-  tokenId: string;
-  authUserId: number;
-}
-
-const tokenData: TokenData = {
-  tokens: [],
-};
+const tokenMap: Map<string, number> = new Map();
 
 let data: Data = {
   users: [],
@@ -74,23 +63,18 @@ function setData(newData: Data) {
 function generateToken(authUserId: number): { token: string } {
   const randomBytes = require('randombytes');
   let tokenId = randomBytes(16).toString('base64url');
-  while (tokenData.tokens.find((token) => token.tokenId === tokenId)) {
+  while (tokenMap.has(tokenId)) {
     tokenId = randomBytes(16).toString('base64url');
   }
 
-  const token = {
-    tokenId: tokenId,
-    authUserId: authUserId,
-  };
-
-  tokenData.tokens.push(token);
+  tokenMap.set(tokenId, authUserId);
 
   return { token: tokenId };
 }
 
-function validToken(token: { token: string }): Token | error.ErrorObject {
+function validToken(token: { token: string }): number | error.ErrorObject {
   let foundToken;
-  if ((foundToken = tokenData.tokens.find((existingToken) => existingToken.tokenId === token.token))) {
+  if ((foundToken = tokenMap.get(token.token))) {
     return foundToken;
   } else {
     return error.InvalidToken(token.token);
@@ -98,9 +82,7 @@ function validToken(token: { token: string }): Token | error.ErrorObject {
 }
 
 function removeToken(token: { token: string }): boolean | error.ErrorObject {
-  let tokenIndex;
-  if ((tokenIndex = tokenData.tokens.findIndex((existingToken) => existingToken.tokenId === token.token)) !== -1) {
-    tokenData.tokens.splice(tokenIndex, 1);
+  if (tokenMap.delete(token.token)) {
     return true;
   } else {
     return error.InvalidToken(token.token);
