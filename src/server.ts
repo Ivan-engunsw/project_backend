@@ -11,6 +11,7 @@ import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister } from './auth';
 import { generateToken } from './dataStore';
+import { ErrorObject } from './errors';
 
 // Set up web app
 const app = express();
@@ -33,8 +34,8 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // ====================================================================
 
 // Example get request
-const errorFunction = (errorObject: {error: string, errorCode: number}, res: Response) => 
-  res.status(errorObject.errorCode).json({error: errorObject.error});
+const setError = (error: ErrorObject, res: Response) => 
+  res.status(error.errorCode).json({error: error.errorMsg});
 
 app.get('/echo', (req: Request, res: Response) => {
   const result = echo(req.query.echo as string);
@@ -53,8 +54,8 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
-  if ('error' in result) {
-    return res.status(400).json(result);
+  if ('errorMsg' in result) {
+    return setError(result, res);
   }
 
   const token = generateToken(result.authUserId);

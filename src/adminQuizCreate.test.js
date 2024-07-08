@@ -2,7 +2,7 @@ import { adminQuizCreate } from './quiz';
 import { adminAuthRegister } from './auth';
 import { clear } from './other';
 
-const ERROR = { error: expect.any(String) };
+const ERROR = { errorMsg: expect.any(String), errorCode: expect.any(Number) };
 
 beforeEach(() => {
   clear();
