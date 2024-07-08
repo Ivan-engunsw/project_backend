@@ -1,3 +1,9 @@
+// YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
+export interface Data {
+  users: User[];
+  quizzes: Quiz[];
+}
+
 export interface User {
   userId: number;
   name: string;
@@ -17,12 +23,19 @@ export interface Quiz {
   timeLastEdited: number;
 }
 
-export interface Data {
-  users: User[];
-  quizzes: Quiz[];
+export interface TokenData {
+  tokens: Token[];
 }
 
-// YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
+export interface Token {
+  tokenId: string;
+  authUserId: number;
+}
+
+const tokenData: TokenData = {
+  tokens: [],
+};
+
 let data: Data = {
   users: [],
   quizzes: [],
@@ -47,11 +60,49 @@ Example usage
 */
 
 // Use get() to access the data
-export function getData() {
+function getData(): Data {
   return data;
 }
 
 // Use set(newData) to pass in the entire data object, with modifications made
-export function setData(newData: Data) {
+function setData(newData: Data) {
   data = newData;
 }
+
+function generateToken(authUserId: number): { token: string } {
+  const randomBytes = require('randombytes');
+  let tokenId = randomBytes(16).toString('base64url');
+  while (tokenData.tokens.find((token) => token.tokenId === tokenId)) {
+    tokenId = randomBytes(16).toString('base64url');
+  }
+
+  const token = {
+    tokenId: tokenId,
+    authUserId: authUserId,
+  };
+
+  tokenData.tokens.push(token);
+
+  return { token: tokenId };
+}
+
+function validToken(token: { token: string }): false | Token {
+  let tokenToFind;
+  if ((tokenToFind = tokenData.tokens.find((tokenA) => tokenA.tokenId === token.token))) {
+    return tokenToFind;
+  } else {
+    return false;
+  }
+}
+
+function removeToken(token: { token: string }): boolean {
+  let index;
+  if ((index = tokenData.tokens.findIndex((tokenA) => tokenA.tokenId === token.token)) !== -1) {
+    tokenData.tokens.splice(index, 1);
+    return true;
+  } else {
+    return false;
+  }
+}
+
+export { getData, setData, generateToken, validToken, removeToken };
