@@ -1,3 +1,5 @@
+import * as error from './errors';
+
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
 export interface Data {
   users: User[];
@@ -86,22 +88,22 @@ function generateToken(authUserId: number): { token: string } {
   return { token: tokenId };
 }
 
-function validToken(token: { token: string }): false | Token {
-  let tokenToFind;
-  if ((tokenToFind = tokenData.tokens.find((tokenA) => tokenA.tokenId === token.token))) {
-    return tokenToFind;
+function validToken(token: { token: string }): Token | error.ErrorObject {
+  let foundToken;
+  if ((foundToken = tokenData.tokens.find((existingToken) => existingToken.tokenId === token.token))) {
+    return foundToken;
   } else {
-    return false;
+    return error.InvalidToken(token.token);
   }
 }
 
-function removeToken(token: { token: string }): boolean {
-  let index;
-  if ((index = tokenData.tokens.findIndex((tokenA) => tokenA.tokenId === token.token)) !== -1) {
-    tokenData.tokens.splice(index, 1);
+function removeToken(token: { token: string }): boolean | error.ErrorObject {
+  let tokenIndex;
+  if ((tokenIndex = tokenData.tokens.findIndex((existingToken) => existingToken.tokenId === token.token)) !== -1) {
+    tokenData.tokens.splice(tokenIndex, 1);
     return true;
   } else {
-    return false;
+    return error.InvalidToken(token.token);
   }
 }
 
