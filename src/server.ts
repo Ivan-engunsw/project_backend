@@ -8,6 +8,7 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+import { clear } from './other';
 import { adminAuthRegister } from './auth';
 import { generateToken } from './dataStore';
 
@@ -41,15 +42,19 @@ app.get('/echo', (req: Request, res: Response) => {
   return res.json(result);
 });
 
+app.delete('/v1/clear', (req: Request, res: Response) => {
+  const result = clear();
+  res.json(result);
+});
 
-app.get('/v1/admin/auth/register', (req: Request, res: Response) => {
+app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
   if ('error' in result) {
     return res.status(400).json(result);
   }
 
-  let token = generateToken(result.authUserId);
+  const token = generateToken(result.authUserId);
   res.json(token);
 });
 

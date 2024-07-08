@@ -1,8 +1,5 @@
-import request from 'sync-request-curl';
-import { port, url } from './config.json';
 import { adminAuthRegister, adminUserDetails } from './auth';
-import { clear } from './other'
-import { error } from 'console';
+import { clear } from './other';
 
 const ERROR = { error: expect.any(String) };
 
@@ -85,12 +82,12 @@ describe('adminAuthRegister', () => {
       if ('error' in auth) {
         expect(auth).toStrictEqual(ERROR);
       } else {
-          const details = adminUserDetails(auth.authUserId);
-          if ('error' in details) {
-            expect(details).toStrictEqual(ERROR);
-          } else {
-            expect(details.user.numSuccessfulLogins).toStrictEqual(1);
-          }
+        const details = adminUserDetails(auth.authUserId);
+        if ('error' in details) {
+          expect(details).toStrictEqual(ERROR);
+        } else {
+          expect(details.user.numSuccessfulLogins).toStrictEqual(1);
+        }
       }
     });
 
@@ -107,5 +104,5 @@ describe('adminAuthRegister', () => {
         }
       }
     });
-  }); 
+  });
 });
