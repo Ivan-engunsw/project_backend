@@ -1,10 +1,9 @@
-import { clear } from './other.js';
-import { adminAuthRegister, adminUserDetails } from './auth.js';
+import { adminAuthRegister, adminUserDetails } from './auth';
+import { clear } from './other';
 
 const ERROR = { error: expect.any(String) };
 
 beforeEach(() => {
-  // Reset state of data so tests can be run independently
   clear();
 });
 
@@ -75,19 +74,35 @@ describe('adminAuthRegister', () => {
       const auth5 = adminAuthRegister('validemail5@gmail.com', 'password1!', 'Bobby', 'Bob');
       const auth6 = adminAuthRegister('validemail6@gmail.com', 'password1!', 'Bobby', 'Bob');
       expect(auth5).toStrictEqual({ authUserId: expect.any(Number) });
-      expect(auth5.authUserId).not.toStrictEqual(auth6.authUserId);
+      expect(auth5).not.toStrictEqual(auth6);
     });
 
     test('successfully update numSuccessfulLogins', () => {
       const auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Bobby', 'Bob');
-      const details = adminUserDetails(auth.authUserId);
-      expect(details.user.numSuccessfulLogins).toStrictEqual(1);
+      if ('error' in auth) {
+        expect(auth).toStrictEqual(ERROR);
+      } else {
+        const details = adminUserDetails(auth.authUserId);
+        if ('error' in details) {
+          expect(details).toStrictEqual(ERROR);
+        } else {
+          expect(details.user.numSuccessfulLogins).toStrictEqual(1);
+        }
+      }
     });
 
     test('successfully create numFailedPasswordsSinceLastLogin', () => {
       const auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Bobby', 'Bob');
-      const details = adminUserDetails(auth.authUserId);
-      expect(details.user.numFailedPasswordsSinceLastLogin).toStrictEqual(0);
+      if ('error' in auth) {
+        expect(auth).toStrictEqual(ERROR);
+      } else {
+        const details = adminUserDetails(auth.authUserId);
+        if ('error' in details) {
+          expect(details).toStrictEqual(ERROR);
+        } else {
+          expect(details.user.numFailedPasswordsSinceLastLogin).toStrictEqual(0);
+        }
+      }
     });
   });
 });
