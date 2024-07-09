@@ -15,8 +15,8 @@ export function adminQuizList(authUserId: number): { quizzes: { quizId: number, 
   const user: User = getUserById(data, authUserId);
   if (!user) { return error.UserIdNotFound(authUserId); }
 
-  const quizList = data.quizzes.reduce((arr, { quizId, name, userId }) =>
-    (userId === authUserId) ? arr.push({ quizId, name }) && arr : arr, []);
+  const quizList: { quizId: number, name: string }[] =
+    data.quizzes.reduce((arr, { quizId, name, userId }) => (userId === authUserId) ? arr.push({ quizId, name }) && arr : arr, []);
 
   return { quizzes: quizList };
 }
@@ -39,7 +39,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
   if (takenQuizName(data, authUserId, name)) { return error.QuizNameTaken(name); }
   if (!validQuizDesc(description)) { return error.QuizDescInvalid(); }
 
-  const quizId = data.quizzes.length;
+  const quizId: number = data.quizzes.length;
 
   data.quizzes.push({
     quizId: quizId,

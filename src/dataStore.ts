@@ -13,7 +13,7 @@ export interface User {
   password: string;
   oldPwords?: string[];
   numSuccessfulLogins: number;
-  numFailedPasswordsSinceLastLogin?: number;
+  numFailedPasswordsSinceLastLogin: number;
 }
 
 export interface Quiz {
@@ -22,7 +22,7 @@ export interface Quiz {
   name: string;
   description: string;
   timeCreated: number;
-  timeLastEdited?: number;
+  timeLastEdited: number;
 }
 
 let data: Data = {
