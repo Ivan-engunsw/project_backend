@@ -59,7 +59,7 @@ describe('GET /v1/admin/quiz/:quizid', () => {
 
       const res = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
       expect(JSON.parse(res.body.toString())).toStrictEqual({
-        quizId: expect.any(Number),
+        quizId: quiz.quizId,
         name: 'first',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
@@ -85,7 +85,7 @@ describe('GET /v1/admin/quiz/:quizid', () => {
 
       const res1 = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}`, { qs: { token: token1.token }, timeout: TIMEOUT_MS });
       expect(JSON.parse(res1.body.toString())).toStrictEqual({
-        quizId: expect.any(Number),
+        quizId: quiz1.quizId,
         name: 'first',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
@@ -94,7 +94,7 @@ describe('GET /v1/admin/quiz/:quizid', () => {
 
       const res2 = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz2.quizId}`, { qs: { token: token1.token }, timeout: TIMEOUT_MS });
       expect(JSON.parse(res2.body.toString())).toStrictEqual({
-        quizId: expect.any(Number),
+        quizId: quiz2.quizId,
         name: 'second',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
@@ -103,7 +103,7 @@ describe('GET /v1/admin/quiz/:quizid', () => {
 
       const res3 = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz3.quizId}`, { qs: { token: token2.token }, timeout: TIMEOUT_MS });
       expect(JSON.parse(res3.body.toString())).toStrictEqual({
-        quizId: expect.any(Number),
+        quizId: quiz3.quizId,
         name: 'second',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
