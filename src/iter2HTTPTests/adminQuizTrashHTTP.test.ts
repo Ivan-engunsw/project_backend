@@ -39,8 +39,7 @@ describe('adminQuizRemove', () => {
     const resQuiz1 = request('POST', SERVER_URL + '/v1/admin/quiz', { json: { token: token.token, name: 'first', description: 'desc' }, timeout: TIMEOUT_MS });
     const quiz1 = JSON.parse(resQuiz1.body.toString());
 
-    const resQuiz2 = request('POST', SERVER_URL + '/v1/admin/quiz', { json: { token: token.token, name: 'second', description: 'desc' }, timeout: TIMEOUT_MS });
-    const quiz2 = JSON.parse(resQuiz2.body.toString());
+    request('POST', SERVER_URL + '/v1/admin/quiz', { json: { token: token.token, name: 'second', description: 'desc' }, timeout: TIMEOUT_MS });
 
     const resQuiz3 = request('POST', SERVER_URL + '/v1/admin/quiz', { json: { token: token.token, name: 'third', description: 'desc' }, timeout: TIMEOUT_MS });
     const quiz3 = JSON.parse(resQuiz3.body.toString());
