@@ -10,7 +10,7 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminUserDetails } from './auth';
-import { adminQuizInfo } from './quiz';
+import { adminQuizCreate, adminQuizInfo } from './quiz';
 import { generateToken, validToken } from './dataStore';
 import { ErrorObject } from './errors';
 
@@ -72,6 +72,19 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   }
 
   const result = adminUserDetails(user.authUserId);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
+  const { token, name, description } = req.body;
+  const authUser = validToken(token);
+  if ('errorMsg' in authUser) {
+    return setError(authUser, res);
+  }
+  const result = adminQuizCreate(authUser.authUserId, name, description);
   if ('errorMsg' in result) {
     return setError(result, res);
   }
