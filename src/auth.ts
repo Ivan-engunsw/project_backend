@@ -23,7 +23,6 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
   if (!validUserPass(password)) { return error.UserPassCurrInvalid(); }
 
   const authUserId: number = data.users.length;
-
   data.users.push({
     userId: authUserId,
     name: nameFirst + ' ' + nameLast,
