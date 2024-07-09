@@ -92,10 +92,6 @@ describe('POST /v1/admin/auth/register', () => {
   });
 
   describe('Functionality testing', () => {
-    beforeEach(() => {
-
-    });
-
     test('Has the correct return type', () => {
       const res = request('POST', SERVER_URL + '/v1/admin/auth/register', inputUser);
       expect(JSON.parse(res.body.toString())).toStrictEqual({ token: expect.any(String) });
