@@ -13,12 +13,16 @@ beforeEach(() => {
 
 describe('POST /v1/admin/quiz/:quizid/transfer', () => {
     let token: { token: string };
+    let token2: { token: string };
     let quiz: { quizId: number };
     beforeEach(() => {
-      const resUser = request('POST', SERVER_URL + '/v1/admin/auth/register', { json: { email: 'betty@unsw.com', password: 'password1', nameFirst: 'Betty', nameLast: 'Boop' }, timeout: TIMEOUT_MS });
+      const resUser = request('POST', SERVER_URL + '/v1/admin/auth/register', { json: INPUT_USER_1, timeout: TIMEOUT_MS });
       token = JSON.parse(resUser.body.toString());
       const resQuiz = request('POST', SERVER_URL + '/v1/admin/quiz', { json: { token: token.token, name: 'Quiz1', description: 'Betty\'s quiz'}, timeout: TIMEOUT_MS });
       quiz = JSON.parse(resQuiz.body.toString());
+
+      const resUser2 = request('POST', SERVER_URL + '/v1/admin/auth/register', { json: INPUT_USER_2, timeout: TIMEOUT_MS });
+      token2 = JSON.parse(resUser2.body.toString());
     });
   
     describe('functionality testing', () => {

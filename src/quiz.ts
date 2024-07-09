@@ -49,6 +49,8 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     timeLastEdited: timeNow(),
   });
 
+  setData(data);
+
   return { quizId: quizId };
 }
 
@@ -71,6 +73,8 @@ export function adminQuizRemove(authUserId: number, quizId: number): EmptyObject
   if (data.quizzes[i].userId !== authUserId) { return error.QuizUnauthorised(quizId); }
 
   data.quizzes.splice(i, 1);
+
+  setData(data);
 
   return {};
 }
