@@ -120,7 +120,7 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const { token, userEmail } = req.body;
-  
+
   const user = validToken(token);
   if ('errorMsg' in user) {
     return setError(user, res);
