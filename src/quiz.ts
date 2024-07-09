@@ -1,4 +1,4 @@
-import { getData, setData, Data, User, Quiz, EmptyObject } from './dataStore';
+import { getData, setData, Data, User, Quiz, EmptyObject, getTrash } from './dataStore';
 import * as error from './errors';
 import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper';
 
@@ -203,4 +203,18 @@ export function adminQuizTransfer (authUserId: number, quizId: number, email: st
   setData(data);
 
   return {};
+}
+
+export function adminQuizTrash(authUserId: number): { quizzes: { quizId: number, name: string }[] } | error.ErrorObject {
+  const data: Data = getData();
+
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  const trash = getTrash();
+
+  const trashList: { quizId: number, name: string }[] =
+    trash.reduce((arr, { quizId, name, userId }) => (userId === authUserId) ? arr.push({ quizId, name }) && arr : arr, []);
+
+  return { quizzes: trashList };
 }
