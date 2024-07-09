@@ -8,6 +8,11 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+import { clear } from './other';
+import { adminAuthRegister, adminUserDetails } from './auth';
+import { adminQuizCreate, adminQuizInfo } from './quiz';
+import { generateToken, validToken } from './dataStore';
+import { ErrorObject } from './errors';
 
 // Set up web app
 const app = express();
@@ -37,6 +42,61 @@ app.get('/echo', (req: Request, res: Response) => {
   }
 
   return res.json(result);
+});
+
+// Given an ErrorObject/cause of error, set the response for the server
+const setError = (error: ErrorObject, res: Response) =>
+  res.status(error.errorCode).json({ error: error.errorMsg });
+
+app.delete('/v1/clear', (req: Request, res: Response) => {
+  const result = clear();
+  res.json(result);
+});
+
+app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
+  const { email, password, nameFirst, nameLast } = req.body;
+  const result = adminAuthRegister(email, password, nameFirst, nameLast);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+
+  const token = generateToken(result.authUserId);
+  res.json(token);
+});
+
+app.get('/v1/admin/user/details', (req: Request, res: Response) => {
+  const token = req.query.token.toString();
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminUserDetails(user.authUserId);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
+  const { token, name, description } = req.body;
+  const authUser = validToken(token);
+  if ('errorMsg' in authUser) {
+    return setError(authUser, res);
+  }
+  const result = adminQuizCreate(authUser.authUserId, name, description);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const authUser = validToken(req.query.token as string);
+  if ('errorMsg' in authUser) return setError(authUser, res);
+
+  const result = adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
+  return ('errorMsg' in result) ? setError(result, res) : res.json(result);
 });
 
 // ====================================================================
