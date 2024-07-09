@@ -25,8 +25,6 @@ export interface Quiz {
   timeLastEdited: number;
 }
 
-const tokenMap: Map<string, number> = new Map();
-
 let data: Data = {
   users: [],
   quizzes: [],
@@ -60,9 +58,11 @@ function setData(newData: Data) {
   data = newData;
 }
 
+const tokenMap: Map<string, number> = new Map();
+
 function generateToken(authUserId: number): { token: string } {
   const randomBytes = require('randombytes');
-  let tokenId = randomBytes(16).toString('base64url');
+  let tokenId: string = randomBytes(16).toString('base64url');
   while (tokenMap.has(tokenId)) {
     tokenId = randomBytes(16).toString('base64url');
   }

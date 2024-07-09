@@ -1,7 +1,7 @@
 import { getData, Data, User } from './dataStore';
 import * as error from './errors';
 import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, validUserPass } from './helper';
-type EmptyObject = Record<string,never>;
+type EmptyObject = Record<string, never>;
 
 /**
  * Register a user with an email, password, and names, then returns their authUserId value.

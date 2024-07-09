@@ -34,8 +34,8 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // ====================================================================
 
 // Example get request
-const setError = (error: ErrorObject, res: Response) => 
-  res.status(error.errorCode).json({error: error.errorMsg});
+const setError = (error: ErrorObject, res: Response) =>
+  res.status(error.errorCode).json({ error: error.errorMsg });
 
 app.get('/echo', (req: Request, res: Response) => {
   const result = echo(req.query.echo as string);
