@@ -26,21 +26,12 @@ const loginUser = {
 
 beforeEach(() => {
   request('DELETE', SERVER_URL + '/v1/clear', { timeout: TIMEOUT_MS });
+  request('POST', SERVER_URL + '/v1/admin/auth/register', createUser);
 });
 
 describe('POST /v1/admin/auth/login', () => {
   describe('Error Testing', () => {
     test('Has incorrect email', () => {
-      request('POST', SERVER_URL + '/v1/admin/auth/register', createUser);
-      const res = request('POST', SERVER_URL + '/v1/admin/auth/login', loginUser);
-      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
-      expect(JSON.parse(res.statusCode.toStrictEqual(400)));
-    });
-  });
-
-  describe('Functionality testing', () => {
-    test('Has the correct return type', () => {
-      request('POST', SERVER_URL + '/v1/admin/auth/register', createUser);
       const res = request('POST', SERVER_URL + '/v1/admin/auth/login', 
         {
           json: {
@@ -49,6 +40,27 @@ describe('POST /v1/admin/auth/login', () => {
           }, 
           timeout: TIMEOUT_MS
       });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
+
+    test('Password does not match email', () => {
+      const res = request('POST', SERVER_URL + '/v1/admin/auth/login', 
+        {
+          json: {
+              email: 'validemail1@gmail.com',
+              password: 'PPP1',    
+          }, 
+          timeout: TIMEOUT_MS
+      });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
+  });
+
+  describe('Functionality testing', () => {
+    test('Has the correct return type', () => {
+      const res = request('POST', SERVER_URL + '/v1/admin/auth/login', loginUser);
       expect(JSON.parse(res.body.toString())).toStrictEqual({ token: expect.any(String) });
     });
   });
