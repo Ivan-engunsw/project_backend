@@ -188,7 +188,7 @@ export function adminQuizTransfer (authUserId: number, quizId: number, email: st
 
   // Check the target exists
   const targetUser: User = getUserByEmail(data, email);
-  if (!user) { return error.EmailNotFound(email) };
+  if (!targetUser) { return error.EmailNotFound(email) };
 
   // Check the target does not have an overlapping name
   if (takenQuizName(data, targetUser.userId, quiz.name)) { return error.QuizNameTaken(quiz.name); };
