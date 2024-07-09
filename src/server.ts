@@ -8,6 +8,9 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
+import { validToken } from './dataStore';
+import { adminQuizInfo } from './quiz';
+
 
 // Set up web app
 const app = express();
@@ -37,6 +40,15 @@ app.get('/echo', (req: Request, res: Response) => {
   }
 
   return res.json(result);
+});
+
+app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const authUser = validToken({ token: parseInt(req.query.token as string) });
+  if ('error' in authUser) return res.status(401).json(authUser);
+
+  const result = adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
+  return ('error' in result) ? res.status(403).json(result) : res.json(result);
+
 });
 
 // ====================================================================
