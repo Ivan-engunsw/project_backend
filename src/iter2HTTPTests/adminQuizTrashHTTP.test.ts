@@ -1,6 +1,5 @@
 import request from 'sync-request-curl';
 import config from '../config.json';
-import { setTrash } from '../dataStore';
 
 const SERVER_URL = `${config.url}:${config.port}`;
 const TIMEOUT_MS = 5 * 1000;
@@ -37,7 +36,7 @@ describe('adminQuizRemove', () => {
     const quiz = JSON.parse(resQuiz.body.toString());
 
     request('DELETE', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
-    
+
     const res = request('GET', SERVER_URL + '/v1/admin/quiz/trash', { qs: { token: token.token }, timeout: TIMEOUT_MS });
     expect(JSON.parse(res.body.toString())).toStrictEqual({ quizzes: [{ name: 'first', quizId: quiz.quizId }] });
   });
@@ -54,8 +53,8 @@ describe('adminQuizRemove', () => {
 
     request('DELETE', SERVER_URL + `/v1/admin/quiz/${quiz2.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
     request('DELETE', SERVER_URL + `/v1/admin/quiz/${quiz3.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
-    
-    const res = request('GET', SERVER_URL + '/v1/admin/quiz/trash', { qs: { token: token.token  }, timeout: TIMEOUT_MS });
+
+    const res = request('GET', SERVER_URL + '/v1/admin/quiz/trash', { qs: { token: token.token }, timeout: TIMEOUT_MS });
     expect(JSON.parse(res.body.toString())).toStrictEqual({ quizzes: [{ name: 'first', quizId: quiz2.quizId }, { name: 'third', quizId: quiz3.quizId }] });
   });
 });
