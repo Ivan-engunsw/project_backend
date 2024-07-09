@@ -80,10 +80,10 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
 
 app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const authUser = validToken(req.query.token as string);
-  if ('errorMsg' in authUser) return res.status(401).json(authUser);
+  if ('errorMsg' in authUser) return setError(authUser, res);
 
   const result = adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
-  return ('errorMsg' in result) ? res.status(403).json(result) : res.json(result);
+  return ('errorMsg' in result) ? setError(result, res) : res.json(result);
 });
 
 // ====================================================================
