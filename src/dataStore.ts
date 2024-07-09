@@ -58,8 +58,12 @@ function setData(newData: Data) {
   data = newData;
 }
 
+// A map data structure for storing tokenId mappings to authUserIds
 const tokenMap: Map<string, number> = new Map();
 
+type EmptyObject = Record<string, never>;
+
+// Given an authUserId, generate a new key: tokenId to value: authUserId pair in the map
 function generateToken(authUserId: number): { token: string } {
   const randomBytes = require('randombytes');
   let tokenId: string = randomBytes(16).toString('base64url');
@@ -72,6 +76,7 @@ function generateToken(authUserId: number): { token: string } {
   return { token: tokenId };
 }
 
+// Check if the token provided is valid and return the authUserId on success or error if invalid
 function validToken(token: { token: string }): number | error.ErrorObject {
   let foundToken;
   if ((foundToken = tokenMap.get(token.token))) {
@@ -81,9 +86,10 @@ function validToken(token: { token: string }): number | error.ErrorObject {
   }
 }
 
-function removeToken(token: { token: string }): boolean | error.ErrorObject {
+// Remove the token from the map and return {} on success or error if invalid
+function removeToken(token: { token: string }): EmptyObject| error.ErrorObject {
   if (tokenMap.delete(token.token)) {
-    return true;
+    return {};
   } else {
     return error.InvalidToken(token.token);
   }
