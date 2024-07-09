@@ -58,10 +58,25 @@ describe('POST /v1/admin/auth/login', () => {
     });
   });
 
+
   describe('Functionality testing', () => {
     test('Has the correct return type', () => {
       const res = request('POST', SERVER_URL + '/v1/admin/auth/login', loginUser);
       expect(JSON.parse(res.body.toString())).toStrictEqual({ token: expect.any(String) });
+    });
+    
+    test('Successfully logs in a user', () => {
+      const res = request('POST', SERVER_URL + '/v1/admin/auth/login', loginUser);
+      const desc = request('GET', SERVER_URL + '/v1/admin/user/details', res);
+      expect(JSON.parse(desc.body.toString())).toStrictEqual({
+        user: {
+          userId: expect.any(Number),
+          name: 'Bobby Bob',
+          email: 'validemail1@gmail.com',
+          numSuccessfulLogins: expect.any(Number),
+          numFailedPasswordsSinceLastLogin: expect.any(Number),
+        }
+      });
     });
   });
 });
