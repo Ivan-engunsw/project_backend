@@ -14,7 +14,8 @@ type ERR = { error: string };
  * @returns {{authUserId}} - return object
  */
 
-export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } | ERR {
+export function adminAuthRegister(email: string, password: string,
+  nameFirst: string, nameLast: string): { authUserId: number } | ERR {
   const data: Data = getData();
 
   if (!validEmail(email)) { return errEmailInvalid(email); }

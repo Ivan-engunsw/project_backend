@@ -31,68 +31,70 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Email is invalid', () => {
-      const res = request('POST', SERVER_URL + '/v1/admin/auth/register', 
-        { json: {
-          email: '!',
-          password: 'password1!',
-          nameFirst: 'Bobby',
-          nameLast: 'Bob'
-        },
-        timeout: TIMEOUT_MS
-      });
+      const res = request('POST', SERVER_URL + '/v1/admin/auth/register',
+        {
+          json: {
+            email: '!',
+            password: 'password1!',
+            nameFirst: 'Bobby',
+            nameLast: 'Bob'
+          },
+          timeout: TIMEOUT_MS
+        });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
 
     test('NameFirst is invalid', () => {
-      const res = request('POST', SERVER_URL + '/v1/admin/auth/register', 
-        { json: {
-          email: 'validemail1@gmail.com',
-          password: 'password1!',
-          nameFirst: '!',
-          nameLast: 'Bob'
-        },
-        timeout: TIMEOUT_MS
-      });
+      const res = request('POST', SERVER_URL + '/v1/admin/auth/register',
+        {
+          json: {
+            email: 'validemail1@gmail.com',
+            password: 'password1!',
+            nameFirst: '!',
+            nameLast: 'Bob'
+          },
+          timeout: TIMEOUT_MS
+        });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
 
     test('NameLast is invalid', () => {
-      const res = request('POST', SERVER_URL + '/v1/admin/auth/register', 
-        { json: {
-          email: 'validemail1@gmail.com',
-          password: 'password1!',
-          nameFirst: 'Bobby',
-          nameLast: '!'
-        },
-        timeout: TIMEOUT_MS
-      });
+      const res = request('POST', SERVER_URL + '/v1/admin/auth/register',
+        {
+          json: {
+            email: 'validemail1@gmail.com',
+            password: 'password1!',
+            nameFirst: 'Bobby',
+            nameLast: '!'
+          },
+          timeout: TIMEOUT_MS
+        });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
 
     test('Password is invalid', () => {
-      const res = request('POST', SERVER_URL + '/v1/admin/auth/register', 
-        { json: {
-          email: 'validemail1@gmail.com',
-          password: 'p',
-          nameFirst: 'Bobby',
-          nameLast: 'Bob'
-        },
-        timeout: TIMEOUT_MS
-      });
+      const res = request('POST', SERVER_URL + '/v1/admin/auth/register',
+        {
+          json: {
+            email: 'validemail1@gmail.com',
+            password: 'p',
+            nameFirst: 'Bobby',
+            nameLast: 'Bob'
+          },
+          timeout: TIMEOUT_MS
+        });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
   });
 
   describe('Functionality testing', () => {
-    
     beforeEach(() => {
-      
-    });
 
+    });
 
     test('Has the correct return type', () => {
       const res = request('POST', SERVER_URL + '/v1/admin/auth/register', inputUser);
@@ -100,12 +102,11 @@ describe('POST /v1/admin/auth/register', () => {
     });
 
     test('Successfully creates a user', () => {
-      let token: { token: string };
       const res = request('POST', SERVER_URL + '/v1/admin/auth/register', inputUser);
-      token = JSON.parse(res.body.toString());
+      const token: { token: string } = JSON.parse(res.body.toString());
 
-      const desc = request('GET', SERVER_URL + '/v1/admin/user/details', 
-                          { qs: { token: token.token }, timeout: TIMEOUT_MS });
+      const desc = request('GET', SERVER_URL + '/v1/admin/user/details',
+        { qs: { token: token.token }, timeout: TIMEOUT_MS });
       expect(JSON.parse(desc.body.toString())).toStrictEqual({
         user: {
           userId: expect.any(Number),
