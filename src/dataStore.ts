@@ -80,7 +80,7 @@ function generateToken(authUserId: number): { token: string } {
   const token = {
     tokenId: tokenId,
     authUserId: authUserId,
-  }
+  };
 
   tokens.push(token);
 
@@ -91,7 +91,7 @@ function generateToken(authUserId: number): { token: string } {
 // NOTE: Token is just a string, not the object { token: string }
 function validToken(token: string): { authUserId: number } | error.ErrorObject {
   let foundUser;
-  if (foundUser = tokens.find((existingToken) => existingToken.tokenId === token)) {
+  if ((foundUser = tokens.find((existingToken) => existingToken.tokenId === token))) {
     return { authUserId: foundUser.authUserId };
   } else {
     return error.InvalidToken(token);
@@ -102,7 +102,7 @@ function validToken(token: string): { authUserId: number } | error.ErrorObject {
 // NOTE: Token is just a string, not the object { token: string }
 function removeToken(token: string): EmptyObject | error.ErrorObject {
   let existingTokenIndex;
-  if (existingTokenIndex = tokens.findIndex((existingToken) => existingToken.tokenId === token)) {
+  if ((existingTokenIndex = tokens.findIndex((existingToken) => existingToken.tokenId === token))) {
     tokens.splice(existingTokenIndex, 1);
     return {};
   } else {

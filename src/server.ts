@@ -75,7 +75,7 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
     return setError(result, res);
   }
   res.json(result);
-})
+});
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
