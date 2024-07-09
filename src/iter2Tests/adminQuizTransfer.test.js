@@ -7,8 +7,8 @@ beforeEach(() => {
 });
 
 describe('adminQuizTransfer', () => {
-    let authUser: { authUserId: number };
-    let quiz: { quizId: number };
+    let authUser;
+    let quiz;
     beforeEach(() => {
       authUser = adminAuthRegister('betty@unsw.com', 'password1', 'Betty', 'Boop');
       adminAuthRegister('norman@unsw.com', 'password1', 'Norman', 'Nile');
@@ -17,7 +17,7 @@ describe('adminQuizTransfer', () => {
 
     describe('functionality testing', () => {
         test('has the correct return type', () => {
-            expect(adminQuizTransfer(authUser.authUserId, 'norman@unsw.com')).toStrictEqual({});
+            expect(adminQuizTransfer(authUser.authUserId, quiz.quizId, 'norman@unsw.com')).toStrictEqual({});
         });
     });
 });
