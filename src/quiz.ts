@@ -1,7 +1,6 @@
-import { getData, Data, User, Quiz } from './dataStore';
+import { getData, Data, User, Quiz, EmptyObject } from './dataStore';
 import * as error from './errors';
 import { getQuizById, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper';
-type EmptyObject = Record<string, never>;
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
