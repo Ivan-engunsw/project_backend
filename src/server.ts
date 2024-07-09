@@ -10,6 +10,7 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminUserDetails } from './auth';
+import { adminQuizCreate, adminQuizInfo } from './quiz';
 import { generateToken, validToken, removeToken, isEmptyObject } from './dataStore';
 import { ErrorObject } from './errors';
 
@@ -85,6 +86,27 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   }
 
   res.json(result);
+});
+
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
+  const { token, name, description } = req.body;
+  const authUser = validToken(token);
+  if ('errorMsg' in authUser) {
+    return setError(authUser, res);
+  }
+  const result = adminQuizCreate(authUser.authUserId, name, description);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const authUser = validToken(req.query.token as string);
+  if ('errorMsg' in authUser) return setError(authUser, res);
+
+  const result = adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
+  return ('errorMsg' in result) ? setError(result, res) : res.json(result);
 });
 
 // ====================================================================
