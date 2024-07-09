@@ -8,9 +8,11 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { generateToken, validToken } from './dataStore';
 import { clear } from './other';
-import { adminAuthRegister, adminUserDetailsUpdate } from './auth';
+import { adminAuthRegister, adminUserDetails, adminUserDetailsUpdate } from './auth';
+import { adminQuizCreate, adminQuizInfo } from './quiz';
+import { generateToken, validToken } from './dataStore';
+import { ErrorObject } from './errors';
 
 // Set up web app
 const app = express();
@@ -33,9 +35,6 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // ====================================================================
 
 // Example get request
-const errorFunction = (errorObject: {error: string, errorCode: number}, res: Response) =>
-  res.status(errorObject.errorCode).json({ error: errorObject.error });
-
 app.get('/echo', (req: Request, res: Response) => {
   const result = echo(req.query.echo as string);
   if ('error' in result) {
@@ -45,32 +44,72 @@ app.get('/echo', (req: Request, res: Response) => {
   return res.json(result);
 });
 
-app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
-  const { email, password, nameFirst, nameLast } = req.body;
-  const result = adminAuthRegister(email, password, nameFirst, nameLast);
-  if ('error' in result) {
-    return errorFunction(result, res);
-  }
-  const token = generateToken(result.authUserId);
-  res.json(token);
-});
-
-app.put('/v1/admin/user/details', (req: Request, res: Response) => {
-  const { token, email, nameFirst, nameLast } = req.body;
-  const authUser = validToken({ token: token });
-  if ('error' in authUser) {
-    return res.status(401).json(authUser);
-  }
-  const result = adminUserDetailsUpdate(authUser.authUserId, email, nameFirst, nameLast);
-  if ('error' in result) {
-    return errorFunction({ error: result.error, errorCode: 400 }, res);
-  }
-  res.status(200).json({});
-});
+// Given an ErrorObject/cause of error, set the response for the server
+const setError = (error: ErrorObject, res: Response) =>
+  res.status(error.errorCode).json({ error: error.errorMsg });
 
 app.delete('/v1/clear', (req: Request, res: Response) => {
   const result = clear();
   res.json(result);
+});
+
+app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
+  const { email, password, nameFirst, nameLast } = req.body;
+  const result = adminAuthRegister(email, password, nameFirst, nameLast);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+
+  const token = generateToken(result.authUserId);
+  res.json(token);
+});
+
+app.get('/v1/admin/user/details', (req: Request, res: Response) => {
+  const token = req.query.token.toString();
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminUserDetails(user.authUserId);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.put('/v1/admin/user/details', (req: Request, res: Response) => {
+  const { token, email, nameFirst, nameLast } = req.body;
+  const authUser = validToken(token);
+  if ('errorMsg' in authUser) {
+    return setError(authUser, res);
+  }
+  const result = adminUserDetailsUpdate(authUser.authUserId, email, nameFirst, nameLast);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
+  const { token, name, description } = req.body;
+  const authUser = validToken(token);
+  if ('errorMsg' in authUser) {
+    return setError(authUser, res);
+  }
+  const result = adminQuizCreate(authUser.authUserId, name, description);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const authUser = validToken(req.query.token as string);
+  if ('errorMsg' in authUser) return setError(authUser, res);
+
+  const result = adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
+  return ('errorMsg' in result) ? setError(result, res) : res.json(result);
 });
 
 // ====================================================================
