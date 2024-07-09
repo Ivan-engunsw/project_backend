@@ -10,7 +10,7 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminUserDetails } from './auth';
-import { generateToken, validToken, removeToken } from './dataStore';
+import { generateToken, validToken, removeToken, isEmptyObject } from './dataStore';
 import { ErrorObject } from './errors';
 
 // Set up web app
@@ -79,8 +79,8 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
 
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const { token } = req.body;
-  const result: any = removeToken(token);
-  if ('errorMsg' in result) {
+  const result = removeToken(token);
+  if (!isEmptyObject(result) && 'errorMsg' in result) {
     return setError(result, res);
   }
 

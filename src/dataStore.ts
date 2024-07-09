@@ -67,7 +67,9 @@ interface Token {
 // An array for storing tokens and their mappings to authUserIds
 const tokens: Token[] = [];
 
-type EmptyObject = Record<string, never>;
+const emptyObject = [{}] as const;
+export type EmptyObject = (typeof emptyObject)[number];
+export const isEmptyObject = (x: any): x is EmptyObject => emptyObject.includes(x);
 
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
 function generateToken(authUserId: number): { token: string } {
