@@ -13,7 +13,7 @@ export interface User {
   password: string;
   oldPwords?: string[];
   numSuccessfulLogins: number;
-  numFailedPasswordsSinceLastLogin?: number;
+  numFailedPasswordsSinceLastLogin: number;
 }
 
 export interface Quiz {
@@ -22,7 +22,7 @@ export interface Quiz {
   name: string;
   description: string;
   timeCreated: number;
-  timeLastEdited?: number;
+  timeLastEdited: number;
 }
 
 let data: Data = {
@@ -67,7 +67,7 @@ interface Token {
 // An array for storing tokens and their mappings to authUserIds
 const tokens: Token[] = [];
 
-type EmptyObject = Record<string, never>;
+export type EmptyObject = Record<string, never>;
 
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
 function generateToken(authUserId: number): { token: string } {
@@ -102,7 +102,7 @@ function validToken(token: string): { authUserId: number } | error.ErrorObject {
 // NOTE: Token is just a string, not the object { token: string }
 function removeToken(token: string): EmptyObject | error.ErrorObject {
   let existingTokenIndex;
-  if ((existingTokenIndex = tokens.findIndex((existingToken) => existingToken.tokenId === token))) {
+  if ((existingTokenIndex = tokens.findIndex((existingToken) => existingToken.tokenId === token)) !== -1) {
     tokens.splice(existingTokenIndex, 1);
     return {};
   } else {
