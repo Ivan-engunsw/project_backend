@@ -102,7 +102,7 @@ function validToken(token: string): { authUserId: number } | error.ErrorObject {
 // NOTE: Token is just a string, not the object { token: string }
 function removeToken(token: string): EmptyObject | error.ErrorObject {
   let existingTokenIndex;
-  if ((existingTokenIndex = tokens.findIndex((existingToken) => existingToken.tokenId === token))) {
+  if ((existingTokenIndex = tokens.findIndex((existingToken) => existingToken.tokenId === token)) !== -1) {
     tokens.splice(existingTokenIndex, 1);
     return {};
   } else {
