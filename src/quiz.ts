@@ -1,4 +1,4 @@
-import { getData, setData, Data, User, Quiz, EmptyObject, getTrash } from './dataStore';
+import { getData, setData, Data, User, Quiz, EmptyObject, getTrash, setTrash } from './dataStore';
 import * as error from './errors';
 import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper';
 
@@ -71,6 +71,10 @@ export function adminQuizRemove(authUserId: number, quizId: number): EmptyObject
   if (i === -1) return error.QuizIdNotFound(quizId);
 
   if (data.quizzes[i].userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  const trash = getTrash();
+  trash.push(data.quizzes[i]);
+  setTrash(trash);
 
   data.quizzes.splice(i, 1);
 
@@ -205,7 +209,7 @@ export function adminQuizTransfer (authUserId: number, quizId: number, email: st
   return {};
 }
 
-export function adminQuizTrash(authUserId: number): { quizzes: { quizId: number, name: string }[] } | error.ErrorObject {
+export function adminQuizViewTrash(authUserId: number): { quizzes: { quizId: number, name: string }[] } | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);

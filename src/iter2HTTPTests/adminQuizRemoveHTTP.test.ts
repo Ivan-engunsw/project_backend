@@ -8,7 +8,6 @@ const ERROR = { error: expect.any(String) };
 describe('adminQuizRemove', () => {
   beforeEach(() => {
     request('DELETE', SERVER_URL + '/v1/clear', { timeout: TIMEOUT_MS });
-    // clear trash
   });
 
   test('AuthUserId is not a valid user', () => {
