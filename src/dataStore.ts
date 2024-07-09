@@ -1,3 +1,5 @@
+import * as error from './errors';
+
 // YOU SHOULD MODIFY THIS OBJECT BELOW ONLY
 export interface Data {
   users: User[];
@@ -22,19 +24,6 @@ export interface Quiz {
   timeCreated: number;
   timeLastEdited: number;
 }
-
-export interface TokenData {
-  tokens: Token[];
-}
-
-export interface Token {
-  tokenId: string;
-  authUserId: number;
-}
-
-const tokenData: TokenData = {
-  tokens: [],
-};
 
 let data: Data = {
   users: [],
@@ -69,10 +58,22 @@ function setData(newData: Data) {
   data = newData;
 }
 
+// Interface for each token
+interface Token {
+  tokenId: string;
+  authUserId: number;
+}
+
+// An array for storing tokens and their mappings to authUserIds
+const tokens: Token[] = [];
+
+type EmptyObject = Record<string, never>;
+
+// Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
 function generateToken(authUserId: number): { token: string } {
   const randomBytes = require('randombytes');
-  let tokenId = randomBytes(16).toString('base64url');
-  while (tokenData.tokens.find((token) => token.tokenId === tokenId)) {
+  let tokenId: string = randomBytes(16).toString('base64url');
+  while (tokens.find((token) => token.tokenId === tokenId)) {
     tokenId = randomBytes(16).toString('base64url');
   }
 
@@ -81,27 +82,31 @@ function generateToken(authUserId: number): { token: string } {
     authUserId: authUserId,
   };
 
-  tokenData.tokens.push(token);
+  tokens.push(token);
 
   return { token: tokenId };
 }
 
-function validToken(token: { token: string }): false | Token {
-  let tokenToFind;
-  if ((tokenToFind = tokenData.tokens.find((tokenA) => tokenA.tokenId === token.token))) {
-    return tokenToFind;
+// Check if the token provided is valid and return the authUserId on success or error if invalid
+// NOTE: Token is just a string, not the object { token: string }
+function validToken(token: string): { authUserId: number } | error.ErrorObject {
+  let foundUser;
+  if ((foundUser = tokens.find((existingToken) => existingToken.tokenId === token))) {
+    return { authUserId: foundUser.authUserId };
   } else {
-    return false;
+    return error.InvalidToken(token);
   }
 }
 
-function removeToken(token: { token: string }): boolean {
-  let index;
-  if ((index = tokenData.tokens.findIndex((tokenA) => tokenA.tokenId === token.token)) !== -1) {
-    tokenData.tokens.splice(index, 1);
-    return true;
+// Remove the token from the array and return {} on success or error if invalid
+// NOTE: Token is just a string, not the object { token: string }
+function removeToken(token: string): EmptyObject | error.ErrorObject {
+  let existingTokenIndex;
+  if ((existingTokenIndex = tokens.findIndex((existingToken) => existingToken.tokenId === token))) {
+    tokens.splice(existingTokenIndex, 1);
+    return {};
   } else {
-    return false;
+    return error.InvalidToken(token);
   }
 }
 

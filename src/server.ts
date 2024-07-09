@@ -9,8 +9,9 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import { clear } from './other';
-import { adminAuthRegister } from './auth';
-import { generateToken } from './dataStore';
+import { adminAuthRegister, adminUserDetails } from './auth';
+import { generateToken, validToken } from './dataStore';
+import { ErrorObject } from './errors';
 
 // Set up web app
 const app = express();
@@ -42,6 +43,10 @@ app.get('/echo', (req: Request, res: Response) => {
   return res.json(result);
 });
 
+// Given an ErrorObject/cause of error, set the response for the server
+const setError = (error: ErrorObject, res: Response) =>
+  res.status(error.errorCode).json({ error: error.errorMsg });
+
 app.delete('/v1/clear', (req: Request, res: Response) => {
   const result = clear();
   res.json(result);
@@ -50,12 +55,26 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
-  if ('error' in result) {
-    return res.status(400).json(result);
+  if ('errorMsg' in result) {
+    return setError(result, res);
   }
 
   const token = generateToken(result.authUserId);
   res.json(token);
+});
+
+app.get('/v1/admin/user/details', (req: Request, res: Response) => {
+  const token = req.query.token.toString();
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminUserDetails(user.authUserId);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+  res.json(result);
 });
 
 // ====================================================================
