@@ -10,7 +10,7 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminUserDetails } from './auth';
-import { adminQuizCreate, adminQuizInfo, adminQuizRemove } from './quiz';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer } from './quiz';
 import { generateToken, validToken, removeToken } from './dataStore';
 import { ErrorObject } from './errors';
 
@@ -115,6 +115,22 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 
   const result = adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
   return ('errorMsg' in result) ? setError(result, res) : res.json(result);
+});
+
+app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const { token, userEmail } = req.body;
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizTransfer(user.authUserId, quizId, userEmail);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
 });
 
 // ====================================================================
