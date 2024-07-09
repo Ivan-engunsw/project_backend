@@ -27,6 +27,7 @@
         "@types/morgan": "^1.9.9",
         "@types/node": "^20.14.7",
         "@types/prompt-sync": "^4.2.3",
+        "@types/randombytes": "^2.0.3",
         "@types/swagger-ui-express": "^4.1.6",
         "@types/validator": "^13.12.0",
         "@typescript-eslint/eslint-plugin": "^6.20.0",
