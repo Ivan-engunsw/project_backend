@@ -104,7 +104,7 @@ describe('GET /v1/admin/quiz/:quizid', () => {
       const res3 = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz3.quizId}`, { qs: { token: token2.token }, timeout: TIMEOUT_MS });
       expect(JSON.parse(res3.body.toString())).toStrictEqual({
         quizId: quiz3.quizId,
-        name: 'second',
+        name: 'third',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
         description: 'desc'
