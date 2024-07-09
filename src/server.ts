@@ -10,7 +10,7 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminUserDetails } from './auth';
-import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizDescriptionUpdate } from './quiz';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizTrash, adminQuizDescriptionUpdate } from './quiz';
 import { generateToken, validToken, removeToken } from './dataStore';
 import { ErrorObject } from './errors';
 
@@ -101,6 +101,13 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   res.json(result);
 });
 
+app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
+  const authUser = validToken(req.query.token as string);
+  if ('errorMsg' in authUser) return setError(authUser, res);
+
+  res.json(adminQuizTrash(authUser.authUserId));
+});
+
 app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const authUser = validToken(req.query.token as string);
   if ('errorMsg' in authUser) return setError(authUser, res);
@@ -147,8 +154,7 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
     return setError(result as ErrorObject, res);
   }
   res.json(result);
-})
-
+});
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================

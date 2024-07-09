@@ -67,6 +67,17 @@ interface Token {
 // An array for storing tokens and their mappings to authUserIds
 const tokens: Token[] = [];
 
+// An array for storing the deleted quizzes
+let quizTrash: Quiz[] = [];
+
+export function getTrash(): Quiz[] {
+  return quizTrash;
+}
+
+export function setTrash(newTrash: Quiz[]) {
+  quizTrash = newTrash;
+}
+
 export type EmptyObject = Record<string, never>;
 
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
