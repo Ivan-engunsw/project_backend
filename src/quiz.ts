@@ -1,6 +1,6 @@
 import { getData, setData, Data, User, Quiz, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, generateQuizId } from './helper';
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -38,7 +38,8 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
   if (takenQuizName(data, authUserId, name)) { return error.QuizNameTaken(name); }
   if (!validQuizDesc(description)) { return error.QuizDescInvalid(); }
 
-  const quizId: number = data.quizzes.length;
+  let quizId: number = generateQuizId();
+  
 
   data.quizzes.push({
     quizId: quizId,

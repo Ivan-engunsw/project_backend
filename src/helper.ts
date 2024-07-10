@@ -1,4 +1,5 @@
 import isEmail from 'validator/lib/isEmail';
+import {Random} from 'random-js';
 import { Data, EmptyObject, getData, setData } from './dataStore';
 import * as error from './errors';
 
@@ -20,6 +21,14 @@ export const validQuizName = (name: string) => /^[a-zA-Z0-9 ]{3,30}$/.test(name)
 export const validQuizDesc = (desc: string) => desc.length <= 100;
 export const takenQuizName = (data: Data, uId: number, qName: string) => data.quizzes.some(quiz => quiz.name === qName && quiz.userId === uId);
 export const getQuizById = (data: Data, id: number) => data.quizzes.find(quiz => id === quiz.quizId);
+export const generateQuizId = () => {
+  const data = getData();
+  const random = new Random();
+  let quizId: number;
+  do { quizId = random.integer(0, Number.MAX_SAFE_INTEGER); }
+  while (data.quizzes.find(quiz => quiz.quizId === quizId));
+  return quizId;
+};
 
 // token
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
