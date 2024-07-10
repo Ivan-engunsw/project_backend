@@ -10,7 +10,8 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminAuthLogin, adminUserDetails } from './auth';
-import { generateToken, validToken } from './dataStore';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizNameUpdate, adminQuizList } from './quiz';
+import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
 
 // Set up web app
@@ -84,6 +85,109 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   const result = adminUserDetails(user.authUserId);
   if ('errorMsg' in result) {
     return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
+  const { token } = req.body;
+  const result = removeToken(token);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+
+  res.json(result);
+});
+
+app.post('/v1/admin/quiz', (req: Request, res: Response) => {
+  const { token, name, description } = req.body;
+  const authUser = validToken(token);
+  if ('errorMsg' in authUser) {
+    return setError(authUser, res);
+  }
+  const result = adminQuizCreate(authUser.authUserId, name, description);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
+  const authUser = validToken(req.query.token as string);
+  if ('errorMsg' in authUser) return setError(authUser, res);
+
+  res.json(adminQuizViewTrash(authUser.authUserId));
+});
+
+app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
+  const authUser = validToken(req.query.token as string);
+  if ('errorMsg' in authUser) {
+    return setError(authUser, res);
+  }
+  const result = adminQuizList(authUser.authUserId);
+  res.json(result);
+});
+
+app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const authUser = validToken(req.query.token as string);
+  if ('errorMsg' in authUser) return setError(authUser, res);
+
+  const result = adminQuizRemove(authUser.authUserId, parseInt(req.params.quizid as string));
+  return ('errorMsg' in result) ? setError(result as ErrorObject, res) : res.json(result);
+});
+
+app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const authUser = validToken(req.query.token as string);
+  if ('errorMsg' in authUser) return setError(authUser, res);
+
+  const result = adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
+  return ('errorMsg' in result) ? setError(result, res) : res.json(result);
+});
+
+app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const { token, userEmail } = req.body;
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizTransfer(user.authUserId, quizId, userEmail);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
+});
+
+app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
+  const { token, description } = req.body;
+  const quizId = parseInt(req.params.quizid.toString());
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizDescriptionUpdate(user.authUserId, quizId, description);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
+});
+
+app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
+  const { token, name } = req.body;
+  const quizId = parseInt(req.params.quizid.toString());
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizNameUpdate(user.authUserId, quizId, name);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
   }
   res.json(result);
 });

@@ -1,7 +1,6 @@
-import { getData, Data, User } from './dataStore';
+import { getData, setData, Data, User, EmptyObject } from './dataStore';
 import * as error from './errors';
 import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, validUserPass } from './helper';
-type EmptyObject = Record<string, never>;
 
 /**
  * Register a user with an email, password, and names, then returns their authUserId value.
@@ -13,7 +12,8 @@ type EmptyObject = Record<string, never>;
  * @returns {{authUserId}} - return object
  */
 
-export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } | error.ErrorObject {
+export function adminAuthRegister(email: string, password: string, nameFirst: string,
+  nameLast: string): { authUserId: number } | error.ErrorObject {
   const data: Data = getData();
 
   if (!validEmail(email)) { return error.EmailInvalid(email); }
@@ -23,7 +23,6 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
   if (!validUserPass(password)) { return error.UserPassCurrInvalid(); }
 
   const authUserId: number = data.users.length;
-
   data.users.push({
     userId: authUserId,
     name: nameFirst + ' ' + nameLast,
@@ -32,6 +31,8 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
     numSuccessfulLogins: 1,
     numFailedPasswordsSinceLastLogin: 0,
   });
+
+  setData(data);
 
   return { authUserId: authUserId };
 }
@@ -57,6 +58,8 @@ export function adminAuthLogin(email: string, password: string): { authUserId: n
 
   user.numFailedPasswordsSinceLastLogin = 0;
   user.numSuccessfulLogins++;
+
+  setData(data);
 
   return { authUserId: user.userId };
 }
@@ -106,6 +109,8 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
   user.email = email;
   user.name = nameFirst + ' ' + nameLast;
 
+  setData(data);
+
   return {};
 }
 
@@ -131,6 +136,8 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
   // Updating the Password
   (user.oldPwords) ? user.oldPwords.push(oldPassword) : user.oldPwords = [oldPassword];
   user.password = newPassword;
+
+  setData(data);
 
   return {};
 }

@@ -1,7 +1,6 @@
-import { getData, Data, User, Quiz } from './dataStore';
+import { getData, setData, Data, User, Quiz, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper';
-type EmptyObject = Record<string, never>;
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper';
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -50,6 +49,8 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     timeLastEdited: timeNow(),
   });
 
+  setData(data);
+
   return { quizId: quizId };
 }
 
@@ -71,7 +72,10 @@ export function adminQuizRemove(authUserId: number, quizId: number): EmptyObject
 
   if (data.quizzes[i].userId !== authUserId) { return error.QuizUnauthorised(quizId); }
 
+  data.trash.push(data.quizzes[i]);
   data.quizzes.splice(i, 1);
+
+  setData(data);
 
   return {};
 }
@@ -131,6 +135,8 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
   quiz.name = name;
   quiz.timeLastEdited = timeNow();
 
+  setData(data);
+
   return {};
 }
 
@@ -163,5 +169,51 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   quiz.description = description;
   quiz.timeLastEdited = timeNow();
 
+  setData(data);
+
   return {};
+}
+
+export function adminQuizTransfer (authUserId: number, quizId: number, email: string): EmptyObject | error.ErrorObject {
+  const data: Data = getData();
+
+  // Check the user exists
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  // Check the email is not the current user's email
+  if (user.email === email) { return error.EmailInvalid(email); }
+
+  // Check the quiz exists
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (!quiz) return error.QuizIdNotFound(quizId);
+
+  // Check the quiz belongs to the user
+  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  // Check the target exists
+  const targetUser: User = getUserByEmail(data, email);
+  if (!targetUser) { return error.EmailNotFound(email); }
+
+  // Check the target does not have an overlapping name
+  if (takenQuizName(data, targetUser.userId, quiz.name)) { return error.QuizNameTaken(quiz.name); }
+
+  // Transfer ownership of the quiz
+  quiz.userId = targetUser.userId;
+
+  setData(data);
+
+  return {};
+}
+
+export function adminQuizViewTrash(authUserId: number): { quizzes: { quizId: number, name: string }[] } | error.ErrorObject {
+  const data: Data = getData();
+
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  const trashList: { quizId: number, name: string }[] =
+    data.trash.reduce((arr, { quizId, name, userId }) => (userId === authUserId) ? arr.push({ quizId, name }) && arr : arr, []);
+
+  return { quizzes: trashList };
 }

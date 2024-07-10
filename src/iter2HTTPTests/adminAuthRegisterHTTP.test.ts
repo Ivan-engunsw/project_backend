@@ -1,5 +1,5 @@
 import request from 'sync-request-curl';
-import { port, url } from './config.json';
+import { port, url } from '../config.json';
 
 const ERROR = { error: expect.any(String) };
 const SERVER_URL = `${url}:${port}`;
@@ -8,6 +8,16 @@ const TIMEOUT_MS = 5 * 1000;
 const inputUser = {
   json: {
     email: 'validemail1@gmail.com',
+    password: 'password1!',
+    nameFirst: 'Bobby',
+    nameLast: 'Bob'
+  },
+  timeout: TIMEOUT_MS
+};
+
+const inputUser2 = {
+  json: {
+    email: 'validemail2@gmail.com',
     password: 'password1!',
     nameFirst: 'Bobby',
     nameLast: 'Bob'
@@ -92,13 +102,15 @@ describe('POST /v1/admin/auth/register', () => {
   });
 
   describe('Functionality testing', () => {
-    beforeEach(() => {
-
-    });
-
-    test('Has the correct return type', () => {
+    test('Has the correct return type for one user', () => {
       const res = request('POST', SERVER_URL + '/v1/admin/auth/register', inputUser);
       expect(JSON.parse(res.body.toString())).toStrictEqual({ token: expect.any(String) });
+    });
+
+    test('Check different tokens are assigned to users', () => {
+      const res = request('POST', SERVER_URL + '/v1/admin/auth/register', inputUser);
+      const res2 = request('POST', SERVER_URL + '/v1/admin/auth/register', inputUser2);
+      expect(JSON.parse(res2.body.toString())).not.toStrictEqual(res.body.toString());
     });
 
     test('Successfully creates a user', () => {
@@ -112,6 +124,37 @@ describe('POST /v1/admin/auth/register', () => {
           userId: expect.any(Number),
           name: 'Bobby Bob',
           email: 'validemail1@gmail.com',
+          numSuccessfulLogins: expect.any(Number),
+          numFailedPasswordsSinceLastLogin: expect.any(Number)
+        }
+      });
+    });
+
+    test('Successfully creates multiple users', () => {
+      const res = request('POST', SERVER_URL + '/v1/admin/auth/register', inputUser);
+      const res2 = request('POST', SERVER_URL + '/v1/admin/auth/register', inputUser2);
+      const token: { token: string } = JSON.parse(res.body.toString());
+      const token2: { token: string } = JSON.parse(res2.body.toString());
+
+      const desc = request('GET', SERVER_URL + '/v1/admin/user/details',
+        { qs: { token: token.token }, timeout: TIMEOUT_MS });
+      expect(JSON.parse(desc.body.toString())).toStrictEqual({
+        user: {
+          userId: expect.any(Number),
+          name: 'Bobby Bob',
+          email: 'validemail1@gmail.com',
+          numSuccessfulLogins: expect.any(Number),
+          numFailedPasswordsSinceLastLogin: expect.any(Number)
+        }
+      });
+
+      const desc2 = request('GET', SERVER_URL + '/v1/admin/user/details',
+        { qs: { token: token2.token }, timeout: TIMEOUT_MS });
+      expect(JSON.parse(desc2.body.toString())).toStrictEqual({
+        user: {
+          userId: expect.any(Number),
+          name: 'Bobby Bob',
+          email: 'validemail2@gmail.com',
           numSuccessfulLogins: expect.any(Number),
           numFailedPasswordsSinceLastLogin: expect.any(Number)
         }
