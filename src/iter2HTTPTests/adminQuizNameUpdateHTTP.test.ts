@@ -1,5 +1,6 @@
 import request from 'sync-request-curl';
 import { port, url } from '../config.json';
+import { timeNow } from '../helper';
 
 const SERVER_URL = `${url}:${port}`;
 const TIMEOUT_MS = 5 * 1000;
@@ -68,8 +69,9 @@ describe('PUT /v1/admin/quiz/:quizid/name', () => {
       expect(JSON.parse(res.body.toString())).toStrictEqual({});
     });
 
-    test('successfully updates the name of a quiz', () => {
+    test('successfully updates the name of a quiz and timeLastEdited', () => {
       request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}/name`, { json: { token: token.token, name: 'New quiz1' }, timeout: TIMEOUT_MS });
+      const time = timeNow();
       const res = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
       expect(JSON.parse(res.body.toString())).toStrictEqual(
         {
@@ -78,8 +80,35 @@ describe('PUT /v1/admin/quiz/:quizid/name', () => {
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
           description: 'Betty\'s quiz',
+          numQuestions: expect.any(Number),
+          questions: [],
+          duration: expect.any(Number)
         }
       );
+
+      const timeLastEdited = parseInt(JSON.parse(res.body.toString()).timeLastEdited);
+      expect(timeLastEdited).toBeGreaterThanOrEqual(time);
+      expect(timeLastEdited).toBeLessThanOrEqual(time + 1);
+    });
+
+    test('successfully updates the name of multiple quizzes', () => {
+      const resQuiz2 = request('POST', SERVER_URL + '/v1/admin/quiz', { json: { token: token.token, name: 'Quiz2', description: 'Norman\'s quiz' }, timeout: TIMEOUT_MS });
+      const quiz2 = JSON.parse(resQuiz2.body.toString());
+      request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}/name`, { json: { token: token.token, name: 'New quiz1' }, timeout: TIMEOUT_MS });
+      request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz2.quizId}/name`, { json: { token: token.token, name: 'New quiz2' }, timeout: TIMEOUT_MS });
+      const res = request('GET', SERVER_URL + '/v1/admin/quiz/list', { qs: { token: token.token }, timeout: TIMEOUT_MS });
+      expect(JSON.parse(res.body.toString())).toStrictEqual({
+        quizzes: [
+          {
+            quizId: quiz.quizId,
+            name: 'New quiz1',
+          },
+          {
+            quizId: quiz2.quizId,
+            name: 'New quiz2',
+          },
+        ]
+      });
     });
   });
 });

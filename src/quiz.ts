@@ -1,6 +1,6 @@
 import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestion } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestion, generateQuizId  } from './helper';
 
 export interface QuestionBody {
   question: string;
@@ -45,7 +45,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
   if (takenQuizName(data, authUserId, name)) { return error.QuizNameTaken(name); }
   if (!validQuizDesc(description)) { return error.QuizDescInvalid(); }
 
-  const quizId: number = data.quizzes.length;
+  const quizId: number = generateQuizId();
 
   data.quizzes.push({
     quizId: quizId,
@@ -54,6 +54,9 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     description: description,
     timeCreated: timeNow(),
     timeLastEdited: timeNow(),
+    numQuestions: 0,
+    questions: [],
+    duration: 0,
   });
 
   setData(data);
@@ -79,6 +82,7 @@ export function adminQuizRemove(authUserId: number, quizId: number): EmptyObject
 
   if (data.quizzes[i].userId !== authUserId) { return error.QuizUnauthorised(quizId); }
 
+  data.quizzes[i].timeLastEdited = timeNow();
   data.trash.push(data.quizzes[i]);
   data.quizzes.splice(i, 1);
 

@@ -18,7 +18,7 @@ export interface Quiz {
   timeCreated: number;
   timeLastEdited: number;
   numQuestions: number;
-  questions: Question[]
+  questions: Question[];
   duration: number;
 }
 
@@ -34,7 +34,7 @@ export interface Answer {
   answerId: number;
   answer: string;
   colour: string;
-  correct: boolean
+  correct: boolean;
 }
 
 export interface Token {
