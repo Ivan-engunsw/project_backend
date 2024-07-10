@@ -47,6 +47,9 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     description: description,
     timeCreated: timeNow(),
     timeLastEdited: timeNow(),
+    numQuestions: 0,
+    questions: [],
+    duration: 0,
   });
 
   setData(data);
