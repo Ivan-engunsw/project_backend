@@ -9,7 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import { clear } from './other';
-import { adminAuthRegister, adminUserDetails, adminUserDetailsUpdate } from './auth';
+import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate } from './auth';
 import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizNameUpdate, adminQuizList } from './quiz';
 import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
@@ -33,7 +33,6 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // ====================================================================
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
-
 // Example get request
 app.get('/echo', (req: Request, res: Response) => {
   const result = echo(req.query.echo as string);
@@ -56,6 +55,17 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+
+  const token = generateToken(result.authUserId);
+  res.json(token);
+});
+
+app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  const result = adminAuthLogin(email, password);
   if ('errorMsg' in result) {
     return setError(result, res);
   }
