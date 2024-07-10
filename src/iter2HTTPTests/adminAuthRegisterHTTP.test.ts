@@ -107,10 +107,9 @@ describe('POST /v1/admin/auth/register', () => {
       expect(JSON.parse(res.body.toString())).toStrictEqual({ token: expect.any(String) });
     });
 
-    test('Has the correct return type for multiple user', () => {
+    test('Check different tokens are assigned to users', () => {
       const res = request('POST', SERVER_URL + '/v1/admin/auth/register', inputUser);
       const res2 = request('POST', SERVER_URL + '/v1/admin/auth/register', inputUser2);
-      expect(JSON.parse(res.body.toString())).toStrictEqual({ token: expect.any(String) });
       expect(JSON.parse(res2.body.toString())).not.toStrictEqual(res.body.toString());
     });
 
