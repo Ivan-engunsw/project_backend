@@ -1,6 +1,6 @@
 import isEmail from 'validator/lib/isEmail';
 import { Random } from 'random-js';
-import { Data, EmptyObject, getData, setData } from './dataStore';
+import { Data, EmptyObject, Quiz, getData, setData } from './dataStore';
 import * as error from './errors';
 
 // time
@@ -29,6 +29,7 @@ export const generateQuizId = () => {
   while (data.quizzes.find(quiz => quiz.quizId === quizId) || data.trash.find(quiz => quiz.quizId === quizId));
   return quizId;
 };
+export const sumDuration = (quiz: Quiz) => quiz.questions.reduce((sum, question) => sum + question.duration, 0);
 
 // token
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
