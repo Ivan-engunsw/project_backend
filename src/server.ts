@@ -218,7 +218,7 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
     return setError(result, res);
   }
   res.json(result);
-})
+});
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
