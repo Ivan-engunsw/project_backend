@@ -72,6 +72,7 @@ export function adminQuizRemove(authUserId: number, quizId: number): EmptyObject
 
   if (data.quizzes[i].userId !== authUserId) { return error.QuizUnauthorised(quizId); }
 
+  data.quizzes[i].timeLastEdited = timeNow();
   data.trash.push(data.quizzes[i]);
   data.quizzes.splice(i, 1);
 
