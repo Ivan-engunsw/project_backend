@@ -86,7 +86,7 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   }
   const result = adminUserDetailsUpdate(authUser.authUserId, email, nameFirst, nameLast);
   if ('errorMsg' in result) {
-    return setError(result, res);
+    return setError(result as ErrorObject, res);
   }
   res.json(result);
 });
