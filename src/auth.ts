@@ -1,8 +1,6 @@
-import { getData, Data, User } from './dataStore';
-import { errEmailInvalid, errEmailNotFound, errEmailTaken, errFirstNameInvalid, errLastNameInvalid, errUserIdNotFound, errUserPassCurrIncorrect, errUserPassCurrInvalid, errUserPassNewInvalid, errUserPassNewNotNew, errUserPassOldIncorrect } from './errors';
+import { getData, setData, Data, User, EmptyObject } from './dataStore';
+import * as error from './errors';
 import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, validUserPass } from './helper';
-
-type ERR = { error: string };
 
 /**
  * Register a user with an email, password, and names, then returns their authUserId value.
@@ -14,18 +12,17 @@ type ERR = { error: string };
  * @returns {{authUserId}} - return object
  */
 
-export function adminAuthRegister(email: string, password: string,
-  nameFirst: string, nameLast: string): { authUserId: number } | ERR {
+export function adminAuthRegister(email: string, password: string, nameFirst: string,
+  nameLast: string): { authUserId: number } | error.ErrorObject {
   const data: Data = getData();
 
-  if (!validEmail(email)) { return errEmailInvalid(email); }
-  if (takenEmail(data, email)) { return errEmailTaken(email); }
-  if (!validUserName(nameFirst)) { return errFirstNameInvalid(nameFirst); }
-  if (!validUserName(nameLast)) { return errLastNameInvalid(nameLast); }
-  if (!validUserPass(password)) { return errUserPassCurrInvalid(); }
+  if (!validEmail(email)) { return error.EmailInvalid(email); }
+  if (takenEmail(data, email)) { return error.EmailTaken(email); }
+  if (!validUserName(nameFirst)) { return error.FirstNameInvalid(nameFirst); }
+  if (!validUserName(nameLast)) { return error.LastNameInvalid(nameLast); }
+  if (!validUserPass(password)) { return error.UserPassCurrInvalid(); }
 
   const authUserId: number = data.users.length;
-
   data.users.push({
     userId: authUserId,
     name: nameFirst + ' ' + nameLast,
@@ -34,6 +31,8 @@ export function adminAuthRegister(email: string, password: string,
     numSuccessfulLogins: 1,
     numFailedPasswordsSinceLastLogin: 0,
   });
+
+  setData(data);
 
   return { authUserId: authUserId };
 }
@@ -46,19 +45,21 @@ export function adminAuthRegister(email: string, password: string,
 * @returns {{authUserId}} - return object
 */
 
-export function adminAuthLogin(email: string, password: string): { authUserId: number } | ERR {
+export function adminAuthLogin(email: string, password: string): { authUserId: number } | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserByEmail(data, email);
-  if (!user) { return errEmailNotFound(email); }
+  if (!user) { return error.EmailNotFound(email); }
 
   if (password !== user.password) {
     user.numFailedPasswordsSinceLastLogin++;
-    return errUserPassCurrIncorrect();
+    return error.UserPassCurrIncorrect();
   }
 
   user.numFailedPasswordsSinceLastLogin = 0;
   user.numSuccessfulLogins++;
+
+  setData(data);
 
   return { authUserId: user.userId };
 }
@@ -71,11 +72,11 @@ export function adminAuthLogin(email: string, password: string): { authUserId: n
  * @returns {{user}} - return object
  */
 
-export function adminUserDetails(authUserId: number): { user: Omit<User, 'password' | 'oldPwords' > } | ERR {
+export function adminUserDetails(authUserId: number): { user: Omit<User, 'password' | 'oldPwords' > } | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) { return errUserIdNotFound(authUserId); }
+  if (!user) { return error.UserIdNotFound(authUserId); }
 
   const { password, oldPwords, ...filtered } = user;
 
@@ -90,23 +91,25 @@ export function adminUserDetails(authUserId: number): { user: Omit<User, 'passwo
  * @param {string} nameLast  - the last name of the author
  * @returns {{}} - empty object
  */
-export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string): Record<string, never> | ERR {
+export function adminUserDetailsUpdate(authUserId: number, email: string, nameFirst: string, nameLast: string): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) { return errUserIdNotFound(authUserId); }
+  if (!user) { return error.UserIdNotFound(authUserId); }
 
   const userWithEmail: User = getUserByEmail(data, email);
-  if (userWithEmail && userWithEmail.userId !== authUserId) { return errEmailTaken(email); }
+  if (userWithEmail && userWithEmail.userId !== authUserId) { return error.EmailTaken(email); }
 
   // Conditions for checking if the input is correct
-  if (!validEmail(email)) { return errEmailInvalid(email); }
-  if (!validUserName(nameFirst)) { return errFirstNameInvalid(nameFirst); }
-  if (!validUserName(nameLast)) { return errLastNameInvalid(nameLast); }
+  if (!validEmail(email)) { return error.EmailInvalid(email); }
+  if (!validUserName(nameFirst)) { return error.FirstNameInvalid(nameFirst); }
+  if (!validUserName(nameLast)) { return error.LastNameInvalid(nameLast); }
 
   // Updating the user details
   user.email = email;
   user.name = nameFirst + ' ' + nameLast;
+
+  setData(data);
 
   return {};
 }
@@ -118,21 +121,23 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
  * @param {string} newPassword - the new password of the author
  * @returns {{}} -empty object
  */
-export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): Record<string, never> | ERR {
+export function adminUserPasswordUpdate(authUserId: number, oldPassword: string, newPassword: string): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) { return errUserIdNotFound(authUserId); }
+  if (!user) { return error.UserIdNotFound(authUserId); }
 
   // Conditions for checking if the input is correct
-  if (user.password !== oldPassword) { return errUserPassOldIncorrect(); }
-  if (oldPassword === newPassword) { return errUserPassNewNotNew(); }
-  if (user.oldPwords && user.oldPwords.includes(newPassword)) { return errUserPassNewNotNew(); }
-  if (!validUserPass(newPassword)) { return errUserPassNewInvalid(); }
+  if (user.password !== oldPassword) { return error.UserPassOldIncorrect(); }
+  if (oldPassword === newPassword) { return error.UserPassNewNotNew(); }
+  if (user.oldPwords && user.oldPwords.includes(newPassword)) { return error.UserPassNewNotNew(); }
+  if (!validUserPass(newPassword)) { return error.UserPassNewInvalid(); }
 
   // Updating the Password
   (user.oldPwords) ? user.oldPwords.push(oldPassword) : user.oldPwords = [oldPassword];
   user.password = newPassword;
+
+  setData(data);
 
   return {};
 }

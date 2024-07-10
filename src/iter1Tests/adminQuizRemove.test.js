@@ -1,8 +1,8 @@
-import { adminQuizCreate, adminQuizRemove } from './quiz';
-import { adminAuthRegister } from './auth';
-import { clear } from './other';
+import { adminQuizCreate, adminQuizRemove } from '../quiz';
+import { adminAuthRegister } from '../auth';
+import { clear } from '../other';
 
-const ERROR = { error: expect.any(String) };
+const ERROR = { errorMsg: expect.any(String), errorCode: expect.any(Number) };
 
 describe('adminQuizRemove', () => {
   let authUserId1, authUserId2, quizId1, quizId2, quizId3;
