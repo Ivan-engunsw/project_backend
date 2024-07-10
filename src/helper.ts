@@ -24,41 +24,31 @@ export const getQuizById = (data: Data, id: number) => data.quizzes.find(quiz =>
 // token
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
 export function generateToken(authUserId: number): { token: string } {
-  const tokens = getData().tokens
+  const tokens = getData().tokens;
   const randomBytes = require('randombytes');
+
   let tokenId: string = randomBytes(16).toString('base64url');
   while (tokens.find(token => token.tokenId === tokenId)) {
     tokenId = randomBytes(16).toString('base64url');
   }
 
-  const token = {
-    tokenId: tokenId,
-    authUserId: authUserId,
-  };
-
-  tokens.push(token);
+  tokens.push({ tokenId: tokenId, authUserId: authUserId });
 
   return { token: tokenId };
 }
 
 // Check if the token provided is valid and return the authUserId on success or error if invalid
 // NOTE: Token is just a string, not the object { token: string }
-export function validToken(token: string): { authUserId: number } | error.ErrorObject {
-  const tokens = getData().tokens
-  const foundUser = tokens.find(existingToken => existingToken.tokenId === token);
-  return (foundUser) ? { authUserId: foundUser.authUserId } : error.InvalidToken(token);
+export function validToken(tokenId: string): { authUserId: number } | error.ErrorObject {
+  const tokens = getData().tokens;
+  const token = tokens.find(token => token.tokenId === tokenId);
+  return (token) ? { authUserId: token.authUserId } : error.InvalidToken(tokenId);
 }
 
 // Remove the token from the array and return {} on success or error if invalid
 // NOTE: Token is just a string, not the object { token: string }
-export function removeToken(token: string): EmptyObject | error.ErrorObject {
-  const tokens = getData().tokens
-  const existingTokenIndex = tokens.findIndex(existingToken => existingToken.tokenId === token);
-
-  if (existingTokenIndex !== -1) {
-    tokens.splice(existingTokenIndex, 1);
-    return {};
-  } else {
-    return error.InvalidToken(token);
-  }
+export function removeToken(tokenId: string): EmptyObject | error.ErrorObject {
+  const tokens = getData().tokens;
+  const tokenIndex = tokens.findIndex(token => token.tokenId === tokenId);
+  return (tokenIndex !== -1) ? tokens.splice(tokenIndex, 1) && {} : error.InvalidToken(tokenId);
 }
