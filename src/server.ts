@@ -11,7 +11,7 @@ import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminUserDetails } from './auth';
 import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizNameUpdate } from './quiz';
-import { generateToken, validToken, removeToken } from './dataStore';
+import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
 
 // Set up web app
