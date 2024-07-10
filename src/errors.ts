@@ -37,11 +37,11 @@ export const QuizUnauthorised = (id: number) => err(`The quiz with ID '${id}' do
 export const InvalidToken = (token: string) => err(`The token '${token}' doesn't exist`, 401);
 
 // question
-export const invalidQuestion = (question: string) => err(`The question '${question}' is invalid`, 400);
+export const invalidQuestion = (question: string) => err(`The question: '${question}' is invalid`, 400);
 
 // answer
 export const invalidNumAnswers = (numAnswer: number) => err(`The number of answers: '${numAnswer}' is invalid`, 400);
-export const invalidAnswerLen = (answer: string) => err(`The length of the answer: '${answer}' is invalid`, 400);
+export const invalidAnswerLen = () => err('The length of the answers is invalid', 400);
 export const duplicateAnswer = (answer: string) => err(`The answer: '${answer}' has been duplicated`, 400);
 export const noCorrectAnswer = () => err('There are no correct answers', 400);
 

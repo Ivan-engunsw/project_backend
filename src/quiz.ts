@@ -1,6 +1,6 @@
 import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestion, generateQuizId  } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestion, generateQuizId, sumDuration } from './helper';
 
 export interface QuestionBody {
   question: string;
@@ -255,31 +255,35 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
   if (questionBody.duration < 0) { return error.invalidDuration(questionBody.duration) }
 
   // Check the duration of the quiz with the new question
-
+  if (sumDuration(quiz) + questionBody.duration > 180) {
+    return error.invalidQuizDuration(sumDuration(quiz) + questionBody.duration);
+  }
+  
   // Check the points of the question
   if (questionBody.points < 1 || questionBody.points > 10) {
     return error.invalidPoints(questionBody.points);
   }
 
   // Check the length of each answer
-  let answer;
-  if ((answer = questionBody.answers.find((answer) => { answer.answer.length < 1 || answer.answer.length > 30 }))) {
-    return error.invalidAnswerLen(answer.answer);
+  if (questionBody.answers.find(answer => answer.answer.length < 1 || answer.answer.length > 30)) {
+    return error.invalidAnswerLen();
   }
 
   // Check for duplicate answers
-  let answerSet = new Set();
-  for (answer of questionBody.answers) {
-    answerSet.add(answer.answer);
-  }
-  if (answerSet.size !== questionBody.answers.length) {
-    return error.duplicateAnswer('idk');
-  }
+  let answersSoFar: string[] = [];
+  questionBody.answers.forEach((answer) => {
+    if (answersSoFar.includes(answer.answer)) {
+      return error.duplicateAnswer(answer.answer);
+    } else {
+      answersSoFar.push(answer.answer);
+    }
+  });
 
   // Check there is at least 1 correct answer
-  if (!(questionBody.answers.find((answer) => { answer.correct === true }))) {
+  if (!questionBody.answers.some(answer => answer.correct === true)) {
     return error.noCorrectAnswer();
   }
+
   // Create the answers array
   const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
   let answers: Answer[] = [];
@@ -301,6 +305,9 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
     points: questionBody.points,
     answers: answers,
   };
+
+  quiz.questions.push(question);
+  setData(data);
 
   return { questionId: questionId };
 }
