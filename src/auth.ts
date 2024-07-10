@@ -1,4 +1,4 @@
-import { getData, Data, User, EmptyObject } from './dataStore';
+import { getData, setData, Data, User, EmptyObject } from './dataStore';
 import * as error from './errors';
 import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, validUserPass } from './helper';
 
@@ -31,6 +31,8 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
     numFailedPasswordsSinceLastLogin: 0,
   });
 
+  setData(data);
+
   return { authUserId: authUserId };
 }
 
@@ -55,6 +57,8 @@ export function adminAuthLogin(email: string, password: string): { authUserId: n
 
   user.numFailedPasswordsSinceLastLogin = 0;
   user.numSuccessfulLogins++;
+
+  setData(data);
 
   return { authUserId: user.userId };
 }
@@ -104,6 +108,8 @@ export function adminUserDetailsUpdate(authUserId: number, email: string, nameFi
   user.email = email;
   user.name = nameFirst + ' ' + nameLast;
 
+  setData(data);
+
   return {};
 }
 
@@ -129,6 +135,8 @@ export function adminUserPasswordUpdate(authUserId: number, oldPassword: string,
   // Updating the Password
   (user.oldPwords) ? user.oldPwords.push(oldPassword) : user.oldPwords = [oldPassword];
   user.password = newPassword;
+
+  setData(data);
 
   return {};
 }
