@@ -3,6 +3,21 @@ import { adminQuizCreate, adminQuizInfo, adminQuizQuestionCreate } from '../quiz
 import { adminAuthRegister } from '../auth';
 
 const ERROR = { errorMsg: expect.any(String), errorCode: expect.any(Number) };
+const INPUT_QUESTION = {
+  question: 'Who is the Monarch of England?',
+  duration: 4,
+  points: 5,
+  answers: [
+    {
+      answer: 'Prince Charles',
+      correct: true,
+    },
+    {
+      answer: 'Queen Elizabeth',
+      correct: false,
+    },
+  ],
+};
 
 beforeEach(() => {
   clear();
@@ -268,25 +283,10 @@ describe('adminQuizQuestionCreate', () => {
     });
 
     test('duration of the question causes the duration of the quiz to be over 3 minutes', () => {
-      const questionBody1 = {
-        question: 'Who is the Monarch of England?',
-        duration: 170,
-        points: 5,
-        answers: [
-          {
-            answer: 'Prince Charles',
-            correct: true,
-          },
-          {
-            answer: 'Queen Elizabeth',
-            correct: false,
-          },
-        ],
-      };
-      adminQuizQuestionCreate(authUser.authUserId, quiz.quizId, questionBody1);
+      adminQuizQuestionCreate(authUser.authUserId, quiz.quizId, INPUT_QUESTION);
       const questionBody2 = {
         question: 'Why is English food so bad?',
-        duration: 11,
+        duration: 177,
         points: 5,
         answers: [
           {
@@ -302,65 +302,27 @@ describe('adminQuizQuestionCreate', () => {
       expect(adminQuizQuestionCreate(authUser.authUserId, quiz.quizId, questionBody2)).toStrictEqual(ERROR);
     });
 
-    let questionBody;
-    beforeEach(() => {
-      questionBody = {
-        question: 'Who is the Monarch of England?',
-        duration: 4,
-        points: 5,
-        answers: [
-          {
-            answer: 'Prince Charles',
-            correct: true,
-          },
-          {
-            answer: 'Queen Elizabeth',
-            correct: false,
-          },
-        ],
-      };
-    });
-
     test('returns an error for invalid authUserId', () => {
-      adminQuizQuestionCreate(authUser.authUserId + 1, quiz.quizId, questionBody);
+      adminQuizQuestionCreate(authUser.authUserId + 1, quiz.quizId, INPUT_QUESTION);
     });
 
     test('returns an error for invalid quizId', () => {
-      adminQuizQuestionCreate(authUser.authUserId, quiz.quizId + 1, questionBody);
+      adminQuizQuestionCreate(authUser.authUserId, quiz.quizId + 1, INPUT_QUESTION);
     });
 
     test('returns an error for a quiz not owned by the user', () => {
       const authUser2 = adminAuthRegister('norman@unsw.com', 'password1', 'Norman', 'Nile');
-      adminQuizQuestionCreate(authUser2.authUserId, quiz.quizId, questionBody);
+      adminQuizQuestionCreate(authUser2.authUserId, quiz.quizId, INPUT_QUESTION);
     });
   });
 
   describe('functionality testing', () => {
-    let questionBody;
-    beforeEach(() => {
-      questionBody = {
-        question: 'Who is the Monarch of England?',
-        duration: 4,
-        points: 5,
-        answers: [
-          {
-            answer: 'Prince Charles',
-            correct: true,
-          },
-          {
-            answer: 'Queen Elizabeth',
-            correct: false,
-          },
-        ],
-      };
-    });
-
     test('has the correct return type', () => {
-      expect(adminQuizQuestionCreate(authUser.authUserId, quiz.quizId, questionBody)).toStrictEqual({ questionId: expect.any(Number) });
+      expect(adminQuizQuestionCreate(authUser.authUserId, quiz.quizId, INPUT_QUESTION)).toStrictEqual({ questionId: expect.any(Number) });
     });
 
     test('correctly creates a question', () => {
-      adminQuizQuestionCreate(authUser.authUserId, quiz.quizId, questionBody);
+      adminQuizQuestionCreate(authUser.authUserId, quiz.quizId, INPUT_QUESTION);
       expect(adminQuizInfo(authUser.authUserId, quiz.quizId)).toStrictEqual({
         quizId: quiz.quizId,
         name: 'Quiz1',
@@ -371,9 +333,9 @@ describe('adminQuizQuestionCreate', () => {
         questions: [
           {
             questionId: expect.any(Number),
-            question: 'Who is the Monarch of England?',
-            duration: 4,
-            points: 5,
+            question: INPUT_QUESTION.question,
+            duration: INPUT_QUESTION.duration,
+            points: INPUT_QUESTION.points,
             answers: [
               {
                 answerId: expect.any(Number),
@@ -390,12 +352,12 @@ describe('adminQuizQuestionCreate', () => {
             ],
           },
         ],
-        duration: 4,
+        duration: INPUT_QUESTION.duration,
       });
     });
 
     test('successfully creates multiple questions', () => {
-      adminQuizQuestionCreate(authUser.authUserId, quiz.quizId, questionBody);
+      adminQuizQuestionCreate(authUser.authUserId, quiz.quizId, INPUT_QUESTION);
       const questionBody2 = {
         question: 'Why is English food so bad?',
         duration: 11,
@@ -422,9 +384,9 @@ describe('adminQuizQuestionCreate', () => {
         questions: [
           {
             questionId: expect.any(Number),
-            question: 'Who is the Monarch of England?',
-            duration: 4,
-            points: 5,
+            question: INPUT_QUESTION.question,
+            duration: INPUT_QUESTION.duration,
+            points: INPUT_QUESTION.points,
             answers: [
               {
                 answerId: expect.any(Number),
@@ -442,9 +404,9 @@ describe('adminQuizQuestionCreate', () => {
           },
           {
             questionId: expect.any(Number),
-            question: 'Why is English food so bad?',
-            duration: 11,
-            points: 5,
+            question: questionBody2.question,
+            duration: questionBody2.duration,
+            points: questionBody2.points,
             answers: [
               {
                 answerId: expect.any(Number),
@@ -461,7 +423,7 @@ describe('adminQuizQuestionCreate', () => {
             ],
           },
         ],
-        duration: questionBody.duration + questionBody2.duration,
+        duration: INPUT_QUESTION.duration + questionBody2.duration,
       });
     });
   });
