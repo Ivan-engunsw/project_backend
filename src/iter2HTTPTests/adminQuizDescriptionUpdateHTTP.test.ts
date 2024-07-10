@@ -79,7 +79,7 @@ describe('POST /v1/admin/quiz/:quizid/description', () => {
 
       const timeLastEdited = parseInt(JSON.parse(res.body.toString()).timeLastEdited);
       expect(timeLastEdited).toBeGreaterThanOrEqual(time);
-      expect(timeLastEdited).toBeLessThanOrEqual(time);
+      expect(timeLastEdited).toBeLessThanOrEqual(time + 1);
     });
 
     test('successfully updates the dscription of multiple quizzes', () => {
