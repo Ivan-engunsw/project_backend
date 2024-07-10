@@ -244,21 +244,21 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
   if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
 
   // Check the length of the question
-  if (!(validQuestion(questionBody.question))) { return error.invalidQuestion(questionBody.question) }
+  if (!(validQuestion(questionBody.question))) { return error.invalidQuestion(questionBody.question); }
 
   // Check the number of answers
-  if (questionBody.answers.length < 2 || questionBody.answers.length > 6) { 
+  if (questionBody.answers.length < 2 || questionBody.answers.length > 6) {
     return error.invalidNumAnswers(questionBody.answers.length);
   }
 
   // Check the duration
-  if (questionBody.duration < 0) { return error.invalidDuration(questionBody.duration) }
+  if (questionBody.duration < 0) { return error.invalidDuration(questionBody.duration); }
 
   // Check the duration of the quiz with the new question
   if (sumDuration(quiz) + questionBody.duration > 180) {
     return error.invalidQuizDuration(sumDuration(quiz) + questionBody.duration);
   }
-  
+
   // Check the points of the question
   if (questionBody.points < 1 || questionBody.points > 10) {
     return error.invalidPoints(questionBody.points);
@@ -270,8 +270,8 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
   }
 
   // Check for duplicate answers
-  let answersSoFar: string[] = [];
-  for (let answer of questionBody.answers) {
+  const answersSoFar: string[] = [];
+  for (const answer of questionBody.answers) {
     if (answersSoFar.includes(answer.answer)) {
       return error.duplicateAnswer(answer.answer);
     } else {
@@ -286,7 +286,7 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
 
   // Create the answers array
   const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
-  let answers: Answer[] = [];
+  const answers: Answer[] = [];
   questionBody.answers.forEach((answer) => {
     answers.push({
       answerId: answers.length,

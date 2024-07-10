@@ -51,4 +51,3 @@ export const invalidQuizDuration = (duration: number) => err(`The duration of th
 
 // points
 export const invalidPoints = (points: number) => err(`The points for the question: '${points}' is invalid`, 400);
-
