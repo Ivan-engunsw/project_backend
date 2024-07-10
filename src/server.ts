@@ -10,7 +10,7 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminUserDetails, adminUserDetailsUpdate } from './auth';
-import { adminQuizCreate, adminQuizInfo } from './quiz';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate } from './quiz';
 import { generateToken, validToken, removeToken } from './dataStore';
 import { ErrorObject } from './errors';
 
@@ -114,12 +114,59 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   res.json(result);
 });
 
+app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
+  const authUser = validToken(req.query.token as string);
+  if ('errorMsg' in authUser) return setError(authUser, res);
+
+  res.json(adminQuizViewTrash(authUser.authUserId));
+});
+
+app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
+  const authUser = validToken(req.query.token as string);
+  if ('errorMsg' in authUser) return setError(authUser, res);
+
+  const result = adminQuizRemove(authUser.authUserId, parseInt(req.params.quizid as string));
+  return ('errorMsg' in result) ? setError(result as ErrorObject, res) : res.json(result);
+});
+
 app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const authUser = validToken(req.query.token as string);
   if ('errorMsg' in authUser) return setError(authUser, res);
 
   const result = adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
   return ('errorMsg' in result) ? setError(result, res) : res.json(result);
+});
+
+app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const { token, userEmail } = req.body;
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizTransfer(user.authUserId, quizId, userEmail);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
+});
+
+app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
+  const { token, description } = req.body;
+  const quizId = parseInt(req.params.quizid.toString());
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizDescriptionUpdate(user.authUserId, quizId, description);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
 });
 
 // ====================================================================
