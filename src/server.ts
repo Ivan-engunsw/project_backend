@@ -10,8 +10,8 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminUserDetails } from './auth';
-import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate } from './quiz';
-import { generateToken, validToken, removeToken } from './dataStore';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizNameUpdate } from './quiz';
+import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
 
 // Set up web app
@@ -150,6 +150,22 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   }
 
   const result = adminQuizDescriptionUpdate(user.authUserId, quizId, description);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
+});
+
+app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
+  const { token, name } = req.body;
+  const quizId = parseInt(req.params.quizid.toString());
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizNameUpdate(user.authUserId, quizId, name);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }
