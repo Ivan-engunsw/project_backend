@@ -12,7 +12,8 @@ import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, val
  * @returns {{authUserId}} - return object
  */
 
-export function adminAuthRegister(email: string, password: string, nameFirst: string, nameLast: string): { authUserId: number } | error.ErrorObject {
+export function adminAuthRegister(email: string, password: string, nameFirst: string,
+  nameLast: string): { authUserId: number } | error.ErrorObject {
   const data: Data = getData();
 
   if (!validEmail(email)) { return error.EmailInvalid(email); }

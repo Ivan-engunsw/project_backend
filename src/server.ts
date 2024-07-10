@@ -10,8 +10,8 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminUserDetails, adminUserDetailsUpdate } from './auth';
-import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizNameUpdate } from './quiz';
-import { generateToken, validToken, removeToken } from './dataStore';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizNameUpdate, adminQuizList } from './quiz';
+import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
 
 // Set up web app
@@ -119,6 +119,15 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   if ('errorMsg' in authUser) return setError(authUser, res);
 
   res.json(adminQuizViewTrash(authUser.authUserId));
+});
+
+app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
+  const authUser = validToken(req.query.token as string);
+  if ('errorMsg' in authUser) {
+    return setError(authUser, res);
+  }
+  const result = adminQuizList(authUser.authUserId);
+  res.json(result);
 });
 
 app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {

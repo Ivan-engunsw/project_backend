@@ -1,5 +1,6 @@
 import request from 'sync-request-curl';
 import { port, url } from '../config.json';
+import { timeNow } from '../helper';
 
 const SERVER_URL = `${url}:${port}`;
 const TIMEOUT_MS = 5 * 1000;
@@ -62,8 +63,9 @@ describe('POST /v1/admin/quiz/:quizid/description', () => {
       expect(JSON.parse(res.body.toString())).toStrictEqual({});
     });
 
-    test('successfully updates the description of a quiz', () => {
+    test('successfully updates the description of a quiz and the timeLastEdited', () => {
       request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}/description`, { json: { token: token.token, description: 'Norman\'s quiz' }, timeout: TIMEOUT_MS });
+      const time = timeNow();
       const res = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
       expect(JSON.parse(res.body.toString())).toStrictEqual(
         {
@@ -74,6 +76,10 @@ describe('POST /v1/admin/quiz/:quizid/description', () => {
           description: 'Norman\'s quiz',
         }
       );
+
+      const timeLastEdited = parseInt(JSON.parse(res.body.toString()).timeLastEdited);
+      expect(timeLastEdited).toBeGreaterThanOrEqual(time);
+      expect(timeLastEdited).toBeLessThanOrEqual(time + 1);
     });
 
     test('successfully updates the dscription of multiple quizzes', () => {
