@@ -8,6 +8,7 @@ export function clear(): EmptyObject {
   const dataStore = getData();
   dataStore.users = [];
   dataStore.quizzes = [];
+  dataStore.tokens = [];
   dataStore.trash = [];
   setData(dataStore);
   return {};
