@@ -9,7 +9,7 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import { clear } from './other';
-import { adminAuthRegister, adminAuthLogin, adminUserDetails } from './auth';
+import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate } from './auth';
 import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizNameUpdate, adminQuizList } from './quiz';
 import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
@@ -84,6 +84,19 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   const result = adminUserDetails(user.authUserId);
   if ('errorMsg' in result) {
     return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.put('/v1/admin/user/details', (req: Request, res: Response) => {
+  const { token, email, nameFirst, nameLast } = req.body;
+  const authUser = validToken(token);
+  if ('errorMsg' in authUser) {
+    return setError(authUser, res);
+  }
+  const result = adminUserDetailsUpdate(authUser.authUserId, email, nameFirst, nameLast);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
   }
   res.json(result);
 });
