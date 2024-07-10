@@ -52,7 +52,7 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
   const result = clear();
   res.json(result);
 });
-adminUserDetailsUpdate 
+
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const { email, password, nameFirst, nameLast } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
