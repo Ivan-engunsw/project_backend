@@ -80,7 +80,10 @@ describe('POST /v1/admin/quiz/:quizid/transfer', () => {
         name: 'Quiz1',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
-        description: 'Betty\'s quiz'
+        description: 'Betty\'s quiz',
+        numQuestions: expect.any(Number),
+        questions: [],
+        duration: expect.any(Number)
       });
     });
   });

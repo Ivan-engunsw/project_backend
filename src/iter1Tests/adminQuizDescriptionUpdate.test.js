@@ -57,6 +57,9 @@ describe('adminQuizDescriptionUpdate', () => {
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
           description: 'Norman\'s quiz',
+          numQuestions: expect.any(Number),
+          questions: [],
+          duration: expect.any(Number)
         }
       );
     });
@@ -72,6 +75,9 @@ describe('adminQuizDescriptionUpdate', () => {
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
           description: 'New description1',
+          numQuestions: expect.any(Number),
+          questions: [],
+          duration: expect.any(Number)
         }
       );
 
@@ -82,6 +88,9 @@ describe('adminQuizDescriptionUpdate', () => {
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
           description: 'New description2',
+          numQuestions: expect.any(Number),
+          questions: [],
+          duration: expect.any(Number)
         }
       );
     });
