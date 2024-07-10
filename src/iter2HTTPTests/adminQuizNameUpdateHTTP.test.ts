@@ -89,7 +89,7 @@ describe('PUT /v1/admin/quiz/:quizid/name', () => {
     });
 
     test('successfully updates the name of multiple quizzes', () => {
-      const resQuiz2 = request('POST', SERVER_URL + '/v1/admin/quiz', { json: { token: token.token, name: 'Quiz2', description: 'Norman\'s quiz'}, timeout: TIMEOUT_MS });
+      const resQuiz2 = request('POST', SERVER_URL + '/v1/admin/quiz', { json: { token: token.token, name: 'Quiz2', description: 'Norman\'s quiz' }, timeout: TIMEOUT_MS });
       const quiz2 = JSON.parse(resQuiz2.body.toString());
       request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}/name`, { json: { token: token.token, name: 'New quiz1' }, timeout: TIMEOUT_MS });
       request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz2.quizId}/name`, { json: { token: token.token, name: 'New quiz2' }, timeout: TIMEOUT_MS });
