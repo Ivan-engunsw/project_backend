@@ -1,5 +1,5 @@
 import isEmail from 'validator/lib/isEmail';
-import { Data, EmptyObject, getData } from './dataStore';
+import { Data, EmptyObject, getData, setData } from './dataStore';
 import * as error from './errors';
 
 // time
@@ -24,15 +24,16 @@ export const getQuizById = (data: Data, id: number) => data.quizzes.find(quiz =>
 // token
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
 export function generateToken(authUserId: number): { token: string } {
-  const tokens = getData().tokens;
+  const data = getData();
   const randomBytes = require('randombytes');
 
-  let tokenId: string = randomBytes(16).toString('base64url');
-  while (tokens.find(token => token.tokenId === tokenId)) {
-    tokenId = randomBytes(16).toString('base64url');
-  }
+  let tokenId: string;
+  do { tokenId = randomBytes(16).toString('base64url'); }
+  while (data.tokens.find(token => token.tokenId === tokenId));
 
-  tokens.push({ tokenId: tokenId, authUserId: authUserId });
+  data.tokens.push({ tokenId: tokenId, authUserId: authUserId });
+
+  setData(data);
 
   return { token: tokenId };
 }
@@ -48,7 +49,12 @@ export function validToken(tokenId: string): { authUserId: number } | error.Erro
 // Remove the token from the array and return {} on success or error if invalid
 // NOTE: Token is just a string, not the object { token: string }
 export function removeToken(tokenId: string): EmptyObject | error.ErrorObject {
-  const tokens = getData().tokens;
-  const tokenIndex = tokens.findIndex(token => token.tokenId === tokenId);
-  return (tokenIndex !== -1) ? tokens.splice(tokenIndex, 1) && {} : error.InvalidToken(tokenId);
+  const data = getData();
+  const tokenIndex = data.tokens.findIndex(token => token.tokenId === tokenId);
+
+  if (tokenIndex === -1) { return error.InvalidToken(tokenId); }
+
+  data.tokens.splice(tokenIndex, 1);
+  setData(data);
+  return {};
 }
