@@ -1,6 +1,13 @@
-import { getData, setData, Data, User, Quiz, EmptyObject } from './dataStore';
+import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestion } from './helper';
+
+export interface QuestionBody {
+  question: string;
+  duration: number;
+  points: number;
+  answers: { answer: string, correct: boolean }[];
+}
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -216,4 +223,80 @@ export function adminQuizViewTrash(authUserId: number): { quizzes: { quizId: num
     data.trash.reduce((arr, { quizId, name, userId }) => (userId === authUserId) ? arr.push({ quizId, name }) && arr : arr, []);
 
   return { quizzes: trashList };
+}
+
+export function adminQuizQuestionCreate(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number } | error.ErrorObject {
+  const data: Data = getData();
+
+  // Check the user exists
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  // Check the quiz exists
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (!quiz) return error.QuizIdNotFound(quizId);
+
+  // Check the quiz belongs to the user
+  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  // Check the length of the question
+  if (!(validQuestion(questionBody.question))) { return error.invalidQuestion(questionBody.question) }
+
+  // Check the number of answers
+  if (questionBody.answers.length < 2 || questionBody.answers.length > 6) { 
+    return error.invalidNumAnswers(questionBody.answers.length);
+  }
+
+  // Check the duration
+  if (questionBody.duration < 0) { return error.invalidDuration(questionBody.duration) }
+
+  // Check the duration of the quiz with the new question
+
+  // Check the points of the question
+  if (questionBody.points < 1 || questionBody.points > 10) {
+    return error.invalidPoints(questionBody.points);
+  }
+
+  // Check the length of each answer
+  let answer;
+  if ((answer = questionBody.answers.find((answer) => { answer.answer.length < 1 || answer.answer.length > 30 }))) {
+    return error.invalidAnswerLen(answer.answer);
+  }
+
+  // Check for duplicate answers
+  let answerSet = new Set();
+  for (answer of questionBody.answers) {
+    answerSet.add(answer.answer);
+  }
+  if (answerSet.size !== questionBody.answers.length) {
+    return error.duplicateAnswer('idk');
+  }
+
+  // Check there is at least 1 correct answer
+  if (!(questionBody.answers.find((answer) => { answer.correct === true }))) {
+    return error.noCorrectAnswer();
+  }
+  // Create the answers array
+  const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+  let answers: Answer[] = [];
+  questionBody.answers.forEach((answer) => {
+    answers.push({
+      answerId: answers.length,
+      answer: answer.answer,
+      colour: colours[Math.floor(Math.random() * colours.length)],
+      correct: answer.correct,
+    });
+  });
+
+  // Create the question
+  const questionId = quiz.questions.length;
+  const question: Question = {
+    questionId: questionId,
+    question: questionBody.question,
+    duration: 0,
+    points: questionBody.points,
+    answers: answers,
+  };
+
+  return { questionId: questionId };
 }

@@ -21,6 +21,9 @@ export const validQuizDesc = (desc: string) => desc.length <= 100;
 export const takenQuizName = (data: Data, uId: number, qName: string) => data.quizzes.some(quiz => quiz.name === qName && quiz.userId === uId);
 export const getQuizById = (data: Data, id: number) => data.quizzes.find(quiz => id === quiz.quizId);
 
+// question
+export const validQuestion = (question: string) => /^.{5,50}$/.test(question);
+
 // token
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
 export function generateToken(authUserId: number): { token: string } {
