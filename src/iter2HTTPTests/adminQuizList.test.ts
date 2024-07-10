@@ -1,6 +1,6 @@
 import request from 'sync-request-curl';
-import { port, url } from './config.json';
-import { Quiz } from './dataStore';
+import { port, url } from '../config.json';
+import { Quiz } from '../dataStore';
 
 const ERROR = { error: expect.any(String) };
 const SERVER_URL = `${url}:${port}`;
