@@ -35,7 +35,7 @@ describe('POST /v1/admin/quiz/{quizid}/question', () => {
 
     describe('functionality testing', () => {
         test('has the correct return type', () => {
-            const res = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}/question`, { json: { token: token.token, INPUT_QUESTION }, timeout: TIMEOUT_MS });
+            const res = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}/question`, { json: { token: token.token, questionBody: INPUT_QUESTION }, timeout: TIMEOUT_MS });
             expect(JSON.parse(res.body.toString())).toStrictEqual({ questionId: expect.any(Number) });
         });
     });
