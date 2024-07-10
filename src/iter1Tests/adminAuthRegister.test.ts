@@ -1,8 +1,7 @@
-import { adminAuthRegister, adminUserDetails } from './auth';
-import { clear } from './other';
+import { adminAuthRegister, adminUserDetails } from '../auth';
+import { clear } from '../other';
 
-const ERROR = { error: expect.any(String), errorCode: expect.any(Number) };
-
+const ERROR = { errorMsg: expect.any(String), errorCode: expect.any(Number) };
 beforeEach(() => {
   clear();
 });
@@ -79,11 +78,11 @@ describe('adminAuthRegister', () => {
 
     test('successfully update numSuccessfulLogins', () => {
       const auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Bobby', 'Bob');
-      if ('error' in auth) {
+      if ('errorMsg' in auth) {
         expect(auth).toStrictEqual(ERROR);
       } else {
         const details = adminUserDetails(auth.authUserId);
-        if ('error' in details) {
+        if ('errorMsg' in details) {
           expect(details).toStrictEqual(ERROR);
         } else {
           expect(details.user.numSuccessfulLogins).toStrictEqual(1);
@@ -93,11 +92,11 @@ describe('adminAuthRegister', () => {
 
     test('successfully create numFailedPasswordsSinceLastLogin', () => {
       const auth = adminAuthRegister('validemail@gmail.com', 'password1!', 'Bobby', 'Bob');
-      if ('error' in auth) {
+      if ('errorMsg' in auth) {
         expect(auth).toStrictEqual(ERROR);
       } else {
         const details = adminUserDetails(auth.authUserId);
-        if ('error' in details) {
+        if ('errorMsg' in details) {
           expect(details).toStrictEqual(ERROR);
         } else {
           expect(details.user.numFailedPasswordsSinceLastLogin).toStrictEqual(0);

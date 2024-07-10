@@ -1,7 +1,7 @@
-import { clear } from './other';
-import { adminAuthRegister, adminUserDetailsUpdate } from './auth';
+import { clear } from '../other';
+import { adminAuthRegister, adminUserDetailsUpdate } from '../auth';
 
-const ERROR = { error: expect.any(String), errorCode: expect.any(Number) };
+const ERROR = { errorMsg: expect.any(String), errorCode: expect.any(Number) };
 
 beforeEach(() => {
   clear();

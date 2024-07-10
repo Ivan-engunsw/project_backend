@@ -1,9 +1,9 @@
-import { adminQuizList, adminQuizCreate, adminQuizInfo } from './quiz';
+import { adminQuizList, adminQuizCreate, adminQuizInfo } from '../quiz';
 
-import { adminAuthRegister } from './auth';
-import { clear } from './other';
+import { adminAuthRegister } from '../auth';
+import { clear } from '../other';
 
-const ERROR = { error: expect.any(String), errorCode: expect.any(Number) };
+const ERROR = { errorMsg: expect.any(String), errorCode: expect.any(Number) };
 
 beforeEach(() => {
   clear();
