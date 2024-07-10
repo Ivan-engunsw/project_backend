@@ -271,13 +271,13 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
 
   // Check for duplicate answers
   let answersSoFar: string[] = [];
-  questionBody.answers.forEach((answer) => {
+  for (let answer of questionBody.answers) {
     if (answersSoFar.includes(answer.answer)) {
       return error.duplicateAnswer(answer.answer);
     } else {
       answersSoFar.push(answer.answer);
     }
-  });
+  }
 
   // Check there is at least 1 correct answer
   if (!questionBody.answers.some(answer => answer.correct === true)) {
@@ -297,17 +297,20 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
   });
 
   // Create the question
-  const questionId = quiz.questions.length;
   const question: Question = {
-    questionId: questionId,
+    questionId: quiz.questions.length,
     question: questionBody.question,
-    duration: 0,
+    duration: questionBody.duration,
     points: questionBody.points,
     answers: answers,
   };
 
+  // Update the quiz
   quiz.questions.push(question);
+  quiz.duration += questionBody.duration;
+  quiz.timeLastEdited = timeNow();
+  quiz.numQuestions++;
   setData(data);
 
-  return { questionId: questionId };
+  return { questionId: question.questionId };
 }
