@@ -63,7 +63,6 @@ describe('POST /v1/admin/auth/login', () => {
       expect(JSON.parse(res.body.toString())).toStrictEqual({ token: expect.any(String) });
     });
 
-    /* *
     test('Successfully logs in a user', () => {
       const res = request('POST', SERVER_URL + '/v1/admin/auth/login', loginUser);
       const desc = request('GET', SERVER_URL + '/v1/admin/user/details', res);
@@ -77,6 +76,5 @@ describe('POST /v1/admin/auth/login', () => {
         }
       });
     });
-    */
   });
 });
