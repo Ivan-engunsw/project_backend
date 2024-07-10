@@ -38,8 +38,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
   if (takenQuizName(data, authUserId, name)) { return error.QuizNameTaken(name); }
   if (!validQuizDesc(description)) { return error.QuizDescInvalid(); }
 
-  let quizId: number = generateQuizId();
-  
+  const quizId: number = generateQuizId();
 
   data.quizzes.push({
     quizId: quizId,

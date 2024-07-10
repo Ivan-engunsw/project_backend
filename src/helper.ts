@@ -1,5 +1,5 @@
 import isEmail from 'validator/lib/isEmail';
-import {Random} from 'random-js';
+import { Random } from 'random-js';
 import { Data, EmptyObject, getData, setData } from './dataStore';
 import * as error from './errors';
 
@@ -26,7 +26,7 @@ export const generateQuizId = () => {
   const random = new Random();
   let quizId: number;
   do { quizId = random.integer(0, Number.MAX_SAFE_INTEGER); }
-  while (data.quizzes.find(quiz => quiz.quizId === quizId));
+  while (data.quizzes.find(quiz => quiz.quizId === quizId) || data.trash.find(quiz => quiz.quizId === quizId));
   return quizId;
 };
 
