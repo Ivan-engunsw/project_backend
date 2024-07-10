@@ -4,6 +4,7 @@ import * as error from './errors';
 export interface Data {
   users: User[];
   quizzes: Quiz[];
+  trash: Quiz[]
 }
 
 export interface User {
@@ -28,6 +29,7 @@ export interface Quiz {
 let data: Data = {
   users: [],
   quizzes: [],
+  trash: []
 };
 
 // YOU SHOULD MODIFY THIS OBJECT ABOVE ONLY
@@ -49,12 +51,12 @@ Example usage
 */
 
 // Use get() to access the data
-function getData(): Data {
+export function getData(): Data {
   return data;
 }
 
 // Use set(newData) to pass in the entire data object, with modifications made
-function setData(newData: Data) {
+export function setData(newData: Data) {
   data = newData;
 }
 
@@ -67,24 +69,24 @@ interface Token {
 // An array for storing tokens and their mappings to authUserIds
 const tokens: Token[] = [];
 
-// An array for storing the deleted quizzes
-let quizTrash: Quiz[] = [];
+// // An array for storing the deleted quizzes
+// let quizTrash: Quiz[] = [];
 
-export function getTrash(): Quiz[] {
-  return quizTrash;
-}
+// export function getTrash(): Quiz[] {
+//   return quizTrash;
+// }
 
-export function setTrash(newTrash: Quiz[]) {
-  quizTrash = newTrash;
-}
+// export function setTrash(newTrash: Quiz[]) {
+//   quizTrash = newTrash;
+// }
 
 export type EmptyObject = Record<string, never>;
 
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
-function generateToken(authUserId: number): { token: string } {
+export function generateToken(authUserId: number): { token: string } {
   const randomBytes = require('randombytes');
   let tokenId: string = randomBytes(16).toString('base64url');
-  while (tokens.find((token) => token.tokenId === tokenId)) {
+  while (tokens.find(token => token.tokenId === tokenId)) {
     tokenId = randomBytes(16).toString('base64url');
   }
 
@@ -100,25 +102,20 @@ function generateToken(authUserId: number): { token: string } {
 
 // Check if the token provided is valid and return the authUserId on success or error if invalid
 // NOTE: Token is just a string, not the object { token: string }
-function validToken(token: string): { authUserId: number } | error.ErrorObject {
-  let foundUser;
-  if ((foundUser = tokens.find((existingToken) => existingToken.tokenId === token))) {
-    return { authUserId: foundUser.authUserId };
-  } else {
-    return error.InvalidToken(token);
-  }
+export function validToken(token: string): { authUserId: number } | error.ErrorObject {
+  const foundUser = tokens.find(existingToken => existingToken.tokenId === token);
+  return (foundUser) ? { authUserId: foundUser.authUserId } : error.InvalidToken(token);
 }
 
 // Remove the token from the array and return {} on success or error if invalid
 // NOTE: Token is just a string, not the object { token: string }
-function removeToken(token: string): EmptyObject | error.ErrorObject {
-  let existingTokenIndex;
-  if ((existingTokenIndex = tokens.findIndex((existingToken) => existingToken.tokenId === token)) !== -1) {
+export function removeToken(token: string): EmptyObject | error.ErrorObject {
+  const existingTokenIndex = tokens.findIndex(existingToken => existingToken.tokenId === token);
+
+  if (existingTokenIndex !== -1) {
     tokens.splice(existingTokenIndex, 1);
     return {};
   } else {
     return error.InvalidToken(token);
   }
 }
-
-export { getData, setData, generateToken, validToken, removeToken };
