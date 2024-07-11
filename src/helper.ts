@@ -33,6 +33,15 @@ export const sumDuration = (quiz: Quiz) => quiz.questions.reduce((sum, question)
 
 // question
 export const validQuestion = (question: string) => /^.{5,50}$/.test(question);
+export const generateQuestionId = (quizId: number) => {
+  const data = getData();
+  const quiz = getQuizById(data, quizId);
+  const random = new Random();
+  let questionId: number;
+  do { questionId = random.integer(0, Number.MAX_SAFE_INTEGER); }
+  while (quiz.questions.find(question => question.questionId === questionId));
+  return questionId;
+};
 
 // token
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
