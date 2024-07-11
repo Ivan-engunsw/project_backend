@@ -9,46 +9,40 @@ beforeEach(() => {
   request('DELETE', SERVER_URL + '/v1/clear', { timeout: TIMEOUT_MS });
 });
 
-describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
-  let token: { token: string };
-  test('Successfully updates the question', () => {
-    // Register and create a quiz with a question
-    const res1 = request('POST', SERVER_URL + '/v1/admin/auth/register', {
-      json: {
-        email: 'originalemail@gmail.com',
-        password: '1234zyx#@',
-        nameFirst: 'Betty',
-        nameLast: 'Boop'
-      },
-      timeout: TIMEOUT_MS
-    });
-    token = JSON.parse(res1.body.toString());
+describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
+  let token: {token: string};
+  let quiz: {quizId: number};
+  let quizId: number;
+  beforeEach(() => {
+    const res = request('POST', SERVER_URL + '/v1/admin/auth/register',
+      {
+        json: {
+          email: 'bettyBoop@gmail.com',
+          password: 'helloWorld1',
+          nameFirst: 'Betty',
+          nameLast: 'Boop'
+        },
+        timeout: TIMEOUT_MS
+      });
+    token = JSON.parse(res.body.toString());
 
     const res2 = request('POST', SERVER_URL + '/v1/admin/quiz', {
       json: {
-        token,
+        token: token.token,
         name: 'Sample Quiz',
-        duration: 180,
-        questions: [{
-          question: 'Initial Question?',
-          duration: 30,
-          points: 5,
-          answers: [
-            { answer: 'Answer 1', correct: false },
-            { answer: 'Answer 2', correct: true }
-          ]
-        }]
+        description: 'For testing purposes quiz'
       },
       timeout: TIMEOUT_MS
     });
+    quiz = JSON.parse(res2.body.toString());
+    quizId = quiz.quizId;
+  });
+  test('Successfully updates the question', () => {
+    // Register and create a quiz with a question
 
-    const quiz = JSON.parse(res2.body.toString());
-    const quizId = quiz.quizid;
-    const questionId = quiz.question?.questionId;
-
-    const res3 = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/${questionId}`, {
+    const res3 = request('POST', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/`, {
       json: {
-        token,
+        token: token.token,
         questionBody: {
           question: 'Who is the Monarch of England?',
           duration: 4,
@@ -61,47 +55,61 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
       },
       timeout: TIMEOUT_MS
     });
+    const questionId = JSON.parse(res3.body.toString());
 
-    expect(JSON.parse(res3.body.toString())).toStrictEqual({});
-    expect(res3.statusCode).toStrictEqual(200);
-
-    // Verify update
-    const res4 = request('GET', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/${questionId}`, {
-      qs: { token },
+    const res4 = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/${questionId.questionId}`, {
+      json: {
+        token: token.token,
+        questionBody: {
+          question: 'Who is the current Monarch of England?',
+          duration: 4,
+          points: 5,
+          answers: [
+            { answer: 'Prince Charles', correct: true },
+            { answer: 'Queen Elizabeth', correct: false }
+          ]
+        }
+      },
       timeout: TIMEOUT_MS
     });
 
-    const updatedQuestion = JSON.parse(res4.body.toString());
-    expect(updatedQuestion).toMatchObject({
-      question: 'Who is the Monarch of England?',
+    expect(JSON.parse(res4.body.toString())).toStrictEqual({});
+    expect(res4.statusCode).toStrictEqual(200);
+
+    // Verify update
+    const res5 = request('GET', `${SERVER_URL}/v1/admin/quiz/${quizId}`, {
+      qs: token,
+      timeout: TIMEOUT_MS
+    });
+
+    const updatedQuestion = JSON.parse(res5.body.toString()).questions;
+    expect(updatedQuestion).toStrictEqual([{
+      questionId: expect.any(Number),
+      question: 'Who is the current Monarch of England?',
       duration: 4,
       points: 5,
-      answers: expect.arrayContaining([
-        { answer: 'Prince Charles', correct: true },
-        { answer: 'Queen Elizabeth', correct: false }
-      ])
-    });
+      answers: [
+        {
+          answerId: expect.any(Number),
+          answer: 'Prince Charles',
+          colour: expect.any(String),
+          correct: true,
+        },
+        {
+          answerId: expect.any(Number),
+          answer: 'Queen Elizabeth',
+          colour: expect.any(String),
+          correct: false,
+        },
+      ],
+    }]);
   });
 
   describe('Error Testing', () => {
-    beforeEach(() => {
-      const res = request('POST', SERVER_URL + '/v1/admin/auth/register',
-        {
-          json: {
-            email: 'bettyBoop@gmail.com',
-            password: 'helloWorld1',
-            nameFirst: 'Betty',
-            nameLast: 'Boop'
-          },
-          timeout: TIMEOUT_MS
-        });
-      token = JSON.parse(res.body.toString());
-    });
-
     test('Case when token is invalid', () => {
-      const res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      const res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token: 'invalid-token',
+          token: token.token + '1',
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 4,
@@ -120,9 +128,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
     });
 
     test('Case when question ID is invalid', () => {
-      const res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/invalid`, {
+      const res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/invalid`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 4,
@@ -142,9 +150,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
 
     test('Case when question is too short or too long', () => {
       // Too short
-      let res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      let res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Too',
             duration: 4,
@@ -161,9 +169,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
       expect(res.statusCode).toStrictEqual(400);
 
       // Too long
-      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'A'.repeat(51),
             duration: 4,
@@ -182,9 +190,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
 
     test('Case when there are too few or too many answers', () => {
       // Too few answers
-      let res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      let res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 4,
@@ -198,9 +206,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
       expect(res.statusCode).toStrictEqual(400);
 
       // Too many answers
-      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 4,
@@ -224,9 +232,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
 
     test('Case when duration is not a positive number or exceeds total duration', () => {
       // Non-positive duration
-      let res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      let res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 0,
@@ -243,9 +251,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
       expect(res.statusCode).toStrictEqual(400);
 
       // Exceeds total duration
-      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 181, // Exceeds the total quiz duration of 180 seconds
@@ -264,9 +272,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
 
     test('Case when points are out of valid range', () => {
       // Points less than 1
-      let res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      let res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 4,
@@ -283,9 +291,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
       expect(res.statusCode).toStrictEqual(400);
 
       // Points greater than 10
-      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 4,
@@ -304,9 +312,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
 
     test('Case when answer strings are duplicates or too long', () => {
       // Duplicate answers
-      let res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      let res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 4,
@@ -323,9 +331,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
       expect(res.statusCode).toStrictEqual(400);
 
       // Answer too long
-      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 4,
@@ -342,9 +350,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
       expect(res.statusCode).toStrictEqual(400);
 
       // Answer too short
-      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 4,
@@ -362,9 +370,9 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
     });
 
     test('Case when there are no correct answers', () => {
-      const res = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      const res = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token,
+          token: token.token,
           questionBody: {
             question: 'Who is the Monarch of England?',
             duration: 4,
@@ -382,12 +390,23 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
     });
 
     test('Case when user is not an owner of the quiz or quiz does not exist', () => {
+      const res1 = request('POST', SERVER_URL + '/v1/admin/auth/register',
+        {
+          json: {
+            email: 'brattyBoop@gmail.com',
+            password: 'helloEarth12',
+            nameFirst: 'Betty',
+            nameLast: 'Boop'
+          },
+          timeout: TIMEOUT_MS
+        });
+      const token2 = JSON.parse(res1.body.toString());
       // Use a different token (not the quiz owner's token) to attempt the update
-      const res2 = request('PUT', `${SERVER_URL}/v1/admin/quiz/1/question/1`, {
+      const res2 = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/1`, {
         json: {
-          token: 'different-token',
+          token: token2.token,
           questionBody: {
-            question: 'Who is the Monarch of England?',
+            question: 'Who is the current Monarch of England?',
             duration: 4,
             points: 5,
             answers: [
