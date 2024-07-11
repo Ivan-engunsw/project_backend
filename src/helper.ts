@@ -1,6 +1,7 @@
 import isEmail from 'validator/lib/isEmail';
 import { Random } from 'random-js';
-import { Data, EmptyObject, getData, setData } from './dataStore';
+import { Data, EmptyObject, Quiz, getData, setData } from './dataStore';
+import { QuestionBody } from './quiz';
 import * as error from './errors';
 
 // time
@@ -28,6 +29,68 @@ export const generateQuizId = () => {
   do { quizId = random.integer(0, Number.MAX_SAFE_INTEGER); }
   while (data.quizzes.find(quiz => quiz.quizId === quizId) || data.trash.find(quiz => quiz.quizId === quizId));
   return quizId;
+};
+export const sumDuration = (quiz: Quiz) => quiz.questions.reduce((sum, question) => sum + question.duration, 0);
+
+// question
+// Checks the validity of the questionBody given the questionBody and the quiz it will be created inside
+export const validQuestionBody = (questionBody: QuestionBody, quiz: Quiz): EmptyObject | error.ErrorObject => {
+  // Check the length of the question
+  if (!(validQuestion(questionBody.question))) { return error.invalidQuestion(questionBody.question); }
+
+  // Check the number of answers
+  if (questionBody.answers.length < 2 || questionBody.answers.length > 6) {
+    return error.invalidNumAnswers(questionBody.answers.length);
+  }
+
+  // Check the duration
+  if (questionBody.duration < 0) { return error.invalidDuration(questionBody.duration); }
+
+  // Check the duration of the quiz with the new question
+  if (sumDuration(quiz) + questionBody.duration > 180) {
+    return error.invalidQuizDuration(sumDuration(quiz) + questionBody.duration);
+  }
+
+  // Check the points of the question
+  if (questionBody.points < 1 || questionBody.points > 10) {
+    return error.invalidPoints(questionBody.points);
+  }
+
+  // Check the length of each answer
+  if (questionBody.answers.find(answer => answer.answer.length < 1 || answer.answer.length > 30)) {
+    return error.invalidAnswerLen();
+  }
+
+  // Check for duplicate answers
+  const answersSoFar: string[] = [];
+  for (const answer of questionBody.answers) {
+    if (answersSoFar.includes(answer.answer)) {
+      return error.duplicateAnswer(answer.answer);
+    } else {
+      answersSoFar.push(answer.answer);
+    }
+  }
+
+  // Check there is at least 1 correct answer
+  if (!questionBody.answers.some(answer => answer.correct === true)) {
+    return error.noCorrectAnswer();
+  }
+
+  return {};
+};
+
+// Checks if a question string is of valid length
+const validQuestion = (question: string) => /^.{5,50}$/.test(question);
+
+// Randomly generates a unique questionId
+export const generateQuestionId = (quizId: number) => {
+  const data = getData();
+  const quiz = getQuizById(data, quizId);
+  const random = new Random();
+  let questionId: number;
+  do { questionId = random.integer(0, Number.MAX_SAFE_INTEGER); }
+  while (quiz.questions.find(question => question.questionId === questionId));
+  return questionId;
 };
 
 // token

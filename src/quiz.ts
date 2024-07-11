@@ -1,6 +1,13 @@
-import { getData, setData, Data, User, Quiz, EmptyObject } from './dataStore';
+import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, generateQuizId } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, generateQuestionId } from './helper';
+
+export interface QuestionBody {
+  question: string;
+  duration: number;
+  points: number;
+  answers: { answer: string, correct: boolean }[];
+}
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -47,6 +54,9 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     description: description,
     timeCreated: timeNow(),
     timeLastEdited: timeNow(),
+    numQuestions: 0,
+    questions: [],
+    duration: 0,
   });
 
   setData(data);
@@ -175,6 +185,14 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   return {};
 }
 
+/**
+ * Given a quizId and a target email, transfer ownership of the quiz to the target
+ *
+ * @param {number} authUserId - user calling the function
+ * @param {number} quizId - the quiz to transfer
+ * @param {email} email - the email of the user to transfer the quiz to
+ * @returns {{}} - empty object
+ */
 export function adminQuizTransfer (authUserId: number, quizId: number, email: string): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
@@ -207,6 +225,12 @@ export function adminQuizTransfer (authUserId: number, quizId: number, email: st
   return {};
 }
 
+/**
+ * View all the user's quizzes inside the trash
+ *
+ * @param {number} authUserId - User calling this function
+ * @returns {{quizList}} - A list of quizzes in the trash
+ */
 export function adminQuizViewTrash(authUserId: number): { quizzes: { quizId: number, name: string }[] } | error.ErrorObject {
   const data: Data = getData();
 
@@ -219,6 +243,71 @@ export function adminQuizViewTrash(authUserId: number): { quizzes: { quizId: num
   return { quizzes: trashList };
 }
 
+/**
+ * Create a question inside the quiz given by the user
+ *
+ * @param {number} authUserId - User creating the question
+ * @param {number} quizId - The quiz inside which to create the question
+ * @param {QuestionBody} questionBody - The body containing information of the question to create
+ * @returns {{questionId}} - Object containing the questionId
+ */
+export function adminQuizQuestionCreate(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number } | error.ErrorObject {
+  const data: Data = getData();
+
+  // Check the user exists
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  // Check the quiz exists
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (!quiz) return error.QuizIdNotFound(quizId);
+
+  // Check the quiz belongs to the user
+  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  const valid = validQuestionBody(questionBody, quiz);
+  if ('errorMsg' in valid) {
+    return valid as error.ErrorObject;
+  }
+
+  // Create the answers array
+  const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+  const answers: Answer[] = [];
+  questionBody.answers.forEach((answer) => {
+    answers.push({
+      answerId: answers.length,
+      answer: answer.answer,
+      colour: colours[Math.floor(Math.random() * colours.length)],
+      correct: answer.correct,
+    });
+  });
+
+  // Create the question
+  const question: Question = {
+    questionId: generateQuestionId(quizId),
+    question: questionBody.question,
+    duration: questionBody.duration,
+    points: questionBody.points,
+    answers: answers,
+  };
+
+  // Update the quiz
+  quiz.questions.push(question);
+  quiz.duration += questionBody.duration;
+  quiz.timeLastEdited = timeNow();
+  quiz.numQuestions++;
+  setData(data);
+
+  return { questionId: question.questionId };
+}
+
+/**
+ * Given a quizId, restore it from the trash into the user's quizzes
+ *
+ * @param {number} authUserId - User calling the function
+ * @param {number} quizId - Quiz to restore
+ * @returns {{}} - Empty object
+ */
 export function adminQuizRestore(authUserId: number, quizId: number): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
