@@ -1,6 +1,6 @@
 import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, sumDuration, generateQuestionId } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, generateQuestionId } from './helper';
 
 export interface QuestionBody {
   question: string;
