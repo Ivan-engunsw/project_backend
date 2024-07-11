@@ -396,3 +396,49 @@ export function adminQuizQuestionMove(authUserId: number, quizId: number, questi
   quiz.timeLastEdited = timeNow();
   return {};
 }
+
+/**
+ * Duplicates a quiz question
+ * @param authUserId - authorised user id
+ * @param quizId - id of quiz
+ * @param questionId - id of question
+ * @returns {{newQuestionId}} - object containing new questionId
+ */
+export function adminQuizQuestionDuplicate(authUserId: number, quizId: number, questionId: number): {newQuestionId: number} | error.ErrorObject {
+  const data: Data = getData();
+
+  // Check the user exists
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  // Check the quiz exists
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (!quiz) return error.QuizIdNotFound(quizId);
+
+  // Check the quiz belongs to the user
+  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  // Check the question exists
+  const question: Question = getQuestionById(quiz, questionId);
+  if (!question) return error.QuestionIdNotFound(quizId);
+
+  // Create the duplicated question
+  const duplicateQuestion: Question = {
+    questionId: generateQuestionId(quizId),
+    question: question.question,
+    duration: question.duration,
+    points: question.points,
+    answers: question.answers,
+  };
+
+  // Update the quiz
+  quiz.questions.push(duplicateQuestion);
+  quiz.duration += duplicateQuestion.duration;
+  quiz.timeLastEdited = timeNow();
+  quiz.numQuestions++;
+  const currentPosition = quiz.questions.indexOf(question);
+  adminQuizQuestionMove(authUserId, quizId, duplicateQuestion.questionId, currentPosition + 1);
+  setData(data);
+
+  return { newQuestionId: duplicateQuestion.questionId };
+}
