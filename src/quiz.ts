@@ -1,6 +1,13 @@
-import { getData, setData, Data, User, Quiz, EmptyObject } from './dataStore';
+import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, generateQuizId } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, generateQuestionId, getQuestionById, validNewPosition } from './helper';
+
+export interface QuestionBody {
+  question: string;
+  duration: number;
+  points: number;
+  answers: { answer: string, correct: boolean }[];
+}
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -47,6 +54,9 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     description: description,
     timeCreated: timeNow(),
     timeLastEdited: timeNow(),
+    numQuestions: 0,
+    questions: [],
+    duration: 0,
   });
 
   setData(data);
@@ -386,6 +396,3 @@ export function adminQuizQuestionMove(authUserId: number, quizId: number, questi
   quiz.timeLastEdited = timeNow();
   return {};
 }
-
-
-

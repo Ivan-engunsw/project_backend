@@ -80,6 +80,9 @@ describe('PUT /v1/admin/quiz/:quizid/name', () => {
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
           description: 'Betty\'s quiz',
+          numQuestions: expect.any(Number),
+          questions: [],
+          duration: expect.any(Number)
         }
       );
 
