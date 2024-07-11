@@ -19,6 +19,7 @@ export const FirstNameInvalid = (Fname: string) => err(`The first name '${Fname}
 export const LastNameInvalid = (Lname: string) => err(`The last name '${Lname}' is invalid`, 400);
 export const QuizNameInvalid = (Qname: string) => err(`The quiz name '${Qname}' is invalid`, 400);
 export const QuizNameTaken = (Qname: string) => err(`The quiz name '${Qname}' is already in use`, 400);
+export const QuizNameRestoredTaken = (Qname: string) => err(`The quiz name '${Qname}' of the quiz being restored is already in use`, 400);
 
 // password
 export const UserPassCurrInvalid = () => err('The password is invalid', 400);
