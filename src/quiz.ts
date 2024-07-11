@@ -185,6 +185,14 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
   return {};
 }
 
+/**
+ * Given a quizId and a target email, transfer ownership of the quiz to the target
+ *
+ * @param {number} authUserId - user calling the function
+ * @param {number} quizId - the quiz to transfer
+ * @param {email} email - the email of the user to transfer the quiz to
+ * @returns {{}} - empty object
+ */
 export function adminQuizTransfer (authUserId: number, quizId: number, email: string): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
@@ -217,6 +225,12 @@ export function adminQuizTransfer (authUserId: number, quizId: number, email: st
   return {};
 }
 
+/**
+ * View all the user's quizzes inside the trash
+ *
+ * @param {number} authUserId - User calling this function
+ * @returns {{quizList}} - A list of quizzes in the trash
+ */
 export function adminQuizViewTrash(authUserId: number): { quizzes: { quizId: number, name: string }[] } | error.ErrorObject {
   const data: Data = getData();
 
@@ -229,6 +243,14 @@ export function adminQuizViewTrash(authUserId: number): { quizzes: { quizId: num
   return { quizzes: trashList };
 }
 
+/**
+ * Create a question inside the quiz given by the user
+ *
+ * @param {number} authUserId - User creating the question
+ * @param {number} quizId - The quiz inside which to create the question
+ * @param {QuestionBody} questionBody - The body containing information of the question to create
+ * @returns {{questionId}} - Object containing the questionId
+ */
 export function adminQuizQuestionCreate(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number } | error.ErrorObject {
   const data: Data = getData();
 
