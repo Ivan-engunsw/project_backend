@@ -62,7 +62,7 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
         token: token.token,
         questionBody: {
           question: 'Who is the current Monarch of England?',
-          duration: 4,
+          duration: 5,
           points: 5,
           answers: [
             { answer: 'Prince Charles', correct: true },
@@ -76,7 +76,7 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
     expect(JSON.parse(res4.body.toString())).toStrictEqual({});
     expect(res4.statusCode).toStrictEqual(200);
 
-    // Verify update
+    // Verifying the update was succesfull
     const res5 = request('GET', `${SERVER_URL}/v1/admin/quiz/${quizId}`, {
       qs: token,
       timeout: TIMEOUT_MS
@@ -86,7 +86,7 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
     expect(updatedQuestion).toStrictEqual([{
       questionId: expect.any(Number),
       question: 'Who is the current Monarch of England?',
-      duration: 4,
+      duration: 5,
       points: 5,
       answers: [
         {
