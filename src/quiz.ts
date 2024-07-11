@@ -330,9 +330,9 @@ export function adminQuizQuestionUpdate(authUserId: number, quizId: number, ques
   if (!existingQuestion) return error.QuestionIdNotFound(questionId);
 
   // Validate the new question body
-  const validation = validQuestionBody(questionBody, quiz);
-  if ('errorMsg' in validation) {
-    return validation as error.ErrorObject;
+  const valid = validQuestionBody(questionBody, quiz);
+  if ('errorMsg' in valid) {
+    return valid as error.ErrorObject;
   }
 
   // Update the question details
