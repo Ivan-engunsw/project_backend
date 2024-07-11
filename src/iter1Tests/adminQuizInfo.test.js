@@ -33,7 +33,10 @@ describe('adminQuizInfo', () => {
       name: 'first',
       timeCreated: expect.any(Number),
       timeLastEdited: expect.any(Number),
-      description: 'desc'
+      description: 'desc',
+      numQuestions: 0,
+      questions: [],
+      duration: 0
     });
   });
 
@@ -43,7 +46,10 @@ describe('adminQuizInfo', () => {
       name: 'first',
       timeCreated: expect.any(Number),
       timeLastEdited: expect.any(Number),
-      description: 'desc'
+      description: 'desc',
+      numQuestions: expect.any(Number),
+      questions: [],
+      duration: expect.any(Number)
     });
 
     expect(adminQuizInfo(authUserId1, quizId2)).toStrictEqual({
@@ -51,7 +57,10 @@ describe('adminQuizInfo', () => {
       name: 'second',
       timeCreated: expect.any(Number),
       timeLastEdited: expect.any(Number),
-      description: 'desc'
+      description: 'desc',
+      numQuestions: expect.any(Number),
+      questions: [],
+      duration: expect.any(Number)
     });
 
     expect(adminQuizInfo(authUserId2, quizId3)).toStrictEqual({
@@ -59,7 +68,10 @@ describe('adminQuizInfo', () => {
       name: 'name',
       timeCreated: expect.any(Number),
       timeLastEdited: expect.any(Number),
-      description: 'desc'
+      description: 'desc',
+      numQuestions: expect.any(Number),
+      questions: [],
+      duration: expect.any(Number)
     });
   });
 });

@@ -17,6 +17,24 @@ export interface Quiz {
   description: string;
   timeCreated: number;
   timeLastEdited: number;
+  numQuestions: number;
+  questions: Question[];
+  duration: number;
+}
+
+export interface Question {
+  questionId: number;
+  question: string;
+  duration: number;
+  points: number;
+  answers: Answer[];
+}
+
+export interface Answer {
+  answerId: number;
+  answer: string;
+  colour: string;
+  correct: boolean;
 }
 
 export interface Token {

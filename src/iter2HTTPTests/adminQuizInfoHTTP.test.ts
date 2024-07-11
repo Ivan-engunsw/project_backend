@@ -63,7 +63,10 @@ describe('GET /v1/admin/quiz/:quizid', () => {
         name: 'first',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
-        description: 'desc'
+        description: 'desc',
+        numQuestions: expect.any(Number),
+        questions: [],
+        duration: expect.any(Number)
       });
     });
 
@@ -89,7 +92,10 @@ describe('GET /v1/admin/quiz/:quizid', () => {
         name: 'first',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
-        description: 'desc'
+        description: 'desc',
+        numQuestions: expect.any(Number),
+        questions: [],
+        duration: expect.any(Number)
       });
 
       const res2 = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz2.quizId}`, { qs: { token: token1.token }, timeout: TIMEOUT_MS });
@@ -98,7 +104,10 @@ describe('GET /v1/admin/quiz/:quizid', () => {
         name: 'second',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
-        description: 'desc'
+        description: 'desc',
+        numQuestions: expect.any(Number),
+        questions: [],
+        duration: expect.any(Number)
       });
 
       const res3 = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz3.quizId}`, { qs: { token: token2.token }, timeout: TIMEOUT_MS });
@@ -107,7 +116,10 @@ describe('GET /v1/admin/quiz/:quizid', () => {
         name: 'third',
         timeCreated: expect.any(Number),
         timeLastEdited: expect.any(Number),
-        description: 'desc'
+        description: 'desc',
+        numQuestions: expect.any(Number),
+        questions: [],
+        duration: expect.any(Number)
       });
     });
   });

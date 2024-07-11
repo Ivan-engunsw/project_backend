@@ -9,9 +9,8 @@ import fs from 'fs';
 import path from 'path';
 import process from 'process';
 import { clear } from './other';
-import { adminAuthRegister, adminAuthLogin, adminUserDetails } from './auth';
-import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, 
-  adminQuizDescriptionUpdate, adminQuizNameUpdate, adminQuizList, adminQuizEmptyTrash } from './quiz';
+import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizRestore, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate, adminQuizQuestionMove, adminQuizQuestionDuplicate, adminQuizEmptyTrash } from './quiz';
 import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
 
@@ -34,7 +33,6 @@ const HOST: string = process.env.IP || '127.0.0.1';
 // ====================================================================
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
-
 // Example get request
 app.get('/echo', (req: Request, res: Response) => {
   const result = echo(req.query.echo as string);
@@ -87,6 +85,34 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   if ('errorMsg' in result) {
     return setError(result, res);
   }
+  res.json(result);
+});
+
+app.put('/v1/admin/user/details', (req: Request, res: Response) => {
+  const { token, email, nameFirst, nameLast } = req.body;
+  const authUser = validToken(token);
+  if ('errorMsg' in authUser) {
+    return setError(authUser, res);
+  }
+  const result = adminUserDetailsUpdate(authUser.authUserId, email, nameFirst, nameLast);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
+});
+
+app.put('/v1/admin/user/password', (req: Request, res: Response) => {
+  const { token, oldPassword, newPassword } = req.body;
+  const authUser = validToken(token);
+  if ('errorMsg' in authUser) {
+    return setError(authUser, res);
+  }
+
+  const result = adminUserPasswordUpdate(authUser.authUserId, oldPassword, newPassword);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+
   res.json(result);
 });
 
@@ -143,6 +169,19 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 
   const result = adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
   return ('errorMsg' in result) ? setError(result, res) : res.json(result);
+});
+
+app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const { token } = req.body;
+
+  const user = validToken(token);
+  if ('errorMsg' in user) { return setError(user, res); }
+
+  const result = adminQuizRestore(user.authUserId, quizId);
+  if ('errorMsg' in result) { return setError(result as ErrorObject, res); }
+
+  res.json(result);
 });
 
 app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
@@ -210,6 +249,55 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   res.json(result);
 });
 
+app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
+  const { token, questionBody } = req.body;
+  const quizId = parseInt(req.params.quizid.toString());
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizQuestionCreate(user.authUserId, quizId, questionBody);
+  if ('errorMsg' in result) {
+    return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const questionId = parseInt(req.params.questionid.toString());
+
+  const { token, newPosition } = req.body;
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizQuestionMove(user.authUserId, quizId, questionId, newPosition);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
+});
+
+app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const questionId = parseInt(req.params.questionid.toString());
+
+  const { token } = req.body;
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizQuestionDuplicate(user.authUserId, quizId, questionId);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
+});
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
