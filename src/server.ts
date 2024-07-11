@@ -10,7 +10,7 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
-import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizRestore, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate, adminQuizQuestionMove } from './quiz';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizRestore, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate, adminQuizQuestionUpdate, adminQuizQuestionMove } from './quiz';
 import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
 
@@ -244,6 +244,23 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const result = adminQuizQuestionCreate(user.authUserId, quizId, questionBody);
   if ('errorMsg' in result) {
     return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
+  const { token, questionBody } = req.body;
+  const quizId = parseInt(req.params.quizid.toString());
+  const questionId = parseInt(req.params.questionid.toString());
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizQuestionUpdate(user.authUserId, quizId, questionId, questionBody);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
   }
   res.json(result);
 });
