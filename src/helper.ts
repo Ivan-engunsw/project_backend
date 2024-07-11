@@ -33,6 +33,7 @@ export const generateQuizId = () => {
 export const sumDuration = (quiz: Quiz) => quiz.questions.reduce((sum, question) => sum + question.duration, 0);
 
 // question
+// Checks the validity of the questionBody given the questionBody and the quiz it will be created inside
 export const validQuestionBody = (questionBody: QuestionBody, quiz: Quiz): EmptyObject | error.ErrorObject => {
   // Check the length of the question
   if (!(validQuestion(questionBody.question))) { return error.invalidQuestion(questionBody.question); }
@@ -78,7 +79,10 @@ export const validQuestionBody = (questionBody: QuestionBody, quiz: Quiz): Empty
   return {};
 };
 
+// Checks if a question string is of valid length
 const validQuestion = (question: string) => /^.{5,50}$/.test(question);
+
+// Randomly generates a unique questionId
 export const generateQuestionId = (quizId: number) => {
   const data = getData();
   const quiz = getQuizById(data, quizId);
