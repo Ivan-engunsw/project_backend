@@ -92,7 +92,7 @@ describe('adminQuizRestore', () => {
 
     const res = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}/restore`, { json: { token: token.token }, timeout: TIMEOUT_MS });
     expect(JSON.parse(res.body.toString())).toStrictEqual({});
-  }); 
+  });
 
   test('Successfully restore one quiz', () => {
     const resUser = request('POST', SERVER_URL + '/v1/admin/auth/register', { json: { email: 'auth@one.com', password: 'authone1', nameFirst: 'auth', nameLast: 'one' }, timeout: TIMEOUT_MS });
@@ -106,12 +106,12 @@ describe('adminQuizRestore', () => {
     const infoBef = request('GET', SERVER_URL + '/v1/admin/quiz/list', { qs: { token: token.token }, timeout: TIMEOUT_MS });
     expect(JSON.parse(infoBef.body.toString()).quizzes).toStrictEqual([]);
     const trashBef = request('GET', SERVER_URL + '/v1/admin/quiz/trash', { qs: { token: token.token }, timeout: TIMEOUT_MS });
-    expect(JSON.parse(trashBef.body.toString()).quizzes).toStrictEqual([{ quizId: quiz.quizId, name: "first" }]);
+    expect(JSON.parse(trashBef.body.toString()).quizzes).toStrictEqual([{ quizId: quiz.quizId, name: 'first' }]);
 
     request('POST', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}/restore`, { json: { token: token.token }, timeout: TIMEOUT_MS });
 
     const infoAft = request('GET', SERVER_URL + '/v1/admin/quiz/list', { qs: { token: token.token }, timeout: TIMEOUT_MS });
-    expect(JSON.parse(infoAft.body.toString()).quizzes).toStrictEqual([{ quizId: quiz.quizId, name: "first" }]);
+    expect(JSON.parse(infoAft.body.toString()).quizzes).toStrictEqual([{ quizId: quiz.quizId, name: 'first' }]);
     const trashAft = request('GET', SERVER_URL + '/v1/admin/quiz/trash', { qs: { token: token.token }, timeout: TIMEOUT_MS });
     expect(JSON.parse(trashAft.body.toString()).quizzes).toStrictEqual([]);
   });
@@ -132,13 +132,13 @@ describe('adminQuizRestore', () => {
     const infoBef = request('GET', SERVER_URL + '/v1/admin/quiz/list', { qs: { token: token.token }, timeout: TIMEOUT_MS });
     expect(JSON.parse(infoBef.body.toString()).quizzes).toStrictEqual([]);
     const trashBef = request('GET', SERVER_URL + '/v1/admin/quiz/trash', { qs: { token: token.token }, timeout: TIMEOUT_MS });
-    expect(JSON.parse(trashBef.body.toString()).quizzes).toStrictEqual([{ quizId: quiz1.quizId, name: "first" }, { quizId: quiz2.quizId, name: "second" }]);
+    expect(JSON.parse(trashBef.body.toString()).quizzes).toStrictEqual([{ quizId: quiz1.quizId, name: 'first' }, { quizId: quiz2.quizId, name: 'second' }]);
 
     request('POST', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}/restore`, { json: { token: token.token }, timeout: TIMEOUT_MS });
     request('POST', SERVER_URL + `/v1/admin/quiz/${quiz2.quizId}/restore`, { json: { token: token.token }, timeout: TIMEOUT_MS });
 
     const infoAft = request('GET', SERVER_URL + '/v1/admin/quiz/list', { qs: { token: token.token }, timeout: TIMEOUT_MS });
-    expect(JSON.parse(infoAft.body.toString()).quizzes).toStrictEqual([{ quizId: quiz1.quizId, name: "first" }, { quizId: quiz2.quizId, name: "second" }]);
+    expect(JSON.parse(infoAft.body.toString()).quizzes).toStrictEqual([{ quizId: quiz1.quizId, name: 'first' }, { quizId: quiz2.quizId, name: 'second' }]);
     const trashAft = request('GET', SERVER_URL + '/v1/admin/quiz/trash', { qs: { token: token.token }, timeout: TIMEOUT_MS });
     expect(JSON.parse(trashAft.body.toString()).quizzes).toStrictEqual([]);
   });
