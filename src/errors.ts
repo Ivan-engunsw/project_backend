@@ -6,7 +6,7 @@ export interface ErrorObject {
 }
 
 // id
-export const UserIdNotFound = (id: number) => err(`The user ID '${id}' was not found`, 400);
+export const UserIdNotFound = (id: number) => err(`The user ID '${id}' was not found`, 401);
 export const QuizIdNotFound = (id: number) => err(`The quiz ID '${id}' was not found`, 403);
 
 // email
@@ -35,3 +35,6 @@ export const QuizUnauthorised = (id: number) => err(`The quiz with ID '${id}' do
 
 // token
 export const InvalidToken = (token: string) => err(`The token '${token}' doesn't exist`, 401);
+
+
+export const QuizNotInTrash = () => err(`One or more of the given quizzes are not currently in the trash`, 400);
