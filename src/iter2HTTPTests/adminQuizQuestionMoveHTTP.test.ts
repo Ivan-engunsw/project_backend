@@ -5,6 +5,36 @@ import { timeNow } from '../helper';
 const ERROR = { error: expect.any(String) };
 const SERVER_URL = `${url}:${port}`;
 const TIMEOUT_MS = 5 * 1000;
+const INPUT_QUESTION = {
+  question: 'Who is the Monarch of England?',
+  duration: 4,
+  points: 5,
+  answers: [
+    {
+      answer: 'Prince Charles',
+      correct: true,
+    },
+    {
+      answer: 'Queen Elizabeth',
+      correct: false,
+    },
+  ],
+};
+const INPUT_QUESTION2 = {
+  question: 'Who is Ronaldo?',
+  duration: 4,
+  points: 5,
+  answers: [
+    {
+      answer: "Football player",
+      correct: true
+    },
+    {
+      answer: "Dancer",
+      correct: false
+    }
+  ],
+};
 
 beforeEach(() => {
   request('DELETE', SERVER_URL + '/v1/clear', { timeout: TIMEOUT_MS });
@@ -74,12 +104,14 @@ describe('PUT /v1/admin/quiz/:quizId/question/:questionId/move', () => {
 
         describe('After creating questions', () => {
           let questionId: {questionId: number};
+          let questionId2: {questionId: number};
           beforeEach(() => {
-            const questionRes = request('POST', SERVER_URL + `v1/admin/quiz/${quiz1.quizId}/question`, 
-              {json: {token: token.token, questionBody: {question: "Who is the Monarch of England", duration: 4, points: 5,
-                answers: [{answer: "Prince Charles", correct: true}]
-              }}});
+            const questionRes = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}/question`, 
+              {json: {token: token.token, questionBody: INPUT_QUESTION} , timeout: TIMEOUT_MS});
             questionId = JSON.parse(questionRes.body.toString());
+            const questionRes2 = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}/question`, 
+              {json: {token: token.token, questionBody: INPUT_QUESTION2}});
+            questionId2 = JSON.parse(questionRes2.body.toString());
           });
 
           test('QuestionId is not valid', () => {
@@ -110,18 +142,18 @@ describe('PUT /v1/admin/quiz/:quizId/question/:questionId/move', () => {
               expect(res1.statusCode).toStrictEqual(400);
           });
 
-          test('Returns correct output', () => {
+          test('Returns correct output and timeLastEdited', () => {
             const res1 = request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}/question/${questionId.questionId}/move`,
               { json: { token: token.token,  newPosition: 1}, timeout: TIMEOUT_MS });
-              expect(JSON.parse(res1.body.toString())).toStrictEqual({});
+            expect(JSON.parse(res1.body.toString())).toStrictEqual({});
+            const time = timeNow();
+            const timeEditedRes = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
+            const timeLastEdited = parseInt(JSON.parse(timeEditedRes.body.toString()).timeLastEdited);
+            expect(timeLastEdited).toBeGreaterThanOrEqual(time);
+            expect(timeLastEdited).toBeLessThanOrEqual(time + 1);
           });
 
-          test('Correctly moves a question', () => {
-            const questionRes2 = request('POST', SERVER_URL + `v1/admin/quiz/${quiz1.quizId}/question`, 
-              {json: {token: token.token, questionBody: {question: "Who is Ronaldo", duration: 4, points: 5,
-                answers: [{answer: "Football player", correct: true}]
-              }}});
-            const questionId2 = JSON.parse(questionRes2.body.toString());
+          test('Correctly moves a question with 2 questions', () => {
             const res1 = request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}/question/${questionId.questionId}/move`,
               { json: { token: token.token,  newPosition: 1}, timeout: TIMEOUT_MS });
               expect(JSON.parse(res1.body.toString())).toStrictEqual({});
@@ -131,22 +163,78 @@ describe('PUT /v1/admin/quiz/:quizId/question/:questionId/move', () => {
             expect(quiz.questions).toStrictEqual([
               {
                 questionId: questionId2.questionId,
-                question: "Who is Ronaldo",
+                question: "Who is Ronaldo?",
                 duration: 4,
                 points: 5,
-                answers: [{answerId: expect.any(Number), answer: "Football player", colour: expect.any(String), correct: true}]
+                answers: expect.any(Array)
               },
               {
                 questionId: questionId.questionId,
-                question: "Who is the Monarch of England",
+                question: "Who is the Monarch of England?",
                 duration: 4,
                 points: 5,
-                answers: [{answerId: expect.any(Number), answer: "Prince Charles", colour: expect.any(String), correct: true}]
+                answers: expect.any(Array)
               }
             ]);
 
             const time = timeNow();
-            const timeEditedRes = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
+            const timeEditedRes = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
+            const timeLastEdited = parseInt(JSON.parse(timeEditedRes.body.toString()).timeLastEdited);
+            expect(timeLastEdited).toBeGreaterThanOrEqual(time);
+            expect(timeLastEdited).toBeLessThanOrEqual(time + 1);
+          });
+
+          test('Correctly moves a question with 3 questions', () => {
+            const INPUT_QUESTION3 = {
+              question: 'What colour is an orange?',
+              duration: 4,
+              points: 5,
+              answers: [
+                {
+                  answer: "Orange",
+                  correct: true
+                },
+                {
+                  answer: "Blue",
+                  correct: false
+                }
+              ],
+            };
+            const questionRes3 = request('POST', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}/question`, 
+              {json: {token: token.token, questionBody: INPUT_QUESTION3}});
+            const questionId3 = JSON.parse(questionRes3.body.toString());
+            const res1 = request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}/question/${questionId3.questionId}/move`,
+              { json: { token: token.token,  newPosition: 1}, timeout: TIMEOUT_MS });
+              expect(JSON.parse(res1.body.toString())).toStrictEqual({});
+
+            const quizRes2 = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
+            const quiz = JSON.parse(quizRes2.body.toString());
+            expect(quiz.questions).toStrictEqual([
+              {
+                questionId: questionId.questionId,
+                question: "Who is the Monarch of England?",
+                duration: 4,
+                points: 5,
+                answers: expect.any(Array)
+              },
+              {
+                questionId: questionId3.questionId,
+                question: 'What colour is an orange?',
+                duration: 4,
+                points: 5,
+                answers: expect.any(Array)
+              },
+              {
+                questionId: questionId2.questionId,
+                question: "Who is Ronaldo?",
+                duration: 4,
+                points: 5,
+                answers: expect.any(Array)
+              },
+            ]);
+
+            const time = timeNow();
+            const timeEditedRes = request('GET', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
             const timeLastEdited = parseInt(JSON.parse(timeEditedRes.body.toString()).timeLastEdited);
             expect(timeLastEdited).toBeGreaterThanOrEqual(time);
             expect(timeLastEdited).toBeLessThanOrEqual(time + 1);

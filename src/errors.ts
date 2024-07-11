@@ -8,6 +8,7 @@ export interface ErrorObject {
 // id
 export const UserIdNotFound = (id: number) => err(`The user ID '${id}' was not found`, 400);
 export const QuizIdNotFound = (id: number) => err(`The quiz ID '${id}' was not found`, 403);
+export const QuestionIdNotFound = (id: number) => err(`The question ID '${id}' was not found`, 400);
 
 // email
 export const EmailInvalid = (email: string) => err(`The email '${email}' is invalid`, 400);
@@ -38,6 +39,7 @@ export const InvalidToken = (token: string) => err(`The token '${token}' doesn't
 
 // question
 export const invalidQuestion = (question: string) => err(`The question: '${question}' is invalid`, 400);
+export const invalidNewPosition = (newPosition: number) => err(`The new position '${newPosition}' is invalid`, 400);
 
 // answer
 export const invalidNumAnswers = (numAnswer: number) => err(`The number of answers: '${numAnswer}' is invalid`, 400);
