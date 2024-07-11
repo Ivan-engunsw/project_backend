@@ -18,8 +18,9 @@ const createUser = {
 //let userToken: { json: { token: string }, timeout: number };
 const quizIds:  number[] = [];
 let token: { token: string };
+let token1: { token: string }
 let quizId: { quizId: number };
-
+let quizId1: { quizId: number };
 beforeEach(() => {
   request('DELETE', SERVER_URL + '/v1/clear', { timeout: TIMEOUT_MS });
   const resUser = request('POST', SERVER_URL + '/v1/admin/auth/register', createUser);
@@ -65,6 +66,48 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
+
+    test('Token is invalid', () => {
+      request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId.quizId}`, 
+        { qs: { token: token.token }, timeout: TIMEOUT_MS });
+
+      const res = request('DELETE', SERVER_URL + '/v1/admin/quiz/trash/empty', 
+        { qs: { token: token.token + 1, quizIds: JSON.stringify(quizIds) }, timeout: TIMEOUT_MS });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(401);
+    });
+
+    test('Valid user but quizId does not exist', () => {
+      request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId.quizId}`, 
+        { qs: { token: token.token }, timeout: TIMEOUT_MS });
+
+      const res = request('DELETE', SERVER_URL + '/v1/admin/quiz/trash/empty', 
+        { qs: { token: token.token, quizIds: JSON.stringify([0]) }, timeout: TIMEOUT_MS });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(403);
+    });
+
+    test('Valid token but quizId does not belong to the current user', () => {
+      const resUser1 = request('POST', SERVER_URL + '/v1/admin/auth/register', createUser);
+      token1 = JSON.parse(resUser1.body.toString());
+
+      const resQuiz1 = request('POST', SERVER_URL + '/v1/admin/quiz', 
+        { json: { token: token1.token, name: 'New Quiz One', 
+          description: 'Quiz getting deleted' }, timeout: TIMEOUT_MS});
+      
+      quizId1 = JSON.parse(resQuiz1.body.toString());
+      quizIds.push(quizId1.quizId);
+
+      request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId1.quizId}`, 
+        { qs: { token: token1.token }, timeout: TIMEOUT_MS });
+      request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId.quizId}`, 
+        { qs: { token: token.token }, timeout: TIMEOUT_MS });
+
+      const res = request('DELETE', SERVER_URL + '/v1/admin/quiz/trash/empty', 
+        { qs: { token: token.token, quizIds: JSON.stringify(quizIds) }, timeout: TIMEOUT_MS });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(403);
+      });
   });
 
   describe('Functionality testing', () => {
