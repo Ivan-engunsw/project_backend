@@ -44,7 +44,7 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionid', () => {
 
     const quiz = JSON.parse(res2.body.toString());
     const quizId = quiz.quizid;
-    const questionId = quiz.questions[0].questionid;
+    const questionId = quiz.question?.questionId;
 
     const res3 = request('PUT', `${SERVER_URL}/v1/admin/quiz/${quizId}/question/${questionId}`, {
       json: {
