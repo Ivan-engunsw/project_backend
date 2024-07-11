@@ -10,7 +10,7 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate } from './auth';
-import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate, adminQuizMoveQuestion } from './quiz';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate, adminQuizQuestionMove } from './quiz';
 import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
 
@@ -230,7 +230,7 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: 
     return setError(user, res);
   }
 
-  const result = adminQuizMoveQuestion(user.authUserId, quizId, questionId, newPosition);
+  const result = adminQuizQuestionMove(user.authUserId, quizId, questionId, newPosition);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }

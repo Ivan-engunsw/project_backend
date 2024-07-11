@@ -287,7 +287,7 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
  * @param newPosition - new position of the question
  * @returns {{}} - empty object
  */
-export function adminQuizMoveQuestion(authUserId: number, quizId: number, questionId: number, newPosition: number): EmptyObject | error.ErrorObject {
+export function adminQuizQuestionMove(authUserId: number, quizId: number, questionId: number, newPosition: number): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // Check the user exists
