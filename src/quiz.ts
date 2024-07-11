@@ -1,6 +1,6 @@
 import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, sumDuration } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, sumDuration, generateQuestionId } from './helper';
 
 export interface QuestionBody {
   question: string;
@@ -262,7 +262,7 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
 
   // Create the question
   const question: Question = {
-    questionId: quiz.questions.length,
+    questionId: generateQuestionId(quizId),
     question: questionBody.question,
     duration: questionBody.duration,
     points: questionBody.points,
