@@ -1,6 +1,6 @@
 import { getData, setData, Data, User, Quiz, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, } from './helper';
 
 /**
  * Provide a list of all quizzes that are owned by the currently logged in user.
@@ -216,4 +216,34 @@ export function adminQuizViewTrash(authUserId: number): { quizzes: { quizId: num
     data.trash.reduce((arr, { quizId, name, userId }) => (userId === authUserId) ? arr.push({ quizId, name }) && arr : arr, []);
 
   return { quizzes: trashList };
+}
+
+export function adminQuizEmptyTrash(authUserId: number, quizIds: number[]): EmptyObject | error.ErrorObject {
+  const data: Data = getData();
+
+  // user doesnt exist
+  const user: User = getUserById(data, authUserId);
+  if(!user) { return error.UserIdNotFound(authUserId); }
+
+  //quiz in trash
+  for (let e of quizIds) {
+    const quiz: Quiz = getQuizById(data, e);
+    if (quiz) {
+      if (quiz.userId !== authUserId) { return error.QuizUnauthorised(e) }
+      return error.QuizNotInTrash()
+    }
+
+    const i: number = data.trash.findIndex(quiz => quiz.quizId === e);
+    if (i !== -1) { 
+      // if quiz doesnt belong to the user
+      if (data.trash[i].userId !== authUserId) { return error.QuizUnauthorised(e) }
+    } else { return error.QuizIdNotFound(e) }
+  }
+
+  for (let e of quizIds) {
+    data.trash.splice( data.trash.findIndex(quiz => quiz.quizId === e), 1)
+  }
+
+  setData(data);
+  return {};
 }
