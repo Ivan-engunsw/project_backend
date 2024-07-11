@@ -195,7 +195,7 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
 
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const token = req.query.token.toString();
-  const quizIds = JSON.parse(req.query.token.toString());
+  const quizIds = JSON.parse(req.query.quizIds.toString());
 
   const user = validToken(token);
   if ('errorMsg' in user) {
@@ -206,7 +206,7 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }
-  
+
   res.json(result);
 });
 
