@@ -1,6 +1,6 @@
 import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestion, generateQuizId, sumDuration } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, sumDuration } from './helper';
 
 export interface QuestionBody {
   question: string;
@@ -243,45 +243,9 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
   // Check the quiz belongs to the user
   if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
 
-  // Check the length of the question
-  if (!(validQuestion(questionBody.question))) { return error.invalidQuestion(questionBody.question); }
-
-  // Check the number of answers
-  if (questionBody.answers.length < 2 || questionBody.answers.length > 6) {
-    return error.invalidNumAnswers(questionBody.answers.length);
-  }
-
-  // Check the duration
-  if (questionBody.duration < 0) { return error.invalidDuration(questionBody.duration); }
-
-  // Check the duration of the quiz with the new question
-  if (sumDuration(quiz) + questionBody.duration > 180) {
-    return error.invalidQuizDuration(sumDuration(quiz) + questionBody.duration);
-  }
-
-  // Check the points of the question
-  if (questionBody.points < 1 || questionBody.points > 10) {
-    return error.invalidPoints(questionBody.points);
-  }
-
-  // Check the length of each answer
-  if (questionBody.answers.find(answer => answer.answer.length < 1 || answer.answer.length > 30)) {
-    return error.invalidAnswerLen();
-  }
-
-  // Check for duplicate answers
-  const answersSoFar: string[] = [];
-  for (const answer of questionBody.answers) {
-    if (answersSoFar.includes(answer.answer)) {
-      return error.duplicateAnswer(answer.answer);
-    } else {
-      answersSoFar.push(answer.answer);
-    }
-  }
-
-  // Check there is at least 1 correct answer
-  if (!questionBody.answers.some(answer => answer.correct === true)) {
-    return error.noCorrectAnswer();
+  const valid = validQuestionBody(questionBody, quiz);
+  if ('errorMsg' in valid) {
+    return valid as error.ErrorObject;
   }
 
   // Create the answers array
