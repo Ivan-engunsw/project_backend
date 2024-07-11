@@ -31,6 +31,9 @@ export const generateQuizId = () => {
 };
 export const sumDuration = (quiz: Quiz) => quiz.questions.reduce((sum, question) => sum + question.duration, 0);
 
+// question
+export const validQuestion = (question: string) => /^.{5,50}$/.test(question);
+
 // token
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
 export function generateToken(authUserId: number): { token: string } {
