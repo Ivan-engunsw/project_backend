@@ -303,7 +303,7 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
 
 /**
  * Given a quizId, restore it from the trash into the user's quizzes
- * 
+ *
  * @param {number} authUserId - User calling the function
  * @param {number} quizId - Quiz to restore
  * @returns {{}} - Empty object

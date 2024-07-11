@@ -11,7 +11,6 @@ import { getUserByEmail, getUserById, takenEmail, validEmail, validUserName, val
  *
  * @returns {{authUserId}} - return object
  */
-
 export function adminAuthRegister(email: string, password: string, nameFirst: string,
   nameLast: string): { authUserId: number } | error.ErrorObject {
   const data: Data = getData();
@@ -44,7 +43,6 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
 *
 * @returns {{authUserId}} - return object
 */
-
 export function adminAuthLogin(email: string, password: string): { authUserId: number } | error.ErrorObject {
   const data: Data = getData();
 
