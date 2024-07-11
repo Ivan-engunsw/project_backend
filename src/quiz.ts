@@ -300,3 +300,35 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
 
   return { questionId: question.questionId };
 }
+
+/**
+ * Given a quizId, restore it from the trash into the user's quizzes
+ * 
+ * @param {number} authUserId - User calling the function
+ * @param {number} quizId - Quiz to restore
+ * @returns {{}} - Empty object
+ */
+export function adminQuizRestore(authUserId: number, quizId: number): EmptyObject | error.ErrorObject {
+  const data: Data = getData();
+
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (quiz) { return error.QuizNotDeleted(quizId); }
+
+  const i: number = data.trash.findIndex(quiz => quiz.quizId === quizId);
+  if (i === -1) return error.QuizIdNotFound(quizId);
+
+  if (data.trash[i].userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  if (data.quizzes.some(quiz => quiz.name === data.trash[i].name)) return error.QuizNameRestoredTaken(data.trash[i].name);
+
+  data.trash[i].timeLastEdited = timeNow();
+  data.quizzes.push(data.trash[i]);
+  data.trash.splice(i, 1);
+
+  setData(data);
+
+  return {};
+}
