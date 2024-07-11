@@ -1,6 +1,6 @@
 import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, generateQuestionId } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, generateQuestionId, getQuestionById, validNewPosition } from './helper';
 
 export interface QuestionBody {
   question: string;
@@ -330,5 +330,43 @@ export function adminQuizRestore(authUserId: number, quizId: number): EmptyObjec
 
   setData(data);
 
+  return {};
+}
+
+/**
+ * Moves a quiz question to new position
+ * @param authUserId - authorised user id
+ * @param quizId - id of quiz
+ * @param questionId - id of question
+ * @param newPosition - new position of the question
+ * @returns {{}} - empty object
+ */
+export function adminQuizQuestionMove(authUserId: number, quizId: number, questionId: number, newPosition: number): EmptyObject | error.ErrorObject {
+  const data: Data = getData();
+
+  // Check the user exists
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  // Check the quiz exists
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (!quiz) return error.QuizIdNotFound(quizId);
+
+  // Check the quiz belongs to the user
+  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  // Check the question exists
+  const question: Question = getQuestionById(quiz, questionId);
+  if (!question) return error.QuestionIdNotFound(quizId);
+
+  const currentPosition = quiz.questions.indexOf(question);
+  if (validNewPosition(quiz, newPosition, currentPosition)) {
+    quiz.questions.splice(currentPosition, 1);
+    quiz.questions.splice(newPosition, 0, question);
+  } else {
+    return error.invalidNewPosition(newPosition);
+  }
+  quiz.timeLastEdited = timeNow();
+  setData(data);
   return {};
 }

@@ -93,6 +93,9 @@ export const generateQuestionId = (quizId: number) => {
   return questionId;
 };
 
+export const getQuestionById = (quiz: Quiz, id: number) => quiz.questions.find(question => id === question.questionId);
+export const validNewPosition = (quiz: Quiz, position: number, currentPosition: number) => (position >= 0 && position < quiz.questions.length && position !== currentPosition);
+
 // token
 // Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
 export function generateToken(authUserId: number): { token: string } {
