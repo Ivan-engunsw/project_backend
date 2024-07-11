@@ -143,24 +143,63 @@ describe('POST /v1/admin/quiz/:quizId/question/:questionId/duplicate', () => {
             expect(quiz.questions).toStrictEqual([
               {
                 questionId: questionId1.questionId,
-                question: "Who is the Monarch of England",
-                duration: 4,
-                points: 5,
-                answers: [{answerId: expect.any(Number), answer: "Prince Charles", colour: expect.any(String), correct: true}]
+                question: INPUT_QUESTION.question,
+                duration: INPUT_QUESTION.duration,
+                points: INPUT_QUESTION.points,
+                answers: [
+                    {
+                    answerId: expect.any(Number),
+                    answer: 'Prince Charles',
+                    colour: expect.any(String),
+                    correct: true,
+                    },
+                    {
+                    answerId: expect.any(Number),
+                    answer: 'Queen Elizabeth',
+                    colour: expect.any(String),
+                    correct: false,
+                    },
+                ],
               },
               {
                 questionId: questionId3.newQuestionId,
-                question: "Who is the Monarch of England",
-                duration: 4,
-                points: 5,
-                answers: [{answerId: expect.any(Number), answer: "Prince Charles", colour: expect.any(String), correct: true}]
+                question: INPUT_QUESTION.question,
+                duration: INPUT_QUESTION.duration,
+                points: INPUT_QUESTION.points,
+                answers: [
+                    {
+                    answerId: expect.any(Number),
+                    answer: 'Prince Charles',
+                    colour: expect.any(String),
+                    correct: true,
+                    },
+                    {
+                    answerId: expect.any(Number),
+                    answer: 'Queen Elizabeth',
+                    colour: expect.any(String),
+                    correct: false,
+                    },
+                ],
               },
               {
                 questionId: questionId2.questionId,
-                question: "Who is Ronaldo?",
-                duration: 4,
-                points: 5,
-                answers: expect.any(Array)
+                question: INPUT_QUESTION2.question,
+                duration: INPUT_QUESTION2.duration,
+                points: INPUT_QUESTION2.points,
+                answers: [
+                    {
+                    answerId: expect.any(Number),
+                    answer: 'Football player',
+                    colour: expect.any(String),
+                    correct: true,
+                    },
+                    {
+                    answerId: expect.any(Number),
+                    answer: 'Dancer',
+                    colour: expect.any(String),
+                    correct: false,
+                    },
+                ],
               }
             ]);
 
