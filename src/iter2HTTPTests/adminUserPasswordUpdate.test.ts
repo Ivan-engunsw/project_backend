@@ -33,6 +33,18 @@ describe('PUT /v1/admin/user/password', () => {
 
     expect(JSON.parse(res2.body.toString())).toStrictEqual({});
     expect(res2.statusCode).toStrictEqual(200);
+    const res3 = request('POST', SERVER_URL + '/v1/admin/auth/login', {
+      json: {
+        email: 'originalemail@gmail.com',
+        password: 'newpass1'
+      },
+      timeout: TIMEOUT_MS
+    });
+
+    const loginResponse = JSON.parse(res3.body.toString());
+
+    expect(res3.statusCode).toStrictEqual(200);
+    expect(loginResponse).toHaveProperty('token');
   });
 
   describe('Error Testing', () => {
