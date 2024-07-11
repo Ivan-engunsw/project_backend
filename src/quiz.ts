@@ -243,3 +243,149 @@ export function adminQuizRestore(authUserId: number, quizId: number): EmptyObjec
 
   return {};
 }
+
+export function adminQuizQuestionCreate(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number } | error.ErrorObject {
+  const data: Data = getData();
+
+  // Check the user exists
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  // Check the quiz exists
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (!quiz) return error.QuizIdNotFound(quizId);
+
+  // Check the quiz belongs to the user
+  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  const valid = validQuestionBody(questionBody, quiz);
+  if ('errorMsg' in valid) {
+    return valid as error.ErrorObject;
+  }
+
+  // Create the answers array
+  const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+  const answers: Answer[] = [];
+  questionBody.answers.forEach((answer) => {
+    answers.push({
+      answerId: answers.length,
+      answer: answer.answer,
+      colour: colours[Math.floor(Math.random() * colours.length)],
+      correct: answer.correct,
+    });
+  });
+
+  // Create the question
+  const question: Question = {
+    questionId: generateQuestionId(quizId),
+    question: questionBody.question,
+    duration: questionBody.duration,
+    points: questionBody.points,
+    answers: answers,
+  };
+
+  // Update the quiz
+  quiz.questions.push(question);
+  quiz.duration += questionBody.duration;
+  quiz.timeLastEdited = timeNow();
+  quiz.numQuestions++;
+  setData(data);
+
+  return { questionId: question.questionId };
+}
+
+/**
+ * Update the details of a particular question within a quiz.
+ *
+ * @param {number} authUserId - Authorised user ID
+ * @param {number} quizId - ID of the quiz containing the question
+ * @param {number} questionId - ID of the question to update
+ * @param {QuestionBody} questionBody - New details for the question
+ * @returns {EmptyObject | error.ErrorObject} - Empty object or error object
+ */
+export function adminQuizQuestionUpdate(authUserId: number, quizId: number, questionId: number, questionBody: QuestionBody): EmptyObject | error.ErrorObject {
+  const data: Data = getData();
+
+  // Check if the user exists
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  // Check if the quiz exists and belongs to the user
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (!quiz) return error.QuizIdNotFound(quizId);
+  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  // Find the question within the quiz
+  const existingQuestion: Question = getQuestionById(quiz, questionId);
+  if (!existingQuestion) return error.QuestionIdNotFound(questionId);
+
+  // Validate the new question body
+  const validation = validQuestionBody(questionBody, quiz);
+  if ('errorMsg' in validation) {
+    return validation as error.ErrorObject;
+  }
+
+  // Update the question details
+  existingQuestion.question = questionBody.question;
+  existingQuestion.duration = questionBody.duration;
+  existingQuestion.points = questionBody.points;
+
+  // Update answers if provided
+  if (questionBody.answers && questionBody.answers.length > 0) {
+    const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+    existingQuestion.answers = questionBody.answers.map((answer, index) => ({
+      answerId: index,
+      answer: answer.answer,
+      colour: colours[Math.floor(Math.random() * colours.length)],
+      correct: answer.correct,
+    }));
+  }
+
+  // Update last edited time for the quiz
+  quiz.timeLastEdited = timeNow();
+
+  // Persist updated data
+  setData(data);
+
+  return {};
+}
+
+/**
+ * Moves a quiz question to new position
+ * @param authUserId - authorised user id
+ * @param quizId - id of quiz
+ * @param questionId - id of question
+ * @param newPosition - new position of the question
+ * @returns {{}} - empty object
+ */
+export function adminQuizQuestionMove(authUserId: number, quizId: number, questionId: number, newPosition: number): EmptyObject | error.ErrorObject {
+  const data: Data = getData();
+
+  // Check the user exists
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  // Check the quiz exists
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (!quiz) return error.QuizIdNotFound(quizId);
+
+  // Check the quiz belongs to the user
+  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  // Check the question exists
+  const question: Question = getQuestionById(quiz, questionId);
+  if (!question) return error.QuestionIdNotFound(quizId);
+
+  const currentPosition = quiz.questions.indexOf(question);
+  if (validNewPosition(quiz, newPosition, currentPosition)) {
+    quiz.questions.splice(currentPosition, 1);
+    quiz.questions.splice(newPosition, 0, question);
+  } else {
+    return error.invalidNewPosition(newPosition);
+  }
+  quiz.timeLastEdited = timeNow();
+  return {};
+}
+
+
+
