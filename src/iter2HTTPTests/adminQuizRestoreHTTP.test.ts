@@ -10,8 +10,6 @@ describe('adminQuizRestore', () => {
     request('DELETE', SERVER_URL + '/v1/clear', { timeout: TIMEOUT_MS });
   });
 
-  // !!! cannot correctly test case below due to quiz trash implementation !!!
-  /*
   test('Quiz ID refers to a quiz that is not currently in the trash', () => {
     const resUser = request('POST', SERVER_URL + '/v1/admin/auth/register', { json: { email: 'auth@one.com', password: 'authone1', nameFirst: 'auth', nameLast: 'one' }, timeout: TIMEOUT_MS });
     const token = JSON.parse(resUser.body.toString());
@@ -23,7 +21,6 @@ describe('adminQuizRestore', () => {
     expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
     expect(res.statusCode).toStrictEqual(400);
   });
-  */
 
   test('Quiz name of the restored quiz is already used by another active quiz', () => {
     const resUser = request('POST', SERVER_URL + '/v1/admin/auth/register', { json: { email: 'auth@one.com', password: 'authone1', nameFirst: 'auth', nameLast: 'one' }, timeout: TIMEOUT_MS });

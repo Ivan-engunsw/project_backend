@@ -225,6 +225,9 @@ export function adminQuizRestore(authUserId: number, quizId: number): EmptyObjec
   const user: User = getUserById(data, authUserId);
   if (!user) { return error.UserIdNotFound(authUserId); }
 
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (quiz) { return error.QuizNotDeleted(quizId); }
+
   const i: number = data.trash.findIndex(quiz => quiz.quizId === quizId);
   if (i === -1) return error.QuizIdNotFound(quizId);
 

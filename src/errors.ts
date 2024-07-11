@@ -8,6 +8,7 @@ export interface ErrorObject {
 // id
 export const UserIdNotFound = (id: number) => err(`The user ID '${id}' was not found`, 400);
 export const QuizIdNotFound = (id: number) => err(`The quiz ID '${id}' was not found`, 403);
+export const QuizNotDeleted = (id: number) => err(`The quiz ID '${id}' has not been deleted`, 400);
 
 // email
 export const EmailInvalid = (email: string) => err(`The email '${email}' is invalid`, 400);
