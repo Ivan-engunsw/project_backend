@@ -62,7 +62,8 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
       request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId1.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
       request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId2.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
       
-      const res = request('DELETE', SERVER_URL + '/v1/admin/quiz/trash/empty', { qs: { token: token.token, quizIds: JSON.stringify(quizIds) }, timeout: TIMEOUT_MS });
+      const res = request('DELETE', SERVER_URL + '/v1/admin/quiz/trash/empty', 
+        { qs: { token: token.token, quizIds: JSON.stringify(quizIds) }, timeout: TIMEOUT_MS });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
@@ -114,8 +115,19 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
     test('Has the correct return type', () => {
       request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId.quizId}`, { qs: { token: token.token }, timeout: TIMEOUT_MS });
 
-      const res = request('DELETE', SERVER_URL + '/v1/admin/quiz/trash/empty', { qs: { token: token.token, quizIds: JSON.stringify(quizIds) }, timeout: TIMEOUT_MS });
+      const res = request('DELETE', SERVER_URL + '/v1/admin/quiz/trash/empty', 
+        { qs: { token: token.token, quizIds: JSON.stringify(quizIds) }, timeout: TIMEOUT_MS });
       expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
+    });
+
+    test('Succesfully deletes one quiz', () => {
+      request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId.quizId}`, 
+        { qs: { token: token.token }, timeout: TIMEOUT_MS });
+      request('DELETE', SERVER_URL + '/v1/admin/quiz/trash/empty', 
+        { qs: { token: token.token, quizIds: JSON.stringify(quizIds) }, timeout: TIMEOUT_MS });
+
+      const res = request('GET', SERVER_URL + 'v1/admin/quiz/trash',  { qs: { token: token.token }, timeout: TIMEOUT_MS });
+      expect(res.body.toString()).toStrictEqual( { quizzes: [] } );
     });
   });
 });
