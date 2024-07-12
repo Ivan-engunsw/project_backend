@@ -494,6 +494,7 @@ export function adminQuizQuestionMove(authUserId: number, quizId: number, questi
     return error.invalidNewPosition(newPosition);
   }
   quiz.timeLastEdited = timeNow();
+  setData(data);
   return {};
 }
 
