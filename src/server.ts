@@ -10,7 +10,7 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
-import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizRestore, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate, adminQuizQuestionMove, adminQuizQuestionDuplicate } from './quiz';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizRestore, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate, adminQuizQuestionMove, adminQuizQuestionDuplicate, adminQuizEmptyTrash } from './quiz';
 import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
 
@@ -229,6 +229,23 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }
+  res.json(result);
+});
+
+app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
+  const token = req.query.token.toString();
+  const quizIds = JSON.parse(req.query.quizIds.toString());
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizEmptyTrash(user.authUserId, quizIds);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+
   res.json(result);
 });
 

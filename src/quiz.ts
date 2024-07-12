@@ -243,6 +243,36 @@ export function adminQuizViewTrash(authUserId: number): { quizzes: { quizId: num
   return { quizzes: trashList };
 }
 
+export function adminQuizEmptyTrash(authUserId: number, quizIds: number[]): EmptyObject | error.ErrorObject {
+  const data: Data = getData();
+
+  // user doesnt exist
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  // quiz in trash
+  for (const e of quizIds) {
+    const quiz: Quiz = getQuizById(data, e);
+    if (quiz) {
+      if (quiz.userId !== authUserId) { return error.QuizUnauthorised(e); }
+      return error.QuizNotInTrash();
+    }
+
+    const i: number = data.trash.findIndex(quiz => quiz.quizId === e);
+    if (i !== -1) {
+      // if quiz doesnt belong to the user
+      if (data.trash[i].userId !== authUserId) { return error.QuizUnauthorised(e); }
+    } else { return error.QuizIdNotFound(e); }
+  }
+
+  for (const e of quizIds) {
+    data.trash.splice(data.trash.findIndex(quiz => quiz.quizId === e), 1);
+  }
+
+  setData(data);
+  return {};
+}
+
 /**
  * Create a question inside the quiz given by the user
  *
