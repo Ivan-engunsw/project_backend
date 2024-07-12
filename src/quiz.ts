@@ -421,6 +421,49 @@ export function adminQuizQuestionUpdate(authUserId: number, quizId: number, ques
   // Update the quiz duration
   quiz.duration = sumDuration(quiz);
 
+  // Update the quiz duration
+  quiz.duration = sumDuration(quiz);
+
+  // Update last edited time for the quiz
+  quiz.timeLastEdited = timeNow();
+
+  // Persist updated data
+  setData(data);
+
+  return {};
+}
+
+/**
+ * Delete a particular question from a quiz.
+ *
+ * @param {number} authUserId - Authorised user ID
+ * @param {number} quizId - ID of the quiz containing the question
+ * @param {number} questionId - ID of the question to delete
+ * @returns {EmptyObject | error.ErrorObject} - Empty object or error object
+ */
+export function adminQuizQuestionDelete(authUserId: number, quizId: number, questionId: number): EmptyObject | error.ErrorObject {
+  const data: Data = getData();
+
+  // Check if the user exists
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  // Check if the quiz exists and belongs to the user
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (!quiz) return error.QuizIdNotFound(quizId);
+  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  // Find the question within the quiz
+  const questionIndex = quiz.questions.findIndex(q => q.questionId === questionId);
+  if (questionIndex === -1) return error.QuestionIdNotFound(questionId);
+
+  // Remove the question from the quiz
+  quiz.questions.splice(questionIndex, 1);
+  quiz.numQuestions--;
+
+  // Update the quiz duration
+  quiz.duration = sumDuration(quiz);
+
   // Update last edited time for the quiz
   quiz.timeLastEdited = timeNow();
 
