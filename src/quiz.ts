@@ -1,6 +1,6 @@
 import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, generateQuestionId, getQuestionById, validNewPosition } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, generateQuestionId, getQuestionById, validNewPosition, sumDuration } from './helper';
 
 export interface QuestionBody {
   question: string;
@@ -418,6 +418,8 @@ export function adminQuizQuestionUpdate(authUserId: number, quizId: number, ques
       correct: answer.correct,
     }));
   }
+  // Update the quiz duration
+  quiz.duration = sumDuration(quiz);
 
   // Update last edited time for the quiz
   quiz.timeLastEdited = timeNow();
