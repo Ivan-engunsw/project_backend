@@ -1,5 +1,11 @@
-import express, { json, Request, Response } from 'express';
-import { echo } from './newecho';
+import express, {
+  json,
+  Request,
+  Response
+} from 'express';
+import {
+  echo
+} from './newecho';
 import morgan from 'morgan';
 import config from './config.json';
 import cors from 'cors';
@@ -8,10 +14,23 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { clear, generateToken, validToken, removeToken } from './other';
-import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
+import {
+  clear,
+  generateToken,
+  validToken,
+  removeToken
+} from './other';
+import {
+  adminAuthRegister,
+  adminAuthLogin,
+  adminUserDetails,
+  adminUserDetailsUpdate,
+  adminUserPasswordUpdate
+} from './auth';
 import * as quiz from './quiz';
-import { ErrorObject } from './errors';
+import {
+  ErrorObject
+} from './errors';
 
 // Set up web app
 const app = express();
@@ -24,7 +43,11 @@ app.use(morgan('dev'));
 // for producing the docs that define the API
 const file = fs.readFileSync(path.join(process.cwd(), 'swagger.yaml'), 'utf8');
 app.get('/', (req: Request, res: Response) => res.redirect('/docs'));
-app.use('/docs', sui.serve, sui.setup(YAML.parse(file), { swaggerOptions: { docExpansion: config.expandDocs ? 'full' : 'list' } }));
+app.use('/docs', sui.serve, sui.setup(YAML.parse(file), {
+  swaggerOptions: {
+    docExpansion: config.expandDocs ? 'full' : 'list'
+  }
+}));
 
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || '127.0.0.1';
@@ -44,7 +67,9 @@ app.get('/echo', (req: Request, res: Response) => {
 
 // Given an ErrorObject/cause of error, set the response for the server
 const setError = (error: ErrorObject, res: Response) =>
-  res.status(error.errorCode).json({ error: error.errorMsg });
+  res.status(error.errorCode).json({
+    error: error.errorMsg
+  });
 
 app.delete('/v1/clear', (req: Request, res: Response) => {
   const result = clear();
@@ -52,7 +77,12 @@ app.delete('/v1/clear', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
-  const { email, password, nameFirst, nameLast } = req.body;
+  const {
+    email,
+    password,
+    nameFirst,
+    nameLast
+  } = req.body;
   const result = adminAuthRegister(email, password, nameFirst, nameLast);
   if ('errorMsg' in result) {
     return setError(result, res);
@@ -63,7 +93,10 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const {
+    email,
+    password
+  } = req.body;
   const result = adminAuthLogin(email, password);
   if ('errorMsg' in result) {
     return setError(result, res);
@@ -88,7 +121,12 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
 });
 
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
-  const { token, email, nameFirst, nameLast } = req.body;
+  const {
+    token,
+    email,
+    nameFirst,
+    nameLast
+  } = req.body;
   const authUser = validToken(token);
   if ('errorMsg' in authUser) {
     return setError(authUser, res);
@@ -101,7 +139,11 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
 });
 
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
-  const { token, oldPassword, newPassword } = req.body;
+  const {
+    token,
+    oldPassword,
+    newPassword
+  } = req.body;
   const authUser = validToken(token);
   if ('errorMsg' in authUser) {
     return setError(authUser, res);
@@ -116,7 +158,9 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  const { token } = req.body;
+  const {
+    token
+  } = req.body;
   const result = removeToken(token);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
@@ -126,7 +170,11 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
-  const { token, name, description } = req.body;
+  const {
+    token,
+    name,
+    description
+  } = req.body;
   const authUser = validToken(token);
   if ('errorMsg' in authUser) {
     return setError(authUser, res);
@@ -172,20 +220,29 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 
 app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
-  const { token } = req.body;
+  const {
+    token
+  } = req.body;
 
   const user = validToken(token);
-  if ('errorMsg' in user) { return setError(user, res); }
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
 
   const result = quiz.adminQuizRestore(user.authUserId, quizId);
-  if ('errorMsg' in result) { return setError(result as ErrorObject, res); }
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
 
   res.json(result);
 });
 
 app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
-  const { token, userEmail } = req.body;
+  const {
+    token,
+    userEmail
+  } = req.body;
 
   const user = validToken(token);
   if ('errorMsg' in user) {
@@ -200,7 +257,10 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
 });
 
 app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
-  const { token, description } = req.body;
+  const {
+    token,
+    description
+  } = req.body;
   const quizId = parseInt(req.params.quizid.toString());
 
   const user = validToken(token);
@@ -216,7 +276,10 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
 });
 
 app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
-  const { token, name } = req.body;
+  const {
+    token,
+    name
+  } = req.body;
   const quizId = parseInt(req.params.quizid.toString());
 
   const user = validToken(token);
@@ -249,7 +312,10 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
-  const { token, questionBody } = req.body;
+  const {
+    token,
+    questionBody
+  } = req.body;
   const quizId = parseInt(req.params.quizid.toString());
 
   const user = validToken(token);
@@ -265,7 +331,10 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
 });
 
 app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
-  const { token, questionBody } = req.body;
+  const {
+    token,
+    questionBody
+  } = req.body;
   const quizId = parseInt(req.params.quizid.toString());
   const questionId = parseInt(req.params.questionid.toString());
 
@@ -285,7 +354,7 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
   const quizId = parseInt(req.params.quizid.toString());
   const questionId = parseInt(req.params.questionid.toString());
 
-  const { token } = req.body;
+  const token = req.query.token.toString();
   const user = validToken(token);
   if ('errorMsg' in user) {
     return setError(user, res);
@@ -302,7 +371,10 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: 
   const quizId = parseInt(req.params.quizid.toString());
   const questionId = parseInt(req.params.questionid.toString());
 
-  const { token, newPosition } = req.body;
+  const {
+    token,
+    newPosition
+  } = req.body;
   const user = validToken(token);
   if ('errorMsg' in user) {
     return setError(user, res);
@@ -319,7 +391,9 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   const quizId = parseInt(req.params.quizid.toString());
   const questionId = parseInt(req.params.questionid.toString());
 
-  const { token } = req.body;
+  const {
+    token
+  } = req.body;
   const user = validToken(token);
   if ('errorMsg' in user) {
     return setError(user, res);
@@ -348,7 +422,9 @@ app.use((req: Request, res: Response) => {
       4. You've forgotten a leading slash (/), e.g. you have posts/list instead
          of /posts/list in your server.ts or test file
   `;
-  res.status(404).json({ error });
+  res.status(404).json({
+    error
+  });
 });
 
 // start server

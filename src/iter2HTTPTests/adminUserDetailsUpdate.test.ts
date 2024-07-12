@@ -6,7 +6,9 @@ const SERVER_URL = `${url}:${port}`;
 const TIMEOUT_MS = 5 * 1000;
 
 beforeEach(() => {
-  request('DELETE', SERVER_URL + '/v1/clear', { timeout: TIMEOUT_MS });
+  request('DELETE', SERVER_URL + '/v1/clear', {
+    timeout: TIMEOUT_MS
+  });
 });
 
 describe('PUT /v1/admin/user/details', () => {
@@ -20,7 +22,9 @@ describe('PUT /v1/admin/user/details', () => {
       },
       timeout: TIMEOUT_MS
     });
-    const { token } = JSON.parse(res1.body.toString());
+    const {
+      token
+    } = JSON.parse(res1.body.toString());
 
     const res2 = request('PUT', SERVER_URL + '/v1/admin/user/details', {
       json: {
@@ -37,7 +41,9 @@ describe('PUT /v1/admin/user/details', () => {
 
     // Retrieve user details after update to verify changes
     const res3 = request('GET', SERVER_URL + '/v1/admin/user/details', {
-      qs: { token },
+      qs: {
+        token
+      },
       timeout: TIMEOUT_MS
     });
 
@@ -76,7 +82,9 @@ describe('PUT /v1/admin/user/details', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       const res2 = request('PUT', SERVER_URL + '/v1/admin/user/details', {
         json: {
@@ -102,7 +110,9 @@ describe('PUT /v1/admin/user/details', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       request('POST', SERVER_URL + '/v1/admin/auth/register', {
         json: {
@@ -128,10 +138,15 @@ describe('PUT /v1/admin/user/details', () => {
       expect(res2.statusCode).toStrictEqual(400);
     });
 
-    test.each([
-      { nameFirst: 'Br@tty' },
-      { nameFirst: 'Br55TTy' },
-    ])('Case when nameFirst contains invalid characters', ({ nameFirst }) => {
+    test.each([{
+      nameFirst: 'Br@tty'
+    },
+    {
+      nameFirst: 'Br55TTy'
+    },
+    ])('Case when nameFirst contains invalid characters', ({
+      nameFirst
+    }) => {
       const res1 = request('POST', SERVER_URL + '/v1/admin/auth/register', {
         json: {
           email: 'originalemail@gmail.com',
@@ -141,7 +156,9 @@ describe('PUT /v1/admin/user/details', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       const res2 = request('PUT', SERVER_URL + '/v1/admin/user/details', {
         json: {
@@ -167,7 +184,9 @@ describe('PUT /v1/admin/user/details', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       const res2 = request('PUT', SERVER_URL + '/v1/admin/user/details', {
         json: {
@@ -193,7 +212,9 @@ describe('PUT /v1/admin/user/details', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       const res2 = request('PUT', SERVER_URL + '/v1/admin/user/details', {
         json: {
@@ -209,10 +230,15 @@ describe('PUT /v1/admin/user/details', () => {
       expect(res2.statusCode).toStrictEqual(400);
     });
 
-    test.each([
-      { nameLast: 'Do@p' },
-      { nameLast: 'D3op' },
-    ])('Case when nameLast contains invalid characters', ({ nameLast }) => {
+    test.each([{
+      nameLast: 'Do@p'
+    },
+    {
+      nameLast: 'D3op'
+    },
+    ])('Case when nameLast contains invalid characters', ({
+      nameLast
+    }) => {
       const res1 = request('POST', SERVER_URL + '/v1/admin/auth/register', {
         json: {
           email: 'originalemail@gmail.com',
@@ -222,7 +248,9 @@ describe('PUT /v1/admin/user/details', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       const res2 = request('PUT', SERVER_URL + '/v1/admin/user/details', {
         json: {
@@ -248,7 +276,9 @@ describe('PUT /v1/admin/user/details', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       const res2 = request('PUT', SERVER_URL + '/v1/admin/user/details', {
         json: {
@@ -274,7 +304,9 @@ describe('PUT /v1/admin/user/details', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       const res2 = request('PUT', SERVER_URL + '/v1/admin/user/details', {
         json: {

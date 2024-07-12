@@ -1,12 +1,38 @@
-import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
+import {
+  getData,
+  setData,
+  Data,
+  User,
+  Quiz,
+  Question,
+  Answer,
+  EmptyObject
+} from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, generateQuestionId, getQuestionById, validNewPosition, sumDuration } from './helper';
+import {
+  getQuizById,
+  getUserByEmail,
+  getUserById,
+  takenQuizName,
+  timeNow,
+  validQuizDesc,
+  validQuizName,
+  validQuestionBody,
+  generateQuizId,
+  generateQuestionId,
+  getQuestionById,
+  validNewPosition,
+  sumDuration
+} from './helper';
 
 export interface QuestionBody {
   question: string;
   duration: number;
   points: number;
-  answers: { answer: string, correct: boolean }[];
+  answers: {
+    answer: string,
+    correct: boolean
+  } [];
 }
 
 /**
@@ -15,16 +41,37 @@ export interface QuestionBody {
  * @param {number} authUserId - authorised user Id
  * @returns {{quizzes}} - object containing quizId and name
  */
-export function adminQuizList(authUserId: number): { quizzes: { quizId: number, name: string }[] } | error.ErrorObject {
+export function adminQuizList(authUserId: number): {
+  quizzes: {
+    quizId: number,
+    name: string
+  } []
+} | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
-  const quizList: { quizId: number, name: string }[] =
-    data.quizzes.reduce((arr, { quizId, name, userId }) => (userId === authUserId) ? arr.push({ quizId, name }) && arr : arr, []);
+  const quizList: {
+      quizId: number,
+      name: string
+    } [] =
+    data.quizzes.reduce((arr, {
+      quizId,
+      name,
+      userId
+    }) => (userId === authUserId)
+      ? arr.push({
+        quizId,
+        name
+      }) && arr
+      : arr, []);
 
-  return { quizzes: quizList };
+  return {
+    quizzes: quizList
+  };
 }
 
 /**
@@ -35,15 +82,25 @@ export function adminQuizList(authUserId: number): { quizzes: { quizId: number, 
  * @param {string} description - description about the quiz
  * @returns {{quizId}} - object containing quizId
  */
-export function adminQuizCreate(authUserId: number, name: string, description: string): { quizId: number } | error.ErrorObject {
+export function adminQuizCreate(authUserId: number, name: string, description: string): {
+  quizId: number
+} | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
-  if (!validQuizName(name)) { return error.QuizNameInvalid(name); }
-  if (takenQuizName(data, authUserId, name)) { return error.QuizNameTaken(name); }
-  if (!validQuizDesc(description)) { return error.QuizDescInvalid(); }
+  if (!validQuizName(name)) {
+    return error.QuizNameInvalid(name);
+  }
+  if (takenQuizName(data, authUserId, name)) {
+    return error.QuizNameTaken(name);
+  }
+  if (!validQuizDesc(description)) {
+    return error.QuizDescInvalid();
+  }
 
   const quizId: number = generateQuizId();
 
@@ -61,7 +118,9 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
 
   setData(data);
 
-  return { quizId: quizId };
+  return {
+    quizId: quizId
+  };
 }
 
 /**
@@ -71,16 +130,21 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
  * @param {number} quizId - quiz Id
  * @returns {{}} - return object
  */
-export function adminQuizRemove(authUserId: number, quizId: number): EmptyObject | error.ErrorObject {
+export function adminQuizRemove
+(authUserId: number, quizId: number): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   const i: number = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
   if (i === -1) return error.QuizIdNotFound(quizId);
 
-  if (data.quizzes[i].userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  if (data.quizzes[i].userId !== authUserId) {
+    return error.QuizUnauthorised(quizId);
+  }
 
   data.quizzes[i].timeLastEdited = timeNow();
   data.trash.push(data.quizzes[i]);
@@ -98,18 +162,26 @@ export function adminQuizRemove(authUserId: number, quizId: number): EmptyObject
  * @param {number} quizId - quiz Id
  * @returns {{quizInfo}} - return object
  */
-export function adminQuizInfo(authUserId: number, quizId: number): Omit<Quiz, 'userId' > | error.ErrorObject {
+export function adminQuizInfo
+(authUserId: number, quizId: number): Omit < Quiz, 'userId' > | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return error.QuizIdNotFound(quizId);
 
-  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  if (quiz.userId !== authUserId) {
+    return error.QuizUnauthorised(quizId);
+  }
 
-  const { userId, ...filtered } = quiz;
+  const {
+    userId,
+    ...filtered
+  } = quiz;
 
   return filtered;
 }
@@ -122,25 +194,34 @@ export function adminQuizInfo(authUserId: number, quizId: number): Omit<Quiz, 'u
  * @param {string} name - new name of quiz
  * @returns {{}} - empty object
  */
-export function adminQuizNameUpdate(authUserId: number, quizId: number, name: string): EmptyObject | error.ErrorObject {
+export function adminQuizNameUpdate
+(authUserId: number, quizId: number, name: string): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // Check the name provided
-  if (!validQuizName(name)) { return error.QuizNameInvalid(name); }
+  if (!validQuizName(name)) {
+    return error.QuizNameInvalid(name);
+  }
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
-  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  if (quiz.userId !== authUserId) {
+    return error.QuizUnauthorised(quizId);
+  }
 
   // Check if the user has another quiz with the same name
-  if (takenQuizName(data, authUserId, name)) { return error.QuizNameTaken(name); }
+  if (takenQuizName(data, authUserId, name)) {
+    return error.QuizNameTaken(name);
+  }
 
   // Update the name of the quiz and return
   quiz.name = name;
@@ -159,22 +240,29 @@ export function adminQuizNameUpdate(authUserId: number, quizId: number, name: st
  * @param {string} description - new description of quiz
  * @returns {{}} - empty object
  */
-export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, description: string): EmptyObject | error.ErrorObject {
+export function adminQuizDescriptionUpdate
+(authUserId: number, quizId: number, description: string): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // Check the description provided
-  if (!validQuizDesc(description)) { return error.QuizDescInvalid(); }
+  if (!validQuizDesc(description)) {
+    return error.QuizDescInvalid();
+  }
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
-  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  if (quiz.userId !== authUserId) {
+    return error.QuizUnauthorised(quizId);
+  }
 
   // Update the description of the quiz and return
   quiz.description = description;
@@ -193,29 +281,40 @@ export function adminQuizDescriptionUpdate (authUserId: number, quizId: number, 
  * @param {email} email - the email of the user to transfer the quiz to
  * @returns {{}} - empty object
  */
-export function adminQuizTransfer (authUserId: number, quizId: number, email: string): EmptyObject | error.ErrorObject {
+export function adminQuizTransfer
+(authUserId: number, quizId: number, email: string): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   // Check the email is not the current user's email
-  if (user.email === email) { return error.EmailInvalid(email); }
+  if (user.email === email) {
+    return error.EmailInvalid(email);
+  }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
-  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  if (quiz.userId !== authUserId) {
+    return error.QuizUnauthorised(quizId);
+  }
 
   // Check the target exists
   const targetUser: User = getUserByEmail(data, email);
-  if (!targetUser) { return error.EmailNotFound(email); }
+  if (!targetUser) {
+    return error.EmailNotFound(email);
+  }
 
   // Check the target does not have an overlapping name
-  if (takenQuizName(data, targetUser.userId, quiz.name)) { return error.QuizNameTaken(quiz.name); }
+  if (takenQuizName(data, targetUser.userId, quiz.name)) {
+    return error.QuizNameTaken(quiz.name);
+  }
 
   // Transfer ownership of the quiz
   quiz.userId = targetUser.userId;
@@ -231,38 +330,68 @@ export function adminQuizTransfer (authUserId: number, quizId: number, email: st
  * @param {number} authUserId - User calling this function
  * @returns {{quizList}} - A list of quizzes in the trash
  */
-export function adminQuizTrashView(authUserId: number): { quizzes: { quizId: number, name: string }[] } | error.ErrorObject {
+export function adminQuizTrashView(authUserId: number): {
+  quizzes: {
+    quizId: number,
+    name: string
+  } []
+} | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
-  const trashList: { quizId: number, name: string }[] =
-    data.trash.reduce((arr, { quizId, name, userId }) => (userId === authUserId) ? arr.push({ quizId, name }) && arr : arr, []);
+  const trashList: {
+      quizId: number,
+      name: string
+    } [] =
+    data.trash.reduce((arr, {
+      quizId,
+      name,
+      userId
+    }) => (userId === authUserId)
+      ? arr.push({
+        quizId,
+        name
+      }) && arr
+      : arr, []);
 
-  return { quizzes: trashList };
+  return {
+    quizzes: trashList
+  };
 }
 
-export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): EmptyObject | error.ErrorObject {
+export function adminQuizTrashEmpty
+(authUserId: number, quizIds: number[]): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // user doesnt exist
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   // quiz in trash
   for (const e of quizIds) {
     const quiz: Quiz = getQuizById(data, e);
     if (quiz) {
-      if (quiz.userId !== authUserId) { return error.QuizUnauthorised(e); }
+      if (quiz.userId !== authUserId) {
+        return error.QuizUnauthorised(e);
+      }
       return error.QuizNotInTrash();
     }
 
     const i: number = data.trash.findIndex(quiz => quiz.quizId === e);
     if (i !== -1) {
       // if quiz doesnt belong to the user
-      if (data.trash[i].userId !== authUserId) { return error.QuizUnauthorised(e); }
-    } else { return error.QuizIdNotFound(e); }
+      if (data.trash[i].userId !== authUserId) {
+        return error.QuizUnauthorised(e);
+      }
+    } else {
+      return error.QuizIdNotFound(e);
+    }
   }
 
   for (const e of quizIds) {
@@ -280,21 +409,30 @@ export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): Empt
  * @param {number} quizId - Quiz to restore
  * @returns {{}} - Empty object
  */
-export function adminQuizRestore(authUserId: number, quizId: number): EmptyObject | error.ErrorObject {
+export function adminQuizRestore
+(authUserId: number, quizId: number): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   const quiz: Quiz = getQuizById(data, quizId);
-  if (quiz) { return error.QuizNotDeleted(quizId); }
+  if (quiz) {
+    return error.QuizNotDeleted(quizId);
+  }
 
   const i: number = data.trash.findIndex(quiz => quiz.quizId === quizId);
   if (i === -1) return error.QuizIdNotFound(quizId);
 
-  if (data.trash[i].userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  if (data.trash[i].userId !== authUserId) {
+    return error.QuizUnauthorised(quizId);
+  }
 
-  if (data.quizzes.some(quiz => quiz.name === data.trash[i].name)) return error.QuizNameRestoredTaken(data.trash[i].name);
+  if (data.quizzes.some(quiz => quiz.name === data.trash[i].name)) {
+    return error.QuizNameRestoredTaken(data.trash[i].name);
+  }
 
   data.trash[i].timeLastEdited = timeNow();
   data.quizzes.push(data.trash[i]);
@@ -313,23 +451,35 @@ export function adminQuizRestore(authUserId: number, quizId: number): EmptyObjec
  * @param {QuestionBody} questionBody - The body containing information of the question to create
  * @returns {{questionId}} - Object containing the questionId
  */
-export function adminQuizQuestionCreate(authUserId: number, quizId: number, questionBody: QuestionBody): { questionId: number } | error.ErrorObject {
+export function adminQuizQuestionCreate
+(authUserId: number, quizId: number, questionBody: QuestionBody): {
+  questionId: number
+} | error.ErrorObject {
   const data: Data = getData();
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
-  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  if (quiz.userId !== authUserId) {
+    return error.QuizUnauthorised(quizId);
+  }
 
   const valid = validQuestionBody(questionBody, quiz);
   if ('errorMsg' in valid) {
     return valid as error.ErrorObject;
+  }
+
+  // Check the duration of the quiz with the new question
+  if (sumDuration(quiz) + questionBody.duration > 180) {
+    return error.invalidQuizDuration(sumDuration(quiz) + questionBody.duration);
   }
 
   // Create the answers array
@@ -360,7 +510,9 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
   quiz.numQuestions++;
   setData(data);
 
-  return { questionId: question.questionId };
+  return {
+    questionId: question.questionId
+  };
 }
 
 /**
@@ -372,17 +524,23 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
  * @param {QuestionBody} questionBody - New details for the question
  * @returns {EmptyObject | error.ErrorObject} - Empty object or error object
  */
-export function adminQuizQuestionUpdate(authUserId: number, quizId: number, questionId: number, questionBody: QuestionBody): EmptyObject | error.ErrorObject {
+export function adminQuizQuestionUpdate
+(authUserId: number, quizId: number, questionId: number, questionBody: QuestionBody):
+EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // Check if the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   // Check if the quiz exists and belongs to the user
   const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return error.QuizIdNotFound(quizId);
-  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  if (quiz.userId !== authUserId) {
+    return error.QuizUnauthorised(quizId);
+  }
 
   // Find the question within the quiz
   const existingQuestion: Question = getQuestionById(quiz, questionId);
@@ -394,30 +552,29 @@ export function adminQuizQuestionUpdate(authUserId: number, quizId: number, ques
     return valid as error.ErrorObject;
   }
 
+  // Check the duration of the quiz with the new question
+  if (sumDuration(quiz) - existingQuestion.duration + questionBody.duration > 180) {
+    return error.invalidQuizDuration(sumDuration(quiz) - existingQuestion.duration +
+    questionBody.duration);
+  }
+
   // Update the question details
   existingQuestion.question = questionBody.question;
+  existingQuestion.duration = questionBody.duration;
+  existingQuestion.points = questionBody.points;
 
-  // Check if duration is provided and update if different
-  if (questionBody.duration !== undefined &&
-      questionBody.duration !== existingQuestion.duration) {
-    existingQuestion.duration = questionBody.duration;
-  }
-  // Check if points is provided and update if different
-  if (questionBody.points !== undefined &&
-      questionBody.points !== existingQuestion.points) {
-    existingQuestion.points = questionBody.points;
-  }
-
-  // Update answers if provided
-  if (questionBody.answers && questionBody.answers.length > 0) {
-    const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
-    existingQuestion.answers = questionBody.answers.map((answer, index) => ({
-      answerId: index,
+  // Create the answers array
+  const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+  const answers: Answer[] = [];
+  questionBody.answers.forEach((answer) => {
+    answers.push({
+      answerId: answers.length,
       answer: answer.answer,
       colour: colours[Math.floor(Math.random() * colours.length)],
       correct: answer.correct,
-    }));
-  }
+    });
+  });
+  existingQuestion.answers = answers;
 
   // Update the quiz
   quiz.duration = sumDuration(quiz);
@@ -435,17 +592,22 @@ export function adminQuizQuestionUpdate(authUserId: number, quizId: number, ques
  * @param {number} questionId - ID of the question to delete
  * @returns {EmptyObject | error.ErrorObject} - Empty object or error object
  */
-export function adminQuizQuestionDelete(authUserId: number, quizId: number, questionId: number): EmptyObject | error.ErrorObject {
+export function adminQuizQuestionDelete
+(authUserId: number, quizId: number, questionId: number): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // Check if the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   // Check if the quiz exists and belongs to the user
   const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return error.QuizIdNotFound(quizId);
-  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  if (quiz.userId !== authUserId) {
+    return error.QuizUnauthorised(quizId);
+  }
 
   // Find the question within the quiz
   const question: Question = getQuestionById(quiz, questionId);
@@ -472,19 +634,25 @@ export function adminQuizQuestionDelete(authUserId: number, quizId: number, ques
  * @param newPosition - new position of the question
  * @returns {{}} - empty object
  */
-export function adminQuizQuestionMove(authUserId: number, quizId: number, questionId: number, newPosition: number): EmptyObject | error.ErrorObject {
+export function adminQuizQuestionMove
+(authUserId: number, quizId: number, questionId: number, newPosition: number):
+EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
-  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  if (quiz.userId !== authUserId) {
+    return error.QuizUnauthorised(quizId);
+  }
 
   // Check the question exists
   const question: Question = getQuestionById(quiz, questionId);
@@ -509,19 +677,26 @@ export function adminQuizQuestionMove(authUserId: number, quizId: number, questi
  * @param questionId - id of question
  * @returns {{newQuestionId}} - object containing new questionId
  */
-export function adminQuizQuestionDuplicate(authUserId: number, quizId: number, questionId: number): {newQuestionId: number} | error.ErrorObject {
+export function adminQuizQuestionDuplicate
+(authUserId: number, quizId: number, questionId: number): {
+  newQuestionId: number
+} | error.ErrorObject {
   const data: Data = getData();
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) { return error.UserIdNotFound(authUserId); }
+  if (!user) {
+    return error.UserIdNotFound(authUserId);
+  }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
-  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  if (quiz.userId !== authUserId) {
+    return error.QuizUnauthorised(quizId);
+  }
 
   // Check the question exists
   const question: Question = getQuestionById(quiz, questionId);
@@ -536,6 +711,11 @@ export function adminQuizQuestionDuplicate(authUserId: number, quizId: number, q
     answers: question.answers,
   };
 
+  // Check the duration of the quiz with the new question
+  if (sumDuration(quiz) + duplicateQuestion.duration > 180) {
+    return error.invalidQuizDuration(sumDuration(quiz) + duplicateQuestion.duration);
+  }
+
   // Update the quiz
   quiz.duration += duplicateQuestion.duration;
   quiz.timeLastEdited = timeNow();
@@ -544,5 +724,7 @@ export function adminQuizQuestionDuplicate(authUserId: number, quizId: number, q
   quiz.questions.splice(currentPosition + 1, 0, duplicateQuestion);
   setData(data);
 
-  return { newQuestionId: duplicateQuestion.questionId };
+  return {
+    newQuestionId: duplicateQuestion.questionId
+  };
 }

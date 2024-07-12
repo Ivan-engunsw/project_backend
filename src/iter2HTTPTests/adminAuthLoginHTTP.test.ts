@@ -41,34 +41,34 @@ const loginUser2 = {
 };
 
 beforeEach(() => {
-  request('DELETE', SERVER_URL + '/v1/clear', { timeout: TIMEOUT_MS });
+  request('DELETE', SERVER_URL + '/v1/clear', {
+    timeout: TIMEOUT_MS
+  });
   request('POST', SERVER_URL + '/v1/admin/auth/register', createUser);
 });
 
 describe('POST /v1/admin/auth/login', () => {
   describe('Error Testing', () => {
     test('Has incorrect email', () => {
-      const res = request('POST', SERVER_URL + '/v1/admin/auth/login',
-        {
-          json: {
-            email: 'invalidEmail',
-            password: 'password1!',
-          },
-          timeout: TIMEOUT_MS
-        });
+      const res = request('POST', SERVER_URL + '/v1/admin/auth/login', {
+        json: {
+          email: 'invalidEmail',
+          password: 'password1!',
+        },
+        timeout: TIMEOUT_MS
+      });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
 
     test('Password does not match email', () => {
-      const res = request('POST', SERVER_URL + '/v1/admin/auth/login',
-        {
-          json: {
-            email: 'validemail1@gmail.com',
-            password: 'PPP1',
-          },
-          timeout: TIMEOUT_MS
-        });
+      const res = request('POST', SERVER_URL + '/v1/admin/auth/login', {
+        json: {
+          email: 'validemail1@gmail.com',
+          password: 'PPP1',
+        },
+        timeout: TIMEOUT_MS
+      });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
@@ -77,7 +77,9 @@ describe('POST /v1/admin/auth/login', () => {
   describe('Functionality testing', () => {
     test('Has the correct return type', () => {
       const res = request('POST', SERVER_URL + '/v1/admin/auth/login', loginUser);
-      expect(JSON.parse(res.body.toString())).toStrictEqual({ token: expect.any(String) });
+      expect(JSON.parse(res.body.toString())).toStrictEqual({
+        token: expect.any(String)
+      });
     });
 
     test('Check different tokens are assigned to users', () => {
@@ -89,9 +91,15 @@ describe('POST /v1/admin/auth/login', () => {
 
     test('Successfully logs in a user', () => {
       const res = request('POST', SERVER_URL + '/v1/admin/auth/login', loginUser);
-      const token: { token: string } = JSON.parse(res.body.toString());
-      const desc = request('GET', SERVER_URL + '/v1/admin/user/details',
-        { qs: { token: token.token }, timeout: TIMEOUT_MS });
+      const token: {
+        token: string
+      } = JSON.parse(res.body.toString());
+      const desc = request('GET', SERVER_URL + '/v1/admin/user/details', {
+        qs: {
+          token: token.token
+        },
+        timeout: TIMEOUT_MS
+      });
       expect(JSON.parse(desc.body.toString())).toStrictEqual({
         user: {
           userId: expect.any(Number),
@@ -105,9 +113,15 @@ describe('POST /v1/admin/auth/login', () => {
 
     test('Successfully update numSuccessfullLogins', () => {
       const res = request('POST', SERVER_URL + '/v1/admin/auth/login', loginUser);
-      const token: { token: string } = JSON.parse(res.body.toString());
-      const desc = request('GET', SERVER_URL + '/v1/admin/user/details',
-        { qs: { token: token.token }, timeout: TIMEOUT_MS });
+      const token: {
+        token: string
+      } = JSON.parse(res.body.toString());
+      const desc = request('GET', SERVER_URL + '/v1/admin/user/details', {
+        qs: {
+          token: token.token
+        },
+        timeout: TIMEOUT_MS
+      });
       expect(JSON.parse(desc.body.toString())).toStrictEqual({
         user: {
           userId: expect.any(Number),
@@ -128,9 +142,15 @@ describe('POST /v1/admin/auth/login', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const token: { token: string } = JSON.parse(res.body.toString());
-      const desc = request('GET', SERVER_URL + '/v1/admin/user/details',
-        { qs: { token: token.token }, timeout: TIMEOUT_MS });
+      const token: {
+        token: string
+      } = JSON.parse(res.body.toString());
+      const desc = request('GET', SERVER_URL + '/v1/admin/user/details', {
+        qs: {
+          token: token.token
+        },
+        timeout: TIMEOUT_MS
+      });
 
       expect(JSON.parse(desc.body.toString())).toStrictEqual({
         user: {
