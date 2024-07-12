@@ -10,7 +10,7 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
-import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizRestore, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate, adminQuizQuestionUpdate, adminQuizQuestionDelete, adminQuizQuestionMove, adminQuizQuestionDuplicate, adminQuizEmptyTrash } from './quiz';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizTrashView, adminQuizDescriptionUpdate, adminQuizRestore, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate, adminQuizQuestionUpdate, adminQuizQuestionDelete, adminQuizQuestionMove, adminQuizQuestionDuplicate, adminQuizTrashEmpty } from './quiz';
 import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
 
@@ -143,7 +143,7 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   const authUser = validToken(req.query.token as string);
   if ('errorMsg' in authUser) return setError(authUser, res);
 
-  res.json(adminQuizViewTrash(authUser.authUserId));
+  res.json(adminQuizTrashView(authUser.authUserId));
 });
 
 app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
@@ -241,7 +241,7 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
     return setError(user, res);
   }
 
-  const result = adminQuizEmptyTrash(user.authUserId, quizIds);
+  const result = adminQuizTrashEmpty(user.authUserId, quizIds);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }

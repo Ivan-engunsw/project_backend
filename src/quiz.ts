@@ -231,7 +231,7 @@ export function adminQuizTransfer (authUserId: number, quizId: number, email: st
  * @param {number} authUserId - User calling this function
  * @returns {{quizList}} - A list of quizzes in the trash
  */
-export function adminQuizViewTrash(authUserId: number): { quizzes: { quizId: number, name: string }[] } | error.ErrorObject {
+export function adminQuizTrashView(authUserId: number): { quizzes: { quizId: number, name: string }[] } | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
@@ -243,7 +243,7 @@ export function adminQuizViewTrash(authUserId: number): { quizzes: { quizId: num
   return { quizzes: trashList };
 }
 
-export function adminQuizEmptyTrash(authUserId: number, quizIds: number[]): EmptyObject | error.ErrorObject {
+export function adminQuizTrashEmpty(authUserId: number, quizIds: number[]): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // user doesnt exist
