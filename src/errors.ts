@@ -6,8 +6,10 @@ export interface ErrorObject {
 }
 
 // id
-export const UserIdNotFound = (id: number) => err(`The user ID '${id}' was not found`, 400);
+export const UserIdNotFound = (id: number) => err(`The user ID '${id}' was not found`, 401);
 export const QuizIdNotFound = (id: number) => err(`The quiz ID '${id}' was not found`, 403);
+export const QuizNotDeleted = (id: number) => err(`The quiz ID '${id}' has not been deleted`, 400);
+export const QuestionIdNotFound = (id: number) => err(`The question ID '${id}' was not found`, 400);
 
 // email
 export const EmailInvalid = (email: string) => err(`The email '${email}' is invalid`, 400);
@@ -19,6 +21,7 @@ export const FirstNameInvalid = (Fname: string) => err(`The first name '${Fname}
 export const LastNameInvalid = (Lname: string) => err(`The last name '${Lname}' is invalid`, 400);
 export const QuizNameInvalid = (Qname: string) => err(`The quiz name '${Qname}' is invalid`, 400);
 export const QuizNameTaken = (Qname: string) => err(`The quiz name '${Qname}' is already in use`, 400);
+export const QuizNameRestoredTaken = (Qname: string) => err(`The quiz name '${Qname}' of the quiz being restored is already in use`, 400);
 
 // password
 export const UserPassCurrInvalid = () => err('The password is invalid', 400);
@@ -36,8 +39,12 @@ export const QuizUnauthorised = (id: number) => err(`The quiz with ID '${id}' do
 // token
 export const InvalidToken = (token: string) => err(`The token '${token}' doesn't exist`, 401);
 
+// quiz
+export const QuizNotInTrash = () => err('One or more of the given quizzes are not currently in the trash', 400);
+
 // question
 export const invalidQuestion = (question: string) => err(`The question: '${question}' is invalid`, 400);
+export const invalidNewPosition = (newPosition: number) => err(`The new position '${newPosition}' is invalid`, 400);
 
 // answer
 export const invalidNumAnswers = (numAnswer: number) => err(`The number of answers: '${numAnswer}' is invalid`, 400);

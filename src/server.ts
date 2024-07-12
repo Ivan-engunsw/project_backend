@@ -10,7 +10,7 @@ import path from 'path';
 import process from 'process';
 import { clear } from './other';
 import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
-import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate } from './quiz';
+import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizViewTrash, adminQuizDescriptionUpdate, adminQuizRestore, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate, adminQuizQuestionUpdate, adminQuizQuestionDelete, adminQuizQuestionMove, adminQuizQuestionDuplicate, adminQuizEmptyTrash } from './quiz';
 import { generateToken, validToken, removeToken } from './helper';
 import { ErrorObject } from './errors';
 
@@ -171,6 +171,19 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   return ('errorMsg' in result) ? setError(result, res) : res.json(result);
 });
 
+app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const { token } = req.body;
+
+  const user = validToken(token);
+  if ('errorMsg' in user) { return setError(user, res); }
+
+  const result = adminQuizRestore(user.authUserId, quizId);
+  if ('errorMsg' in result) { return setError(result as ErrorObject, res); }
+
+  res.json(result);
+});
+
 app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const { token, userEmail } = req.body;
@@ -219,6 +232,23 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   res.json(result);
 });
 
+app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
+  const token = req.query.token.toString();
+  const quizIds = JSON.parse(req.query.quizIds.toString());
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizEmptyTrash(user.authUserId, quizIds);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+
+  res.json(result);
+});
+
 app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const { token, questionBody } = req.body;
   const quizId = parseInt(req.params.quizid.toString());
@@ -231,6 +261,74 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const result = adminQuizQuestionCreate(user.authUserId, quizId, questionBody);
   if ('errorMsg' in result) {
     return setError(result, res);
+  }
+  res.json(result);
+});
+
+app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
+  const { token, questionBody } = req.body;
+  const quizId = parseInt(req.params.quizid.toString());
+  const questionId = parseInt(req.params.questionid.toString());
+
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizQuestionUpdate(user.authUserId, quizId, questionId, questionBody);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
+});
+
+app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const questionId = parseInt(req.params.questionid.toString());
+
+  const { token } = req.body;
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizQuestionDelete(user.authUserId, quizId, questionId);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
+});
+
+app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const questionId = parseInt(req.params.questionid.toString());
+
+  const { token, newPosition } = req.body;
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizQuestionMove(user.authUserId, quizId, questionId, newPosition);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
+  }
+  res.json(result);
+});
+
+app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const questionId = parseInt(req.params.questionid.toString());
+
+  const { token } = req.body;
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminQuizQuestionDuplicate(user.authUserId, quizId, questionId);
+  if ('errorMsg' in result) {
+    return setError(result as ErrorObject, res);
   }
   res.json(result);
 });

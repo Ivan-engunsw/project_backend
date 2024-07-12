@@ -57,20 +57,6 @@ let data: Data = {
   trash: []
 };
 
-/*
-Example usage
-    let store = getData()
-    console.log(store) # Prints { 'names': ['Hayden', 'Tam', 'Rani', 'Giuliana', 'Rando'] }
-
-    names = store.names
-
-    names.pop()
-    names.push('Jake')
-
-    console.log(store) # Prints { 'names': ['Hayden', 'Tam', 'Rani', 'Giuliana', 'Jake'] }
-    setData(store)
-*/
-
 // Use get() to access the data
 export function getData(): Data {
   if (fs.existsSync('src/dataStoreSave.json')) {
