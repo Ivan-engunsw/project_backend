@@ -1,6 +1,6 @@
 import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
-import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, generateQuestionId, getQuestionById, validNewPosition } from './helper';
+import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, generateQuestionId, getQuestionById, validNewPosition, sumDuration } from './helper';
 
 export interface QuestionBody {
   question: string;
@@ -274,6 +274,38 @@ export function adminQuizEmptyTrash(authUserId: number, quizIds: number[]): Empt
 }
 
 /**
+ * Given a quizId, restore it from the trash into the user's quizzes
+ *
+ * @param {number} authUserId - User calling the function
+ * @param {number} quizId - Quiz to restore
+ * @returns {{}} - Empty object
+ */
+export function adminQuizRestore(authUserId: number, quizId: number): EmptyObject | error.ErrorObject {
+  const data: Data = getData();
+
+  const user: User = getUserById(data, authUserId);
+  if (!user) { return error.UserIdNotFound(authUserId); }
+
+  const quiz: Quiz = getQuizById(data, quizId);
+  if (quiz) { return error.QuizNotDeleted(quizId); }
+
+  const i: number = data.trash.findIndex(quiz => quiz.quizId === quizId);
+  if (i === -1) return error.QuizIdNotFound(quizId);
+
+  if (data.trash[i].userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+
+  if (data.quizzes.some(quiz => quiz.name === data.trash[i].name)) return error.QuizNameRestoredTaken(data.trash[i].name);
+
+  data.trash[i].timeLastEdited = timeNow();
+  data.quizzes.push(data.trash[i]);
+  data.trash.splice(i, 1);
+
+  setData(data);
+
+  return {};
+}
+
+/**
  * Create a question inside the quiz given by the user
  *
  * @param {number} authUserId - User creating the question
@@ -332,32 +364,67 @@ export function adminQuizQuestionCreate(authUserId: number, quizId: number, ques
 }
 
 /**
- * Given a quizId, restore it from the trash into the user's quizzes
+ * Update the details of a particular question within a quiz.
  *
- * @param {number} authUserId - User calling the function
- * @param {number} quizId - Quiz to restore
- * @returns {{}} - Empty object
+ * @param {number} authUserId - Authorised user ID
+ * @param {number} quizId - ID of the quiz containing the question
+ * @param {number} questionId - ID of the question to update
+ * @param {QuestionBody} questionBody - New details for the question
+ * @returns {EmptyObject | error.ErrorObject} - Empty object or error object
  */
-export function adminQuizRestore(authUserId: number, quizId: number): EmptyObject | error.ErrorObject {
+export function adminQuizQuestionUpdate(authUserId: number, quizId: number, questionId: number, questionBody: QuestionBody): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
+  // Check if the user exists
   const user: User = getUserById(data, authUserId);
   if (!user) { return error.UserIdNotFound(authUserId); }
 
+  // Check if the quiz exists and belongs to the user
   const quiz: Quiz = getQuizById(data, quizId);
-  if (quiz) { return error.QuizNotDeleted(quizId); }
+  if (!quiz) return error.QuizIdNotFound(quizId);
+  if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
 
-  const i: number = data.trash.findIndex(quiz => quiz.quizId === quizId);
-  if (i === -1) return error.QuizIdNotFound(quizId);
+  // Find the question within the quiz
+  const existingQuestion: Question = getQuestionById(quiz, questionId);
+  if (!existingQuestion) return error.QuestionIdNotFound(questionId);
 
-  if (data.trash[i].userId !== authUserId) { return error.QuizUnauthorised(quizId); }
+  // Validate the new question body
+  const valid = validQuestionBody(questionBody, quiz);
+  if ('errorMsg' in valid) {
+    return valid as error.ErrorObject;
+  }
 
-  if (data.quizzes.some(quiz => quiz.name === data.trash[i].name)) return error.QuizNameRestoredTaken(data.trash[i].name);
+  // Update the question details
+  existingQuestion.question = questionBody.question;
 
-  data.trash[i].timeLastEdited = timeNow();
-  data.quizzes.push(data.trash[i]);
-  data.trash.splice(i, 1);
+  // Check if duration is provided and update if different
+  if (questionBody.duration !== undefined &&
+      questionBody.duration !== existingQuestion.duration) {
+    existingQuestion.duration = questionBody.duration;
+  }
+  // Check if points is provided and update if different
+  if (questionBody.points !== undefined &&
+      questionBody.points !== existingQuestion.points) {
+    existingQuestion.points = questionBody.points;
+  }
 
+  // Update answers if provided
+  if (questionBody.answers && questionBody.answers.length > 0) {
+    const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
+    existingQuestion.answers = questionBody.answers.map((answer, index) => ({
+      answerId: index,
+      answer: answer.answer,
+      colour: colours[Math.floor(Math.random() * colours.length)],
+      correct: answer.correct,
+    }));
+  }
+  // Update the quiz duration
+  quiz.duration = sumDuration(quiz);
+
+  // Update last edited time for the quiz
+  quiz.timeLastEdited = timeNow();
+
+  // Persist updated data
   setData(data);
 
   return {};
