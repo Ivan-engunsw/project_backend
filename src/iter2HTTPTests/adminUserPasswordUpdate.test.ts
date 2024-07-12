@@ -6,7 +6,9 @@ const SERVER_URL = `${url}:${port}`;
 const TIMEOUT_MS = 5 * 1000;
 
 beforeEach(() => {
-  request('DELETE', SERVER_URL + '/v1/clear', { timeout: TIMEOUT_MS });
+  request('DELETE', SERVER_URL + '/v1/clear', {
+    timeout: TIMEOUT_MS
+  });
 });
 
 describe('PUT /v1/admin/user/password', () => {
@@ -20,7 +22,9 @@ describe('PUT /v1/admin/user/password', () => {
       },
       timeout: TIMEOUT_MS
     });
-    const { token } = JSON.parse(res1.body.toString());
+    const {
+      token
+    } = JSON.parse(res1.body.toString());
 
     const res2 = request('PUT', SERVER_URL + '/v1/admin/user/password', {
       json: {
@@ -71,7 +75,9 @@ describe('PUT /v1/admin/user/password', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       const res2 = request('PUT', SERVER_URL + '/v1/admin/user/password', {
         json: {
@@ -96,7 +102,9 @@ describe('PUT /v1/admin/user/password', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       const res2 = request('PUT', SERVER_URL + '/v1/admin/user/password', {
         json: {
@@ -121,7 +129,9 @@ describe('PUT /v1/admin/user/password', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       request('PUT', SERVER_URL + '/v1/admin/user/password', {
         json: {
@@ -164,7 +174,9 @@ describe('PUT /v1/admin/user/password', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       const res2 = request('PUT', SERVER_URL + '/v1/admin/user/password', {
         json: {
@@ -189,7 +201,9 @@ describe('PUT /v1/admin/user/password', () => {
         },
         timeout: TIMEOUT_MS
       });
-      const { token } = JSON.parse(res1.body.toString());
+      const {
+        token
+      } = JSON.parse(res1.body.toString());
 
       const res2 = request('PUT', SERVER_URL + '/v1/admin/user/password', {
         json: {
