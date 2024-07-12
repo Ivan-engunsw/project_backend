@@ -396,8 +396,17 @@ export function adminQuizQuestionUpdate(authUserId: number, quizId: number, ques
 
   // Update the question details
   existingQuestion.question = questionBody.question;
-  existingQuestion.duration = questionBody.duration;
-  existingQuestion.points = questionBody.points;
+
+  // Check if duration is provided and update if different
+  if (questionBody.duration !== undefined &&
+      questionBody.duration !== existingQuestion.duration) {
+    existingQuestion.duration = questionBody.duration;
+  }
+  // Check if points is provided and update if different
+  if (questionBody.points !== undefined &&
+      questionBody.points !== existingQuestion.points) {
+    existingQuestion.points = questionBody.points;
+  }
 
   // Update answers if provided
   if (questionBody.answers && questionBody.answers.length > 0) {
