@@ -419,6 +419,9 @@ export function adminQuizQuestionUpdate(authUserId: number, quizId: number, ques
     }));
   }
 
+  // Update the quiz duration
+  quiz.duration = sumDuration(quiz);
+
   // Update last edited time for the quiz
   quiz.timeLastEdited = timeNow();
 
