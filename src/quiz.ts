@@ -1,3 +1,4 @@
+import { CurlError } from 'sync-request-curl';
 import { getData, setData, Data, User, Quiz, Question, Answer, EmptyObject } from './dataStore';
 import * as error from './errors';
 import { getQuizById, getUserByEmail, getUserById, takenQuizName, timeNow, validQuizDesc, validQuizName, validQuestionBody, generateQuizId, generateQuestionId, getQuestionById, validNewPosition, sumDuration } from './helper';
@@ -546,12 +547,11 @@ export function adminQuizQuestionDuplicate(authUserId: number, quizId: number, q
   };
 
   // Update the quiz
-  quiz.questions.push(duplicateQuestion);
   quiz.duration += duplicateQuestion.duration;
   quiz.timeLastEdited = timeNow();
   quiz.numQuestions++;
   const currentPosition = quiz.questions.indexOf(question);
-  adminQuizQuestionMove(authUserId, quizId, duplicateQuestion.questionId, currentPosition + 1);
+  quiz.questions.splice(currentPosition + 1, 0, duplicateQuestion);
   setData(data);
 
   return { newQuestionId: duplicateQuestion.questionId };

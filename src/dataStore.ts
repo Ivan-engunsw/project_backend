@@ -62,8 +62,6 @@ export function getData(): Data {
   if (fs.existsSync('src/dataStoreSave.json')) {
     data = JSON.parse(fs.readFileSync('src/dataStoreSave.json', { flag: 'r' }).toString());
   }
-
-  fs.writeFileSync('src/dataStoreSave.json', JSON.stringify(data));
   return data;
 }
 
