@@ -1,4 +1,5 @@
 export type EmptyObject = Record<string, never>;
+import fs from 'fs';
 
 export interface User {
   userId: number;
@@ -58,10 +59,14 @@ let data: Data = {
 
 // Use get() to access the data
 export function getData(): Data {
+  if (fs.existsSync('src/dataStoreSave.json')) {
+    data = JSON.parse(fs.readFileSync('src/dataStoreSave.json', { flag: 'r' }).toString());
+  }
   return data;
 }
 
 // Use set(newData) to pass in the entire data object, with modifications made
 export function setData(newData: Data) {
   data = newData;
+  fs.writeFileSync('src/dataStoreSave.json', JSON.stringify(data), { flag: 'w' });
 }
