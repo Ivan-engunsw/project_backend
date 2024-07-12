@@ -76,7 +76,7 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
     expect(JSON.parse(res4.body.toString())).toStrictEqual({});
     expect(res4.statusCode).toStrictEqual(200);
 
-    // Verifying the update was succesfull
+    // Verifying the update was successfull
     const res5 = request('GET', `${SERVER_URL}/v1/admin/quiz/${quizId}`, {
       qs: token,
       timeout: TIMEOUT_MS
