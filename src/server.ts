@@ -8,10 +8,9 @@ import sui from 'swagger-ui-express';
 import fs from 'fs';
 import path from 'path';
 import process from 'process';
-import { clear } from './other';
+import { clear, generateToken, validToken, removeToken } from './other';
 import { adminAuthRegister, adminAuthLogin, adminUserDetails, adminUserDetailsUpdate, adminUserPasswordUpdate } from './auth';
-import { adminQuizCreate, adminQuizInfo, adminQuizRemove, adminQuizTransfer, adminQuizTrashView, adminQuizDescriptionUpdate, adminQuizRestore, adminQuizNameUpdate, adminQuizList, adminQuizQuestionCreate, adminQuizQuestionUpdate, adminQuizQuestionDelete, adminQuizQuestionMove, adminQuizQuestionDuplicate, adminQuizTrashEmpty } from './quiz';
-import { generateToken, validToken, removeToken } from './helper';
+import * as quiz from './quiz';
 import { ErrorObject } from './errors';
 
 // Set up web app
@@ -132,7 +131,7 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   if ('errorMsg' in authUser) {
     return setError(authUser, res);
   }
-  const result = adminQuizCreate(authUser.authUserId, name, description);
+  const result = quiz.adminQuizCreate(authUser.authUserId, name, description);
   if ('errorMsg' in result) {
     return setError(result, res);
   }
@@ -143,7 +142,7 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   const authUser = validToken(req.query.token as string);
   if ('errorMsg' in authUser) return setError(authUser, res);
 
-  res.json(adminQuizTrashView(authUser.authUserId));
+  res.json(quiz.adminQuizTrashView(authUser.authUserId));
 });
 
 app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
@@ -151,7 +150,7 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   if ('errorMsg' in authUser) {
     return setError(authUser, res);
   }
-  const result = adminQuizList(authUser.authUserId);
+  const result = quiz.adminQuizList(authUser.authUserId);
   res.json(result);
 });
 
@@ -159,7 +158,7 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const authUser = validToken(req.query.token as string);
   if ('errorMsg' in authUser) return setError(authUser, res);
 
-  const result = adminQuizRemove(authUser.authUserId, parseInt(req.params.quizid as string));
+  const result = quiz.adminQuizRemove(authUser.authUserId, parseInt(req.params.quizid as string));
   return ('errorMsg' in result) ? setError(result as ErrorObject, res) : res.json(result);
 });
 
@@ -167,7 +166,7 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   const authUser = validToken(req.query.token as string);
   if ('errorMsg' in authUser) return setError(authUser, res);
 
-  const result = adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
+  const result = quiz.adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
   return ('errorMsg' in result) ? setError(result, res) : res.json(result);
 });
 
@@ -178,7 +177,7 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   const user = validToken(token);
   if ('errorMsg' in user) { return setError(user, res); }
 
-  const result = adminQuizRestore(user.authUserId, quizId);
+  const result = quiz.adminQuizRestore(user.authUserId, quizId);
   if ('errorMsg' in result) { return setError(result as ErrorObject, res); }
 
   res.json(result);
@@ -193,7 +192,7 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
     return setError(user, res);
   }
 
-  const result = adminQuizTransfer(user.authUserId, quizId, userEmail);
+  const result = quiz.adminQuizTransfer(user.authUserId, quizId, userEmail);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }
@@ -209,7 +208,7 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
     return setError(user, res);
   }
 
-  const result = adminQuizDescriptionUpdate(user.authUserId, quizId, description);
+  const result = quiz.adminQuizDescriptionUpdate(user.authUserId, quizId, description);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }
@@ -225,7 +224,7 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
     return setError(user, res);
   }
 
-  const result = adminQuizNameUpdate(user.authUserId, quizId, name);
+  const result = quiz.adminQuizNameUpdate(user.authUserId, quizId, name);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }
@@ -241,7 +240,7 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
     return setError(user, res);
   }
 
-  const result = adminQuizTrashEmpty(user.authUserId, quizIds);
+  const result = quiz.adminQuizTrashEmpty(user.authUserId, quizIds);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }
@@ -258,7 +257,7 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
     return setError(user, res);
   }
 
-  const result = adminQuizQuestionCreate(user.authUserId, quizId, questionBody);
+  const result = quiz.adminQuizQuestionCreate(user.authUserId, quizId, questionBody);
   if ('errorMsg' in result) {
     return setError(result, res);
   }
@@ -275,7 +274,7 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
     return setError(user, res);
   }
 
-  const result = adminQuizQuestionUpdate(user.authUserId, quizId, questionId, questionBody);
+  const result = quiz.adminQuizQuestionUpdate(user.authUserId, quizId, questionId, questionBody);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }
@@ -292,7 +291,7 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
     return setError(user, res);
   }
 
-  const result = adminQuizQuestionDelete(user.authUserId, quizId, questionId);
+  const result = quiz.adminQuizQuestionDelete(user.authUserId, quizId, questionId);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }
@@ -309,7 +308,7 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: 
     return setError(user, res);
   }
 
-  const result = adminQuizQuestionMove(user.authUserId, quizId, questionId, newPosition);
+  const result = quiz.adminQuizQuestionMove(user.authUserId, quizId, questionId, newPosition);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }
@@ -326,7 +325,7 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
     return setError(user, res);
   }
 
-  const result = adminQuizQuestionDuplicate(user.authUserId, quizId, questionId);
+  const result = quiz.adminQuizQuestionDuplicate(user.authUserId, quizId, questionId);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }

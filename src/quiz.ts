@@ -418,16 +418,10 @@ export function adminQuizQuestionUpdate(authUserId: number, quizId: number, ques
       correct: answer.correct,
     }));
   }
-  // Update the quiz duration
-  quiz.duration = sumDuration(quiz);
 
-  // Update the quiz duration
+  // Update the quiz
   quiz.duration = sumDuration(quiz);
-
-  // Update last edited time for the quiz
   quiz.timeLastEdited = timeNow();
-
-  // Persist updated data
   setData(data);
 
   return {};
@@ -454,20 +448,17 @@ export function adminQuizQuestionDelete(authUserId: number, quizId: number, ques
   if (quiz.userId !== authUserId) { return error.QuizUnauthorised(quizId); }
 
   // Find the question within the quiz
-  const questionIndex = quiz.questions.findIndex(q => q.questionId === questionId);
-  if (questionIndex === -1) return error.QuestionIdNotFound(questionId);
+  const question: Question = getQuestionById(quiz, questionId);
+  if (!question) return error.QuestionIdNotFound(questionId);
 
   // Remove the question from the quiz
+  const questionIndex = quiz.questions.indexOf(question);
   quiz.questions.splice(questionIndex, 1);
+
+  // Update the quiz
   quiz.numQuestions--;
-
-  // Update the quiz duration
   quiz.duration = sumDuration(quiz);
-
-  // Update last edited time for the quiz
   quiz.timeLastEdited = timeNow();
-
-  // Persist updated data
   setData(data);
 
   return {};
