@@ -5,6 +5,7 @@ import { timeNow } from '../helper';
 const SERVER_URL = `${url}:${port}`;
 const TIMEOUT_MS = 5 * 1000;
 const ERROR = { error: expect.any(String) };
+const INPUT_USER = { email: 'betty@unsw.com', password: 'password1', nameFirst: 'Betty', nameLast: 'Boop' };
 
 beforeEach(() => {
   request('DELETE', SERVER_URL + '/v1/clear', { timeout: TIMEOUT_MS });
@@ -14,9 +15,10 @@ describe('PUT /v1/admin/quiz/:quizid/name', () => {
   let token: { token: string };
   let quiz: { quizId: number };
   beforeEach(() => {
-    const resUser = request('POST', SERVER_URL + '/v1/admin/auth/register', { json: { email: 'betty@unsw.com', password: 'password1', nameFirst: 'Betty', nameLast: 'Boop' }, timeout: TIMEOUT_MS });
+    const resUser = request('POST', SERVER_URL + '/v1/admin/auth/register', { json: INPUT_USER, timeout: TIMEOUT_MS });
     token = JSON.parse(resUser.body.toString());
-    const resQuiz = request('POST', SERVER_URL + '/v1/admin/quiz', { json: { token: token.token, name: 'Quiz1', description: 'Betty\'s quiz' }, timeout: TIMEOUT_MS });
+    const inputQuiz = { token: token.token, name: 'Quiz1', description: 'Betty\'s quiz' };
+    const resQuiz = request('POST', SERVER_URL + '/v1/admin/quiz', { json: inputQuiz, timeout: TIMEOUT_MS });
     quiz = JSON.parse(resQuiz.body.toString());
   });
 
@@ -34,7 +36,9 @@ describe('PUT /v1/admin/quiz/:quizid/name', () => {
     });
 
     test('returns an error for name already in use', () => {
-      request('POST', SERVER_URL + '/v1/admin/quiz', { json: { token: token.token, name: 'Quiz2', description: 'Norman\'s quiz' }, timeout: TIMEOUT_MS });
+      const inputQuiz2 = { token: token.token, name: 'Quiz2', description: 'Norman\'s quiz' };
+      request('POST', SERVER_URL + '/v1/admin/quiz', { json: inputQuiz2, timeout: TIMEOUT_MS });
+
       const res = request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz.quizId}/name`, { json: { token: token.token, name: 'Quiz2' }, timeout: TIMEOUT_MS });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
@@ -53,10 +57,13 @@ describe('PUT /v1/admin/quiz/:quizid/name', () => {
     });
 
     test('returns an error for a quiz not owned by this user', () => {
-      const resUser2 = request('POST', SERVER_URL + '/v1/admin/auth/register', { json: { email: 'norman@unsw.com', password: 'password1', nameFirst: 'Norman', nameLast: 'Nile' }, timeout: TIMEOUT_MS });
+      const inputUser2 = { email: 'norman@unsw.com', password: 'password1', nameFirst: 'Norman', nameLast: 'Nile' };
+      const resUser2 = request('POST', SERVER_URL + '/v1/admin/auth/register', { json: inputUser2, timeout: TIMEOUT_MS });
       const token2 = JSON.parse(resUser2.body.toString());
-      const resQuiz2 = request('POST', SERVER_URL + '/v1/admin/quiz', { json: { token: token2.token, name: 'Quiz2', description: 'Norman\'s quiz' }, timeout: TIMEOUT_MS });
+      const inputQuiz2 = { token: token2.token, name: 'Quiz2', description: 'Norman\'s quiz' };
+      const resQuiz2 = request('POST', SERVER_URL + '/v1/admin/quiz', { json: inputQuiz2, timeout: TIMEOUT_MS });
       const quiz2 = JSON.parse(resQuiz2.body.toString());
+
       const res = request('PUT', SERVER_URL + `/v1/admin/quiz/${quiz2.quizId}/name`, { json: { token: token.token, name: 'Quiz2' }, timeout: TIMEOUT_MS });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(403);
