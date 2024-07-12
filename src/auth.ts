@@ -51,6 +51,7 @@ export function adminAuthLogin(email: string, password: string): { authUserId: n
 
   if (password !== user.password) {
     user.numFailedPasswordsSinceLastLogin++;
+    setData(data);
     return error.UserPassCurrIncorrect();
   }
 
