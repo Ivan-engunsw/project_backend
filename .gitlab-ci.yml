@@ -20,3 +20,18 @@ tests:
     - sleep 2
     - cat $SERVER_LOG
 
+linting:
+  stage: checks
+  only:
+    - master
+    - merge_requests
+  script:
+    - npm run lint
+  
+typescript-checking:
+  stage: checks
+  only:
+    - master
+    - merge_requests
+  script:
+    - npm run tsc
