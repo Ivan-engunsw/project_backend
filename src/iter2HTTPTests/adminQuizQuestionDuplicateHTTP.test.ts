@@ -169,6 +169,30 @@ describe('POST /v1/admin/quiz/:quizId/question/:questionId/duplicate', () => {
           expect(res1.statusCode).toStrictEqual(400);
         });
 
+        test('New duration exceeds 3 mins', () => {
+          const question = Object.assign({}, INPUT_QUESTION);
+          question.duration = 100;
+          const resLong = request('POST', SERVER_URL +
+          `/v1/admin/quiz/${quiz1.quizId}/question`, {
+            json: {
+              token: token.token,
+              questionBody: question
+            },
+            timeout: TIMEOUT_MS
+          });
+          questionId1 = JSON.parse(resLong.body.toString());
+
+          const res1 = request('POST', SERVER_URL +
+          `/v1/admin/quiz/${quiz1.quizId}/question/${questionId1.questionId}/duplicate`, {
+            json: {
+              token: token.token
+            },
+            timeout: TIMEOUT_MS
+          });
+          expect(JSON.parse(res1.body.toString())).toStrictEqual(ERROR);
+          expect(res1.statusCode).toStrictEqual(400);
+        });
+
         test('Returns correct output and timeLastEdited', () => {
           const res1 = request('POST', SERVER_URL +
           `/v1/admin/quiz/${quiz1.quizId}/question/${questionId1.questionId}/duplicate`, {

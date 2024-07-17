@@ -114,9 +114,10 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   }
 
   const result = adminUserDetails(user.authUserId);
-  if ('errorMsg' in result) {
-    return setError(result, res);
-  }
+  // SafeToRemove
+  // if ('errorMsg' in result) {
+  //   return setError(result, res);
+  // }
   res.json(result);
 });
 

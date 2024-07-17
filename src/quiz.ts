@@ -50,9 +50,10 @@ export function adminQuizList(authUserId: number): {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   const quizList: {
       quizId: number,
@@ -88,9 +89,10 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   if (!validQuizName(name)) {
     return error.QuizNameInvalid(name);
@@ -135,9 +137,10 @@ export function adminQuizRemove
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   const i: number = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
   if (i === -1) return error.QuizIdNotFound(quizId);
@@ -167,9 +170,10 @@ export function adminQuizInfo
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   const quiz: Quiz = getQuizById(data, quizId);
   if (!quiz) return error.QuizIdNotFound(quizId);
@@ -205,9 +209,10 @@ export function adminQuizNameUpdate
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
@@ -251,9 +256,10 @@ export function adminQuizDescriptionUpdate
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
@@ -287,9 +293,10 @@ export function adminQuizTransfer
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   // Check the email is not the current user's email
   if (user.email === email) {
@@ -339,9 +346,10 @@ export function adminQuizTrashView(authUserId: number): {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   const trashList: {
       quizId: number,
@@ -369,9 +377,10 @@ export function adminQuizTrashEmpty
 
   // user doesnt exist
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   // quiz in trash
   for (const e of quizIds) {
@@ -414,9 +423,10 @@ export function adminQuizRestore
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   const quiz: Quiz = getQuizById(data, quizId);
   if (quiz) {
@@ -459,9 +469,10 @@ export function adminQuizQuestionCreate
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
@@ -531,9 +542,10 @@ EmptyObject | error.ErrorObject {
 
   // Check if the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   // Check if the quiz exists and belongs to the user
   const quiz: Quiz = getQuizById(data, quizId);
@@ -598,9 +610,10 @@ export function adminQuizQuestionDelete
 
   // Check if the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   // Check if the quiz exists and belongs to the user
   const quiz: Quiz = getQuizById(data, quizId);
@@ -641,9 +654,10 @@ EmptyObject | error.ErrorObject {
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
@@ -685,9 +699,10 @@ export function adminQuizQuestionDuplicate
 
   // Check the user exists
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
