@@ -9,8 +9,9 @@ export interface ErrorObject {
   }
 
 // id
-export const UserIdNotFound = (id: number) =>
-  err(`The user ID '${id}' was not found`, 401);
+// SafeToRemove
+// export const UserIdNotFound = (id: number) =>
+//   err(`The user ID '${id}' was not found`, 401);
 export const QuizIdNotFound = (id: number) =>
   err(`The quiz ID '${id}' was not found`, 403);
 export const QuizNotDeleted = (id: number) =>

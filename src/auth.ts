@@ -111,9 +111,10 @@ export function adminUserDetails(authUserId: number): {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   const {
     password,
@@ -141,9 +142,10 @@ EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   const userWithEmail: User = getUserByEmail(data, email);
   if (userWithEmail && userWithEmail.userId !== authUserId) {
@@ -183,9 +185,10 @@ export function adminUserPasswordUpdate
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
-  if (!user) {
-    return error.UserIdNotFound(authUserId);
-  }
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   // Conditions for checking if the input is correct
   if (user.password !== oldPassword) {
