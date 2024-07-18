@@ -12,6 +12,7 @@ import {
   QuestionBody
 } from './quiz';
 import * as error from './errors';
+import crypto from 'crypto';
 
 // time
 export const timeNow = () =>
@@ -125,3 +126,19 @@ export const getQuestionById = (quiz: Quiz, id: number) =>
   quiz.questions.find(question => id === question.questionId);
 export const validNewPosition = (quiz: Quiz, position: number, currentPosition: number) =>
   (position >= 0 && position < quiz.questions.length && position !== currentPosition);
+
+// Randomly generates an Id that is a string or a number based on the option it is given
+interface TypeOptions {
+  type: 'string' | 'number';
+}
+
+export function generateId({ type }: TypeOptions | EmptyObject = {}): string | number {
+  let Id;
+  if (type === 'string') {
+    Id = crypto.randomBytes(16).toString('base64url');
+  } else {
+    Id = crypto.randomBytes(4).readUInt32BE();
+  }
+
+  return Id;
+}
