@@ -13,7 +13,6 @@ import {
 } from './quiz';
 import * as error from './errors';
 import crypto from 'crypto';
-import { Type } from 'typescript';
 
 // time
 export const timeNow = () =>
