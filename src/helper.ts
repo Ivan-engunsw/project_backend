@@ -13,6 +13,7 @@ import {
 } from './quiz';
 import * as error from './errors';
 import crypto from 'crypto';
+import { Type } from 'typescript';
 
 // time
 export const timeNow = () =>
@@ -128,7 +129,9 @@ export const validNewPosition = (quiz: Quiz, position: number, currentPosition: 
   (position >= 0 && position < quiz.questions.length && position !== currentPosition);
 
 // Randomly generates an Id that is a string or a number based on the option it is given
-export function generateId({ type }: { type: 'string' | 'number' } | EmptyObject = {}): string | number {
+interface TypeOptions { type: 'string' | 'number' }
+
+export function generateId({ type }: TypeOptions | EmptyObject = {}): string | number {
   let Id;
   if (type === 'string') {
     Id = crypto.randomBytes(16).toString('base64url');
