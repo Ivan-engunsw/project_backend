@@ -57,10 +57,6 @@ export const QuizUnauthorised = (id: number) =>
 export const InvalidToken = (token: string) =>
   err(`The token '${token}' doesn't exist`, 401);
 
-// quiz
-export const QuizNotInTrash = () =>
-  err('One or more of the given quizzes are not currently in the trash', 400);
-
 // question
 export const invalidQuestion = (question: string) =>
   err(`The question: '${question}' is invalid`, 400);

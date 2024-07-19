@@ -380,28 +380,28 @@ export function adminQuizTrashEmpty
   // }
 
   // quiz in trash
-  for (const e of quizIds) {
-    const quiz: Quiz = getQuizById(data, e);
+  for (const id of quizIds) {
+    const quiz: Quiz = getQuizById(data, id);
     if (quiz) {
       if (quiz.userId !== authUserId) {
-        return error.QuizUnauthorised(e);
+        return error.QuizUnauthorised(id);
       }
-      return error.QuizNotInTrash();
+      return error.QuizNotDeleted(id);
     }
 
-    const i: number = data.trash.findIndex(quiz => quiz.quizId === e);
+    const i: number = data.trash.findIndex(quiz => quiz.quizId === id);
     if (i !== -1) {
       // if quiz doesnt belong to the user
       if (data.trash[i].userId !== authUserId) {
-        return error.QuizUnauthorised(e);
+        return error.QuizUnauthorised(id);
       }
     } else {
-      return error.QuizIdNotFound(e);
+      return error.QuizIdNotFound(id);
     }
   }
 
-  for (const e of quizIds) {
-    data.trash.splice(data.trash.findIndex(quiz => quiz.quizId === e), 1);
+  for (const id of quizIds) {
+    data.trash.splice(data.trash.findIndex(quiz => quiz.quizId === id), 1);
   }
 
   setData(data);
