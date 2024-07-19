@@ -129,15 +129,11 @@ export const validNewPosition = (quiz: Quiz, position: number, currentPosition: 
   (position >= 0 && position < quiz.questions.length && position !== currentPosition);
 
 // Randomly generates an Id that is a string or a number based on the option it is given
-interface TypeOptions { type: 'string' | 'number' }
+type TypeOptions = 'string' | 'number';
 
-export function generateId({ type }: TypeOptions | EmptyObject = {}): string | number {
-  let Id;
-  if (type === 'string') {
-    Id = crypto.randomBytes(16).toString('base64url');
-  } else {
-    Id = crypto.randomBytes(4).readUInt32BE();
+export function generateId(type: TypeOptions = 'number'): string | number {
+  switch (type) {
+    case 'string': return crypto.randomBytes(16).toString('base64url');
+    case 'number': return crypto.randomBytes(4).readUInt32BE();
   }
-
-  return Id;
 }

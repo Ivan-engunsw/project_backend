@@ -34,7 +34,7 @@ export function generateToken(authUserId: number): {
 
   let tokenId: string;
   do {
-    tokenId = generateId({ type: 'string' }) as string;
+    tokenId = generateId('string') as string;
   }
   while (data.tokens.find(token => token.tokenId === tokenId));
 
