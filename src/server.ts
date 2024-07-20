@@ -71,6 +71,10 @@ const setError = (error: ErrorObject, res: Response) =>
     error: error.errorMsg
   });
 
+// ====================================================================
+//  ========================= ITER 2 ROUTES ==========================
+// ====================================================================
+
 app.delete('/v1/clear', (req: Request, res: Response) => {
   const result = clear();
   res.json(result);
@@ -159,9 +163,7 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  const {
-    token
-  } = req.body;
+  const token = req.body.token;
   const result = removeToken(token);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
@@ -406,6 +408,10 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   }
   res.json(result);
 });
+
+// ====================================================================
+//  ========================= ITER 3 ROUTES ==========================
+// ====================================================================
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
