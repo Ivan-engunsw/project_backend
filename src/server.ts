@@ -31,7 +31,6 @@ import * as quiz from './quiz';
 import {
   ErrorObject
 } from './errors';
-import { REPLCommand } from 'repl';
 
 // Set up web app
 const app = express();
@@ -425,7 +424,6 @@ app.get('/v2/admin/user/details', (req: Request, res: Response) => {
 
   res.json(result);
 });
-
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================

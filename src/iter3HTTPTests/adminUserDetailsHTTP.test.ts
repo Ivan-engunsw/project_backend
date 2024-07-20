@@ -1,4 +1,4 @@
-import request, { HttpVerb } from 'sync-request-curl';
+import request from 'sync-request-curl';
 import { port, url } from '../config.json';
 
 // CONSTANTS //
@@ -19,14 +19,14 @@ const clear = () => {
   });
 };
 
-const adminAuthRegister = 
-(inputUser: { 
-  email: string, 
-  password: string, 
-  nameFirst: string, 
-  nameLast: string 
+const adminAuthRegister =
+(inputUser: {
+  email: string,
+  password: string,
+  nameFirst: string,
+  nameLast: string
 }) => {
-  return request('POST', SERVER_URL + `/v1/admin/auth/register`, {
+  return request('POST', SERVER_URL + '/v1/admin/auth/register', {
     json: inputUser,
     timeout: TIMEOUT_MS
   });
@@ -56,7 +56,7 @@ describe('GET /v1/admin/user/details', () => {
 
   describe('error testing', () => {
     test('returns an error for invalid token', () => {
-      const res = adminUserDetails(token.token + 1)
+      const res = adminUserDetails(token.token + 1);
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(401);
     });
@@ -64,7 +64,7 @@ describe('GET /v1/admin/user/details', () => {
 
   describe('functionality testing', () => {
     test('has the correct return type', () => {
-      const res = adminUserDetails(token.token)
+      const res = adminUserDetails(token.token);
       expect(JSON.parse(res.body.toString())).toStrictEqual({
         user: {
           userId: expect.any(Number),
