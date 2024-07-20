@@ -28,23 +28,23 @@ import {
 export function adminAuthRegister(email: string, password: string, nameFirst: string,
   nameLast: string): {
   authUserId: number
-} {
+} | error.ErrorObject {
   const data: Data = getData();
 
   if (!validEmail(email)) {
-    throw new Error(error.EmailInvalid(email));
+    return error.EmailInvalid(email);
   }
   if (takenEmail(data, email)) {
-    throw new Error(error.EmailTaken(email));
+    return error.EmailTaken(email);
   }
   if (!validUserName(nameFirst)) {
-    throw new Error(error.FirstNameInvalid(nameFirst));
+    return error.FirstNameInvalid(nameFirst);
   }
   if (!validUserName(nameLast)) {
-    throw new Error(error.LastNameInvalid(nameLast));
+    return error.LastNameInvalid(nameLast);
   }
   if (!validUserPass(password)) {
-    throw new Error(error.UserPassCurrInvalid());
+    return error.UserPassCurrInvalid();
   }
 
   const authUserId: number = data.users.length;
@@ -73,18 +73,18 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
  */
 export function adminAuthLogin(email: string, password: string): {
   authUserId: number
-} {
+} | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserByEmail(data, email);
   if (!user) {
-    throw new Error(error.EmailNotFound(email));
+    return error.EmailNotFound(email);
   }
 
   if (hash(password) !== user.password) {
     user.numFailedPasswordsSinceLastLogin++;
     setData(data);
-    throw new Error(error.UserPassCurrIncorrect());
+    return error.UserPassCurrIncorrect();
   }
 
   user.numFailedPasswordsSinceLastLogin = 0;
@@ -108,10 +108,14 @@ export function adminAuthLogin(email: string, password: string): {
 export function adminUserDetails(authUserId: number): {
   user: Omit < User,
   'password' | 'oldPwords' >
-} {
+} | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   const {
     password,
@@ -135,25 +139,29 @@ export function adminUserDetails(authUserId: number): {
  */
 export function adminUserDetailsUpdate
 (authUserId: number, email: string, nameFirst: string, nameLast: string):
-EmptyObject {
+EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
+  // SafeToRemove
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   const userWithEmail: User = getUserByEmail(data, email);
   if (userWithEmail && userWithEmail.userId !== authUserId) {
-    throw new Error(error.EmailTaken(email));
+    return error.EmailTaken(email);
   }
 
   // Conditions for checking if the input is correct
   if (!validEmail(email)) {
-    throw new Error(error.EmailInvalid(email));
+    return error.EmailInvalid(email);
   }
   if (!validUserName(nameFirst)) {
-    throw new Error(error.FirstNameInvalid(nameFirst));
+    return error.FirstNameInvalid(nameFirst);
   }
   if (!validUserName(nameLast)) {
-    throw new Error(error.LastNameInvalid(nameLast));
+    return error.LastNameInvalid(nameLast);
   }
 
   // Updating the user details
@@ -174,7 +182,7 @@ EmptyObject {
  * @returns {{}} -empty object
  */
 export function adminUserPasswordUpdate
-(authUserId: number, oldPassword: string, newPassword: string): EmptyObject {
+(authUserId: number, oldPassword: string, newPassword: string): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   const user: User = getUserById(data, authUserId);
@@ -185,16 +193,16 @@ export function adminUserPasswordUpdate
 
   // Conditions for checking if the input is correct
   if (user.password !== hash(oldPassword)) {
-    throw new Error(error.UserPassOldIncorrect());
+    return error.UserPassOldIncorrect();
   }
   if (hash(oldPassword) === hash(newPassword)) {
-    throw new Error(error.UserPassNewNotNew());
+    return error.UserPassNewNotNew();
   }
   if (user.oldPwords && user.oldPwords.includes(hash(newPassword))) {
-    throw new Error(error.UserPassNewNotNew());
+    return error.UserPassNewNotNew();
   }
   if (!validUserPass(newPassword)) {
-    throw new Error(error.UserPassNewInvalid());
+    return error.UserPassNewInvalid();
   }
 
   // Updating the Password

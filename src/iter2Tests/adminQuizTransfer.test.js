@@ -2,7 +2,7 @@ import { clear } from '../other';
 import { adminQuizCreate, adminQuizInfo, adminQuizTransfer } from '../quiz';
 import { adminAuthRegister } from '../auth';
 
-const ERROR = expect.any(String);
+const ERROR = { errorMsg: expect.any(String), errorCode: expect.any(Number) };
 
 beforeEach(() => {
   clear();
@@ -20,29 +20,29 @@ describe('adminQuizTransfer', () => {
 
   describe('error testing', () => {
     test('returns an error for an invalid target email', () => {
-      expect(() => adminQuizTransfer(authUser.authUserId, quiz.quizId, 'notanemail@unsw.com')).toThrow(Error);
+      expect(adminQuizTransfer(authUser.authUserId, quiz.quizId, 'notanemail@unsw.com')).toStrictEqual(ERROR);
     });
 
     test('returns an error for the current user\'s email', () => {
-      expect(() => adminQuizTransfer(authUser.authUserId, quiz.quizId, 'betty@unsw.com')).toThrow(Error);
+      expect(adminQuizTransfer(authUser.authUserId, quiz.quizId, 'betty@unsw.com')).toStrictEqual(ERROR);
     });
 
     test('returns an error for a quiz name already in use by the target', () => {
       adminQuizCreate(authUser2.authUserId, 'Quiz1', 'Norman\'s quiz');
-      expect(() => adminQuizTransfer(authUser.authUserId, quiz.quizId, 'norman@unsw.com')).toThrow(Error);
+      expect(adminQuizTransfer(authUser.authUserId, quiz.quizId, 'norman@unsw.com')).toStrictEqual(ERROR);
     });
 
     test('returns an error for a quiz not owned by this user', () => {
       const quiz2 = adminQuizCreate(authUser2.authUserId, 'Quiz1', 'Norman\'s quiz');
-      expect(() => adminQuizTransfer(authUser.authUserId, quiz2.quizId, 'norman@unsw.com')).toThrow(Error);
+      expect(adminQuizTransfer(authUser.authUserId, quiz2.quizId, 'norman@unsw.com')).toStrictEqual(ERROR);
     });
 
     test('returns an error for an invalid authUserId', () => {
-      expect(() => adminQuizTransfer(authUser.authUserId + 1, quiz.quizId, 'norman@unsw.com')).toThrow(Error);
+      expect(adminQuizTransfer(authUser.authUserId + 1, quiz.quizId, 'norman@unsw.com')).toStrictEqual(ERROR);
     });
 
     test('returns an error for an invalid quizId', () => {
-      expect(() => adminQuizTransfer(authUser.authUserId, quiz.quizId + 1, 'norman@unsw.com')).toThrow(Error);
+      expect(adminQuizTransfer(authUser.authUserId, quiz.quizId + 1, 'norman@unsw.com')).toStrictEqual(ERROR);
     });
   });
 

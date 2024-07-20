@@ -2,7 +2,7 @@ import { clear } from '../other';
 import { adminQuizCreate, adminQuizInfo, adminQuizQuestionCreate } from '../quiz';
 import { adminAuthRegister } from '../auth';
 
-const ERROR = expect.any(String);
+const ERROR = { errorMsg: expect.any(String), errorCode: expect.any(Number) };
 const INPUT_QUESTION = {
   question: 'Who is the Monarch of England?',
   duration: 4,

@@ -46,8 +46,14 @@ export function adminQuizList(authUserId: number): {
     quizId: number,
     name: string
   } []
-} {
+} | error.ErrorObject {
   const data: Data = getData();
+
+  // SafeToRemove
+  // const user: User = getUserById(data, authUserId);
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
 
   const quizList: {
       quizId: number,
@@ -79,17 +85,23 @@ export function adminQuizList(authUserId: number): {
  */
 export function adminQuizCreate(authUserId: number, name: string, description: string): {
   quizId: number
-} {
+} | error.ErrorObject {
   const data: Data = getData();
 
+  // SafeToRemove
+  // const user: User = getUserById(data, authUserId);
+  // if (!user) {
+  //   return error.UserIdNotFound(authUserId);
+  // }
+
   if (!validQuizName(name)) {
-    throw new Error(error.QuizNameInvalid(name));
+    return error.QuizNameInvalid(name);
   }
   if (takenQuizName(data, authUserId, name)) {
-    throw new Error(error.QuizNameTaken(name));
+    return error.QuizNameTaken(name);
   }
   if (!validQuizDesc(description)) {
-    throw new Error(error.QuizDescInvalid());
+    return error.QuizDescInvalid();
   }
 
   const quizId: number = generateQuizId();
@@ -121,7 +133,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
  * @returns {{}} - return object
  */
 export function adminQuizRemove
-(authUserId: number, quizId: number): EmptyObject {
+(authUserId: number, quizId: number): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // SafeToRemove
@@ -131,10 +143,10 @@ export function adminQuizRemove
   // }
 
   const i: number = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
-  if (i === -1) throw new Error(error.QuizIdNotFound(quizId));
+  if (i === -1) return error.QuizIdNotFound(quizId);
 
   if (data.quizzes[i].userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
+    return error.QuizUnauthorised(quizId);
   }
 
   data.quizzes[i].timeLastEdited = timeNow();
@@ -154,7 +166,7 @@ export function adminQuizRemove
  * @returns {{quizInfo}} - return object
  */
 export function adminQuizInfo
-(authUserId: number, quizId: number): Omit < Quiz, 'userId' > {
+(authUserId: number, quizId: number): Omit < Quiz, 'userId' > | error.ErrorObject {
   const data: Data = getData();
 
   // SafeToRemove
@@ -164,10 +176,10 @@ export function adminQuizInfo
   // }
 
   const quiz: Quiz = getQuizById(data, quizId);
-  if (!quiz) throw new Error(error.QuizIdNotFound(quizId));
+  if (!quiz) return error.QuizIdNotFound(quizId);
 
   if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
+    return error.QuizUnauthorised(quizId);
   }
 
   const {
@@ -187,12 +199,12 @@ export function adminQuizInfo
  * @returns {{}} - empty object
  */
 export function adminQuizNameUpdate
-(authUserId: number, quizId: number, name: string): EmptyObject {
+(authUserId: number, quizId: number, name: string): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // Check the name provided
   if (!validQuizName(name)) {
-    throw new Error(error.QuizNameInvalid(name));
+    return error.QuizNameInvalid(name);
   }
 
   // SafeToRemove
@@ -203,16 +215,16 @@ export function adminQuizNameUpdate
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
-  if (!quiz) throw new Error(error.QuizIdNotFound(quizId));
+  if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
   if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
+    return error.QuizUnauthorised(quizId);
   }
 
   // Check if the user has another quiz with the same name
   if (takenQuizName(data, authUserId, name)) {
-    throw new Error(error.QuizNameTaken(name));
+    return error.QuizNameTaken(name);
   }
 
   // Update the name of the quiz and return
@@ -233,12 +245,12 @@ export function adminQuizNameUpdate
  * @returns {{}} - empty object
  */
 export function adminQuizDescriptionUpdate
-(authUserId: number, quizId: number, description: string): EmptyObject {
+(authUserId: number, quizId: number, description: string): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // Check the description provided
   if (!validQuizDesc(description)) {
-    throw new Error(error.QuizDescInvalid());
+    return error.QuizDescInvalid();
   }
 
   // SafeToRemove
@@ -249,11 +261,11 @@ export function adminQuizDescriptionUpdate
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
-  if (!quiz) throw new Error(error.QuizIdNotFound(quizId));
+  if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
   if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
+    return error.QuizUnauthorised(quizId);
   }
 
   // Update the description of the quiz and return
@@ -274,7 +286,7 @@ export function adminQuizDescriptionUpdate
  * @returns {{}} - empty object
  */
 export function adminQuizTransfer
-(authUserId: number, quizId: number, email: string): EmptyObject {
+(authUserId: number, quizId: number, email: string): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // Check the user exists
@@ -286,27 +298,27 @@ export function adminQuizTransfer
 
   // Check the email is not the current user's email
   if (user.email === email) {
-    throw new Error(error.EmailInvalid(email));
+    return error.EmailInvalid(email);
   }
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
-  if (!quiz) throw new Error(error.QuizIdNotFound(quizId));
+  if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
   if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
+    return error.QuizUnauthorised(quizId);
   }
 
   // Check the target exists
   const targetUser: User = getUserByEmail(data, email);
   if (!targetUser) {
-    throw new Error(error.EmailNotFound(email));
+    return error.EmailNotFound(email);
   }
 
   // Check the target does not have an overlapping name
   if (takenQuizName(data, targetUser.userId, quiz.name)) {
-    throw new Error(error.QuizNameTaken(quiz.name));
+    return error.QuizNameTaken(quiz.name);
   }
 
   // Transfer ownership of the quiz
@@ -328,7 +340,7 @@ export function adminQuizTrashView(authUserId: number): {
     quizId: number,
     name: string
   } []
-} {
+} | error.ErrorObject {
   const data: Data = getData();
 
   // SafeToRemove
@@ -358,7 +370,7 @@ export function adminQuizTrashView(authUserId: number): {
 }
 
 export function adminQuizTrashEmpty
-(authUserId: number, quizIds: number[]): EmptyObject {
+(authUserId: number, quizIds: number[]): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // SafeToRemove
@@ -372,19 +384,19 @@ export function adminQuizTrashEmpty
     const quiz: Quiz = getQuizById(data, id);
     if (quiz) {
       if (quiz.userId !== authUserId) {
-        throw new Error(error.QuizUnauthorised(id));
+        return error.QuizUnauthorised(id);
       }
-      throw new Error(error.QuizNotDeleted(id));
+      return error.QuizNotDeleted(id);
     }
 
     const i: number = data.trash.findIndex(quiz => quiz.quizId === id);
     if (i !== -1) {
       // if quiz doesnt belong to the user
       if (data.trash[i].userId !== authUserId) {
-        throw new Error(error.QuizUnauthorised(id));
+        return error.QuizUnauthorised(id);
       }
     } else {
-      throw new Error(error.QuizIdNotFound(id));
+      return error.QuizIdNotFound(id);
     }
   }
 
@@ -404,7 +416,7 @@ export function adminQuizTrashEmpty
  * @returns {{}} - Empty object
  */
 export function adminQuizRestore
-(authUserId: number, quizId: number): EmptyObject {
+(authUserId: number, quizId: number): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // SafeToRemove
@@ -415,18 +427,18 @@ export function adminQuizRestore
 
   const quiz: Quiz = getQuizById(data, quizId);
   if (quiz) {
-    throw new Error(error.QuizNotDeleted(quizId));
+    return error.QuizNotDeleted(quizId);
   }
 
   const i: number = data.trash.findIndex(quiz => quiz.quizId === quizId);
-  if (i === -1) throw new Error(error.QuizIdNotFound(quizId));
+  if (i === -1) return error.QuizIdNotFound(quizId);
 
   if (data.trash[i].userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
+    return error.QuizUnauthorised(quizId);
   }
 
   if (data.quizzes.some(quiz => quiz.name === data.trash[i].name)) {
-    throw new Error(error.QuizNameRestoredTaken(data.trash[i].name));
+    return error.QuizNameRestoredTaken(data.trash[i].name);
   }
 
   data.trash[i].timeLastEdited = timeNow();
@@ -449,7 +461,7 @@ export function adminQuizRestore
 export function adminQuizQuestionCreate
 (authUserId: number, quizId: number, questionBody: QuestionBody): {
   questionId: number
-} {
+} | error.ErrorObject {
   const data: Data = getData();
 
   // SafeToRemove
@@ -460,23 +472,21 @@ export function adminQuizQuestionCreate
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
-  if (!quiz) throw new Error(error.QuizIdNotFound(quizId));
+  if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
   if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
+    return error.QuizUnauthorised(quizId);
   }
 
-  // Check the validity of the question body
-  try {
-    validQuestionBody(questionBody, quiz);
-  } catch (error) {
-    throw new Error(error.message);
+  const valid = validQuestionBody(questionBody, quiz);
+  if ('errorMsg' in valid) {
+    return valid as error.ErrorObject;
   }
 
   // Check the duration of the quiz with the new question
   if (sumDuration(quiz) + questionBody.duration > 180) {
-    throw new Error(error.invalidQuizDuration(sumDuration(quiz) + questionBody.duration));
+    return error.invalidQuizDuration(sumDuration(quiz) + questionBody.duration);
   }
 
   // Create the answers array
@@ -523,7 +533,7 @@ export function adminQuizQuestionCreate
  */
 export function adminQuizQuestionUpdate
 (authUserId: number, quizId: number, questionId: number, questionBody: QuestionBody):
-EmptyObject {
+EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // SafeToRemove
@@ -534,26 +544,25 @@ EmptyObject {
 
   // Check if the quiz exists and belongs to the user
   const quiz: Quiz = getQuizById(data, quizId);
-  if (!quiz) throw new Error(error.QuizIdNotFound(quizId));
+  if (!quiz) return error.QuizIdNotFound(quizId);
   if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
+    return error.QuizUnauthorised(quizId);
   }
 
   // Find the question within the quiz
   const existingQuestion: Question = getQuestionById(quiz, questionId);
-  if (!existingQuestion) throw new Error(error.QuestionIdNotFound(questionId));
+  if (!existingQuestion) return error.QuestionIdNotFound(questionId);
 
-  // Check the validity of the question body
-  try {
-    validQuestionBody(questionBody, quiz);
-  } catch (error) {
-    throw new Error(error.message);
+  // Validate the new question body
+  const valid = validQuestionBody(questionBody, quiz);
+  if ('errorMsg' in valid) {
+    return valid as error.ErrorObject;
   }
 
   // Check the duration of the quiz with the new question
   if (sumDuration(quiz) - existingQuestion.duration + questionBody.duration > 180) {
-    throw new Error(error.invalidQuizDuration(sumDuration(quiz) - existingQuestion.duration +
-    questionBody.duration));
+    return error.invalidQuizDuration(sumDuration(quiz) - existingQuestion.duration +
+    questionBody.duration);
   }
 
   // Update the question details
@@ -591,7 +600,7 @@ EmptyObject {
  * @returns {EmptyObject | error.ErrorObject} - Empty object or error object
  */
 export function adminQuizQuestionDelete
-(authUserId: number, quizId: number, questionId: number): EmptyObject {
+(authUserId: number, quizId: number, questionId: number): EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // SafeToRemove
@@ -602,14 +611,14 @@ export function adminQuizQuestionDelete
 
   // Check if the quiz exists and belongs to the user
   const quiz: Quiz = getQuizById(data, quizId);
-  if (!quiz) throw new Error(error.QuizIdNotFound(quizId));
+  if (!quiz) return error.QuizIdNotFound(quizId);
   if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
+    return error.QuizUnauthorised(quizId);
   }
 
   // Find the question within the quiz
   const question: Question = getQuestionById(quiz, questionId);
-  if (!question) throw new Error(error.QuestionIdNotFound(questionId));
+  if (!question) return error.QuestionIdNotFound(questionId);
 
   // Remove the question from the quiz
   const questionIndex = quiz.questions.indexOf(question);
@@ -634,7 +643,7 @@ export function adminQuizQuestionDelete
  */
 export function adminQuizQuestionMove
 (authUserId: number, quizId: number, questionId: number, newPosition: number):
-EmptyObject {
+EmptyObject | error.ErrorObject {
   const data: Data = getData();
 
   // SafeToRemove
@@ -645,23 +654,23 @@ EmptyObject {
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
-  if (!quiz) throw new Error(error.QuizIdNotFound(quizId));
+  if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
   if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
+    return error.QuizUnauthorised(quizId);
   }
 
   // Check the question exists
   const question: Question = getQuestionById(quiz, questionId);
-  if (!question) throw new Error(error.QuestionIdNotFound(quizId));
+  if (!question) return error.QuestionIdNotFound(quizId);
 
   const currentPosition = quiz.questions.indexOf(question);
   if (validNewPosition(quiz, newPosition, currentPosition)) {
     quiz.questions.splice(currentPosition, 1);
     quiz.questions.splice(newPosition, 0, question);
   } else {
-    throw new Error(error.invalidNewPosition(newPosition));
+    return error.invalidNewPosition(newPosition);
   }
   quiz.timeLastEdited = timeNow();
   setData(data);
@@ -678,7 +687,7 @@ EmptyObject {
 export function adminQuizQuestionDuplicate
 (authUserId: number, quizId: number, questionId: number): {
   newQuestionId: number
-} {
+} | error.ErrorObject {
   const data: Data = getData();
 
   // SafeToRemove
@@ -689,16 +698,16 @@ export function adminQuizQuestionDuplicate
 
   // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
-  if (!quiz) throw new Error(error.QuizIdNotFound(quizId));
+  if (!quiz) return error.QuizIdNotFound(quizId);
 
   // Check the quiz belongs to the user
   if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
+    return error.QuizUnauthorised(quizId);
   }
 
   // Check the question exists
   const question: Question = getQuestionById(quiz, questionId);
-  if (!question) throw new Error(error.QuestionIdNotFound(quizId));
+  if (!question) return error.QuestionIdNotFound(quizId);
 
   // Create the duplicated question
   const duplicateQuestion: Question = {
@@ -711,7 +720,7 @@ export function adminQuizQuestionDuplicate
 
   // Check the duration of the quiz with the new question
   if (sumDuration(quiz) + duplicateQuestion.duration > 180) {
-    throw new Error(error.invalidQuizDuration(sumDuration(quiz) + duplicateQuestion.duration));
+    return error.invalidQuizDuration(sumDuration(quiz) + duplicateQuestion.duration);
   }
 
   // Update the quiz

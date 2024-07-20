@@ -57,38 +57,38 @@ export const sumDuration = (quiz: Quiz) =>
 // Checks the validity of the questionBody given the questionBody
 // and the quiz it will be created inside
 export const validQuestionBody =
-(questionBody: QuestionBody, quiz: Quiz): EmptyObject => {
+(questionBody: QuestionBody, quiz: Quiz): EmptyObject | error.ErrorObject => {
   // Check the length of the question
   if (!(validQuestion(questionBody.question))) {
-    throw new Error(error.invalidQuestion(questionBody.question));
+    return error.invalidQuestion(questionBody.question);
   }
 
   // Check the number of answers
   if (questionBody.answers.length < 2 || questionBody.answers.length > 6) {
-    throw new Error(error.invalidNumAnswers(questionBody.answers.length));
+    return error.invalidNumAnswers(questionBody.answers.length);
   }
 
   // Check the duration
   if (questionBody.duration <= 0) {
-    throw new Error(error.invalidDuration(questionBody.duration));
+    return error.invalidDuration(questionBody.duration);
   }
 
   // Check the points of the question
   if (questionBody.points < 1 || questionBody.points > 10) {
-    throw new Error(error.invalidPoints(questionBody.points));
+    return error.invalidPoints(questionBody.points);
   }
 
   // Check the length of each answer
   if (questionBody.answers.find(answer => answer.answer.length < 1 ||
     answer.answer.length > 30)) {
-    throw new Error(error.invalidAnswerLen());
+    return error.invalidAnswerLen();
   }
 
   // Check for duplicate answers
   const answersSoFar: string[] = [];
   for (const answer of questionBody.answers) {
     if (answersSoFar.includes(answer.answer)) {
-      throw new Error(error.duplicateAnswer(answer.answer));
+      return error.duplicateAnswer(answer.answer);
     } else {
       answersSoFar.push(answer.answer);
     }
@@ -96,7 +96,7 @@ export const validQuestionBody =
 
   // Check there is at least 1 correct answer
   if (!questionBody.answers.some(answer => answer.correct === true)) {
-    throw new Error(error.noCorrectAnswer());
+    return error.noCorrectAnswer();
   }
 
   return {};
@@ -135,22 +135,4 @@ export function generateId(type: TypeOptions = 'number'): string | number {
 // Hash the given string
 export function hash(plaintext: string) {
   return crypto.createHash('sha256').update(plaintext).digest('hex');
-}
-
-// Check if a given quiz exists and if it is authorised
-export function validQuiz(quizId: number, authUserId: number, { trash }: { trash?: boolean } = {}) {
-  let quiz = getQuizById(getData(), quizId);
-  if (!quiz) {
-    switch (trash) {
-      case true:
-        if (!(quiz = getData().trash.find(quiz => quiz.quizId === quizId))) {
-          throw new Error(error.QuizIdNotFound(quizId));
-        } break;
-      default: throw new Error(error.QuizIdNotFound(quizId));
-    }
-  }
-
-  if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
-  }
 }
