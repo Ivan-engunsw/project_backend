@@ -4,6 +4,7 @@ import {
   EmptyObject
 } from './dataStore';
 import * as error from './errors';
+import { generateId } from './helper';
 
 /**
  * Reset the state of the application back to the start.
@@ -19,17 +20,21 @@ export function clear(): EmptyObject {
   setData(dataStore);
   return {};
 }
-// token
-// Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
+
+/**
+ * Given an authUserId, generate a new key: tokenId to value: authUserId pair in the array
+ *
+ * @param authUserId
+ * @returns
+ */
 export function generateToken(authUserId: number): {
   token: string
 } {
   const data = getData();
-  const randomBytes = require('randombytes');
 
   let tokenId: string;
   do {
-    tokenId = randomBytes(16).toString('base64url');
+    tokenId = generateId('string') as string;
   }
   while (data.tokens.find(token => token.tokenId === tokenId));
 
