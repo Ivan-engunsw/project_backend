@@ -101,7 +101,7 @@ describe('adminQuizViewTrash', () => {
   });
 
   test('Successfully view multiple deleted quizzes', () => {
-    const resUser = request('POST', SERVER_URL + '/v1/admin/auth/register', {
+    const resUser1 = request('POST', SERVER_URL + '/v1/admin/auth/register', {
       json: {
         email: 'auth@one.com',
         password: 'authone1',
@@ -110,11 +110,32 @@ describe('adminQuizViewTrash', () => {
       },
       timeout: TIMEOUT_MS
     });
-    const token = JSON.parse(resUser.body.toString());
+    const token1 = JSON.parse(resUser1.body.toString());
+
+    const resUser2 = request('POST', SERVER_URL + '/v1/admin/auth/register', {
+      json: {
+        email: 'auth@two.com',
+        password: 'authtw02',
+        nameFirst: 'auth',
+        nameLast: 'two'
+      },
+      timeout: TIMEOUT_MS
+    });
+    const token2 = JSON.parse(resUser2.body.toString());
+
+    const resQuiz1 = request('POST', SERVER_URL + '/v1/admin/quiz', {
+      json: {
+        token: token1.token,
+        name: 'first',
+        description: 'desc'
+      },
+      timeout: TIMEOUT_MS
+    });
+    const quiz1 = JSON.parse(resQuiz1.body.toString());
 
     const resQuiz2 = request('POST', SERVER_URL + '/v1/admin/quiz', {
       json: {
-        token: token.token,
+        token: token2.token,
         name: 'second',
         description: 'desc'
       },
@@ -124,7 +145,7 @@ describe('adminQuizViewTrash', () => {
 
     const resQuiz3 = request('POST', SERVER_URL + '/v1/admin/quiz', {
       json: {
-        token: token.token,
+        token: token2.token,
         name: 'third',
         description: 'desc'
       },
@@ -132,22 +153,28 @@ describe('adminQuizViewTrash', () => {
     });
     const quiz3 = JSON.parse(resQuiz3.body.toString());
 
+    request('DELETE', SERVER_URL + `/v1/admin/quiz/${quiz1.quizId}`, {
+      qs: {
+        token: token1.token
+      },
+      timeout: TIMEOUT_MS
+    });
     request('DELETE', SERVER_URL + `/v1/admin/quiz/${quiz2.quizId}`, {
       qs: {
-        token: token.token
+        token: token2.token
       },
       timeout: TIMEOUT_MS
     });
     request('DELETE', SERVER_URL + `/v1/admin/quiz/${quiz3.quizId}`, {
       qs: {
-        token: token.token
+        token: token2.token
       },
       timeout: TIMEOUT_MS
     });
 
     const res = request('GET', SERVER_URL + '/v1/admin/quiz/trash', {
       qs: {
-        token: token.token
+        token: token2.token
       },
       timeout: TIMEOUT_MS
     });

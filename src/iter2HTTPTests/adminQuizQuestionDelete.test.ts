@@ -99,6 +99,18 @@ describe('DELETE /v1/admin/quiz/:quizid/question/:questionid', () => {
       expect(res.statusCode).toStrictEqual(401);
     });
 
+    test('Case when quiz is not found from quizid', () => {
+      const res = request('DELETE',
+      `${SERVER_URL}/v1/admin/quiz/${quizId + 1}/question/${question.questionId}`, {
+        qs: {
+          token: token.token
+        },
+        timeout: TIMEOUT_MS
+      });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(403);
+    });
+
     test('Case when question ID does not refer to a valid question within this quiz', () => {
       const res = request('DELETE',
       `${SERVER_URL}/v1/admin/quiz/${quizId}/question/${question.questionId + 1}`, {

@@ -15,6 +15,16 @@ const createUser = {
   timeout: TIMEOUT_MS
 };
 
+const createUser1 = {
+  json: {
+    email: 'validemail2@gmail.com',
+    password: 'password1!',
+    nameFirst: 'Bobby',
+    nameLast: 'Bob'
+  },
+  timeout: TIMEOUT_MS
+};
+
 // let userToken: { json: { token: string }, timeout: number };
 let quizIds: number[];
 let token: {
@@ -149,44 +159,61 @@ describe('DELETE /v1/admin/quiz/trash/empty', () => {
       expect(res.statusCode).toStrictEqual(403);
     });
 
-    test('Valid token but quizId does not belong to the current user', () => {
-      const resUser1 = request('POST', SERVER_URL + '/v1/admin/auth/register', createUser);
-      token1 = JSON.parse(resUser1.body.toString());
+    describe('Valid token but quizId does not belong to the current user', () => {
+      test('quiz in quizzes', () => {
+        const resUser1 = request('POST', SERVER_URL + '/v1/admin/auth/register', createUser1);
+        token1 = JSON.parse(resUser1.body.toString());
 
-      const resQuiz1 = request('POST', SERVER_URL + '/v1/admin/quiz', {
-        json: {
-          token: token1.token,
-          name: 'New Quiz One',
-          description: 'Quiz getting deleted'
-        },
-        timeout: TIMEOUT_MS
+        const res = request('DELETE', SERVER_URL + '/v1/admin/quiz/trash/empty', {
+          qs: {
+            token: token1.token,
+            quizIds: JSON.stringify(quizIds)
+          },
+          timeout: TIMEOUT_MS
+        });
+        expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+        expect(res.statusCode).toStrictEqual(403);
       });
 
-      quizId1 = JSON.parse(resQuiz1.body.toString());
-      quizIds.push(quizId1.quizId);
+      test('quiz in trash', () => {
+        const resUser1 = request('POST', SERVER_URL + '/v1/admin/auth/register', createUser1);
+        token1 = JSON.parse(resUser1.body.toString());
 
-      request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId1.quizId}`, {
-        qs: {
-          token: token1.token
-        },
-        timeout: TIMEOUT_MS
-      });
-      request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId.quizId}`, {
-        qs: {
-          token: token.token
-        },
-        timeout: TIMEOUT_MS
-      });
+        const resQuiz1 = request('POST', SERVER_URL + '/v1/admin/quiz', {
+          json: {
+            token: token1.token,
+            name: 'New Quiz One',
+            description: 'Quiz getting deleted'
+          },
+          timeout: TIMEOUT_MS
+        });
 
-      const res = request('DELETE', SERVER_URL + '/v1/admin/quiz/trash/empty', {
-        qs: {
-          token: token.token,
-          quizIds: JSON.stringify(quizIds)
-        },
-        timeout: TIMEOUT_MS
+        quizId1 = JSON.parse(resQuiz1.body.toString());
+        quizIds.push(quizId1.quizId);
+
+        request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId1.quizId}`, {
+          qs: {
+            token: token1.token
+          },
+          timeout: TIMEOUT_MS
+        });
+        request('DELETE', SERVER_URL + `/v1/admin/quiz/${quizId.quizId}`, {
+          qs: {
+            token: token.token
+          },
+          timeout: TIMEOUT_MS
+        });
+
+        const res = request('DELETE', SERVER_URL + '/v1/admin/quiz/trash/empty', {
+          qs: {
+            token: token.token,
+            quizIds: JSON.stringify(quizIds)
+          },
+          timeout: TIMEOUT_MS
+        });
+        expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+        expect(res.statusCode).toStrictEqual(403);
       });
-      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
-      expect(res.statusCode).toStrictEqual(403);
     });
   });
 
