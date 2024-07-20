@@ -1,1 +1,1 @@
-{"users":[{"userId":0,"name":"Betty Boop","email":"betty@unsw.com","password":"password1","numSuccessfulLogins":1,"numFailedPasswordsSinceLastLogin":0},{"userId":1,"name":"Norman Nile","email":"norman@unsw.com","password":"password1","numSuccessfulLogins":1,"numFailedPasswordsSinceLastLogin":0}],"quizzes":[],"tokens":[],"trash":[]}
+{"users":[],"quizzes":[],"tokens":[],"trash":[]}
