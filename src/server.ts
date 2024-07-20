@@ -31,6 +31,7 @@ import * as quiz from './quiz';
 import {
   ErrorObject
 } from './errors';
+import { REPLCommand } from 'repl';
 
 // Set up web app
 const app = express();
@@ -412,6 +413,19 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 // ====================================================================
 //  ========================= ITER 3 ROUTES ==========================
 // ====================================================================
+
+app.get('/v2/admin/user/details', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminUserDetails(user.authUserId);
+
+  res.json(result);
+});
+
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
