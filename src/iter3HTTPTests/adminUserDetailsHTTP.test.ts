@@ -1,5 +1,6 @@
 import request from 'sync-request-curl';
 import { port, url } from '../config.json';
+import * as HTTP from './HTTPHelper';
 
 // CONSTANTS //
 const SERVER_URL = `${url}:${port}`;
@@ -12,56 +13,25 @@ const INPUT_USER = {
 };
 const ERROR = { error: expect.any(String) };
 
-// HELPER FUNCTIONS //
-const clear = () => {
-  request('DELETE', SERVER_URL + '/v1/clear', {
-    timeout: TIMEOUT_MS
-  });
-};
-
-const adminAuthRegister =
-(inputUser: {
-  email: string,
-  password: string,
-  nameFirst: string,
-  nameLast: string
-}) => {
-  return request('POST', SERVER_URL + '/v1/admin/auth/register', {
-    json: inputUser,
-    timeout: TIMEOUT_MS
-  });
-};
-
-const adminUserDetails = (token: string) => {
-  return request('GET', SERVER_URL + '/v2/admin/user/details', {
-    headers: {
-      token: token
-    },
-    timeout: TIMEOUT_MS
-  });
-};
-
 // TESTING //
 beforeEach(() => {
-  clear();
+  HTTP.clear();
 });
 
 afterEach(() => {
-  clear();
+  HTTP.clear();
 });
 
 describe('GET /v1/admin/user/details', () => {
-  let token: {
-    token: string
-  };
+  let token: string;
   beforeEach(() => {
-    const res = adminAuthRegister(INPUT_USER);
-    token = JSON.parse(res.body.toString());
+    const res = HTTP.adminAuthRegister(INPUT_USER);
+    token = JSON.parse(res.body.toString()).token;
   });
 
   describe('error testing', () => {
     test('returns an error for invalid token', () => {
-      const res = adminUserDetails(token.token + 1);
+      const res = HTTP.adminUserDetails({ token: token + 1});
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(401);
     });
@@ -69,7 +39,7 @@ describe('GET /v1/admin/user/details', () => {
 
   describe('functionality testing', () => {
     test('has the correct return type', () => {
-      const res = adminUserDetails(token.token);
+      const res = HTTP.adminUserDetails({ token: token });
       expect(JSON.parse(res.body.toString())).toStrictEqual({
         user: {
           userId: expect.any(Number),
@@ -82,7 +52,7 @@ describe('GET /v1/admin/user/details', () => {
     });
 
     test('correctly returns the user details of 1 user', () => {
-      const res = adminUserDetails(token.token);
+      const res = HTTP.adminUserDetails({ token: token });
       expect(JSON.parse(res.body.toString())).toStrictEqual({
         user: {
           userId: expect.any(Number),
@@ -101,10 +71,10 @@ describe('GET /v1/admin/user/details', () => {
         nameFirst: 'Norman',
         nameLast: 'Nile'
       };
-      const user2 = adminAuthRegister(inputUser2);
-      const token2 = JSON.parse(user2.body.toString());
+      const user2 = HTTP.adminAuthRegister(inputUser2);
+      const token2 = JSON.parse(user2.body.toString()).token;
 
-      const res = adminUserDetails(token.token);
+      const res = HTTP.adminUserDetails({ token: token });
       expect(JSON.parse(res.body.toString())).toStrictEqual({
         user: {
           userId: expect.any(Number),
@@ -115,7 +85,7 @@ describe('GET /v1/admin/user/details', () => {
         }
       });
 
-      const res2 = adminUserDetails(token2.token);
+      const res2 = HTTP.adminUserDetails({ token: token2 });
       expect(JSON.parse(res2.body.toString())).toStrictEqual({
         user: {
           userId: expect.any(Number),
