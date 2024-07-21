@@ -33,13 +33,13 @@ const adminAuthRegister =
 };
 
 const adminAuthLogout = (token: string) => {
-  return request('GET', SERVER_URL + '/v2/admin/auth/logout', {
+  return request('POST', SERVER_URL + '/v2/admin/auth/logout', {
     headers: {
       token: token
     },
     timeout: TIMEOUT_MS
   });
-}
+};
 
 // TESTING //
 beforeEach(() => {
@@ -51,13 +51,13 @@ afterEach(() => {
 });
 
 describe('POST /v1/admin/auth/logout', () => {
-    let token: {
+  let token: {
       token: string
     };
-    beforeEach(() => {
-      const res = adminAuthRegister(INPUT_USER);
-      token = JSON.parse(res.body.toString());
-    });
+  beforeEach(() => {
+    const res = adminAuthRegister(INPUT_USER);
+    token = JSON.parse(res.body.toString());
+  });
 
   describe('error testing', () => {
     test('returns an error for invalid token', () => {

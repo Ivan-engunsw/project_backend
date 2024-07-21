@@ -563,6 +563,16 @@ app.get('/v2/admin/user/details', (req: Request, res: Response) => {
   res.json(result);
 });
 
+app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  try {
+    const result = removeToken(token);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+});
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
