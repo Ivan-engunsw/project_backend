@@ -55,24 +55,24 @@ export function generateToken(authUserId: number): {
 // NOTE: Token is just a string, not the object { token: string }
 export function validToken(tokenId: string): {
   authUserId: number
-} | error.ErrorObject {
+} {
   const tokens = getData().tokens;
   const token = tokens.find(token => token.tokenId === tokenId);
-  return (token)
-    ? {
-        authUserId: token.authUserId
-      }
-    : error.InvalidToken(tokenId);
+  if (token) {
+    return { authUserId: token.authUserId };
+  } else {
+    throw new Error(error.InvalidToken(tokenId));
+  }
 }
 
 // Remove the token from the array and return {} on success or error if invalid
 // NOTE: Token is just a string, not the object { token: string }
-export function removeToken(tokenId: string): EmptyObject | error.ErrorObject {
+export function removeToken(tokenId: string): EmptyObject {
   const data = getData();
   const tokenIndex = data.tokens.findIndex(token => token.tokenId === tokenId);
 
   if (tokenIndex === -1) {
-    return error.InvalidToken(tokenId);
+    throw new Error(error.InvalidToken(tokenId));
   }
 
   data.tokens.splice(tokenIndex, 1);
