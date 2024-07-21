@@ -1,10 +1,6 @@
-import request from 'sync-request-curl';
-import { port, url } from '../config.json';
 import * as HTTP from './HTTPHelper';
 
 // CONSTANTS //
-const SERVER_URL = `${url}:${port}`;
-const TIMEOUT_MS = 5 * 1000;
 const INPUT_USER = {
   email: 'betty@unsw.com',
   password: 'password1',
@@ -31,7 +27,7 @@ describe('POST /v1/admin/auth/logout', () => {
 
   describe('error testing', () => {
     test('returns an error for invalid token', () => {
-      const res = HTTP.adminAuthLogout({ token: token + 1});
+      const res = HTTP.adminAuthLogout({ token: token + 1 });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(401);
     });

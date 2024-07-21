@@ -10,7 +10,7 @@ const TIMEOUT_MS = 5 * 1000;
 export function requestHelper(method: HttpVerb, path: string, payload: { [key: string]: any }) {
   let qs = {};
   let json = {};
-  const headers = { 'token': payload.token };
+  const headers = { token: payload.token };
   if (['GET', 'DELETE'].includes(method)) {
     qs = payload;
   } else {
