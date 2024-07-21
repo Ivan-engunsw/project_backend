@@ -1,6 +1,5 @@
 import * as HTTP from './HTTPHelper';
 import { timeNow } from '../helper';
-import { adminQuizCreate } from '../quiz';
 
 const ERROR = { error: expect.any(String) };
 const INPUT_USER = {
