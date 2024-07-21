@@ -78,11 +78,15 @@ const setError = (res: Response, error: Error, flag: 'p' | 't' | 'q') => {
 //  ========================= ITER 2 ROUTES ==========================
 // ====================================================================
 
+// OTHER REQUESTS //
+// Clear
 app.delete('/v1/clear', (req: Request, res: Response) => {
   const result = clear();
   res.json(result);
 });
 
+// AUTH REQUESTS //
+// Auth register
 app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   const {
     email,
@@ -99,6 +103,7 @@ app.post('/v1/admin/auth/register', (req: Request, res: Response) => {
   }
 });
 
+// Auth login
 app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   const {
     email,
@@ -113,6 +118,7 @@ app.post('/v1/admin/auth/login', (req: Request, res: Response) => {
   }
 });
 
+// User details
 app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   const token = req.query.token.toString();
   let user;
@@ -126,6 +132,7 @@ app.get('/v1/admin/user/details', (req: Request, res: Response) => {
   res.json(result);
 });
 
+// User details update
 app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   const {
     token,
@@ -148,6 +155,7 @@ app.put('/v1/admin/user/details', (req: Request, res: Response) => {
   }
 });
 
+// User password update
 app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   const {
     token,
@@ -169,6 +177,7 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
   }
 });
 
+// Auth logout
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   const token = req.body.token;
   try {
@@ -179,6 +188,8 @@ app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
   }
 });
 
+// QUIZ REQUESTS //
+// Quiz create
 app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   const {
     token,
@@ -200,6 +211,7 @@ app.post('/v1/admin/quiz', (req: Request, res: Response) => {
   }
 });
 
+// Quiz trash view
 app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   let authUser;
   try {
@@ -211,6 +223,7 @@ app.get('/v1/admin/quiz/trash', (req: Request, res: Response) => {
   res.json(quiz.adminQuizTrashView(authUser.authUserId));
 });
 
+// Quiz list
 app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   let authUser;
   try {
@@ -223,6 +236,7 @@ app.get('/v1/admin/quiz/list', (req: Request, res: Response) => {
   res.json(result);
 });
 
+// Quiz remove
 app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   let authUser;
   try {
@@ -245,6 +259,7 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   }
 });
 
+// Quiz info
 app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   let authUser;
   try {
@@ -267,6 +282,7 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
   }
 });
 
+// Quiz restore
 app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const {
@@ -294,6 +310,7 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   }
 });
 
+// Quiz transfer
 app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const {
@@ -322,6 +339,7 @@ app.post('/v1/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   }
 });
 
+// Quiz description update
 app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   const {
     token,
@@ -350,6 +368,7 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   }
 });
 
+// Quiz name update
 app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   const {
     token,
@@ -378,6 +397,7 @@ app.put('/v1/admin/quiz/:quizid/name', (req: Request, res: Response) => {
   }
 });
 
+// Quiz trash empty
 app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   const token = req.query.token.toString();
   const quizIds = JSON.parse(req.query.quizIds.toString());
@@ -405,6 +425,8 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   }
 });
 
+// QUESTION REQUESTS //
+// Question create
 app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   const {
     token,
@@ -433,6 +455,7 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   }
 });
 
+// Question update
 app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
   const {
     token,
@@ -462,6 +485,7 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
   }
 });
 
+// Question delete
 app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const questionId = parseInt(req.params.questionid.toString());
@@ -488,6 +512,7 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
   }
 });
 
+// Question move
 app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const questionId = parseInt(req.params.questionid.toString());
@@ -517,6 +542,7 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: 
   }
 });
 
+// Question duplicate
 app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const questionId = parseInt(req.params.questionid.toString());
@@ -549,6 +575,8 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 //  ========================= ITER 3 ROUTES ==========================
 // ====================================================================
 
+// AUTH REQUESTS //
+// User details
 app.get('/v2/admin/user/details', (req: Request, res: Response) => {
   const token = req.headers.token.toString();
   let user;
@@ -563,6 +591,7 @@ app.get('/v2/admin/user/details', (req: Request, res: Response) => {
   res.json(result);
 });
 
+// Auth logout
 app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
   const token = req.headers.token.toString();
   try {
@@ -572,6 +601,83 @@ app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
     return setError(res, error, 't');
   }
 });
+
+// QUIZ REQUESTS //
+// Quiz create
+app.post('/v2/admin/quiz', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const {
+    name,
+    description
+  } = req.body;
+  let authUser;
+  try {
+    authUser = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    const result = quiz.adminQuizCreate(authUser.authUserId, name, description);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// Quiz info
+app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
+  let user;
+  try {
+    user = validToken(req.headers.token as string);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(parseInt(req.params.quizid as string), user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = quiz.adminQuizInfo(user.authUserId, parseInt(req.params.quizid as string));
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// Quiz transfer
+app.post('/v2/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const token = req.headers.token.toString();
+  const {
+    userEmail
+  } = req.body;
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = quiz.adminQuizTransfer(user.authUserId, quizId, userEmail);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// QUESTION REQUESTS //
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
