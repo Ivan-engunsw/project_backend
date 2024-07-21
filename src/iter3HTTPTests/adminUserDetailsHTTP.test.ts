@@ -41,6 +41,7 @@ const adminUserDetails = (token: string) => {
   });
 };
 
+// TESTING //
 beforeEach(() => {
   clear();
 });
