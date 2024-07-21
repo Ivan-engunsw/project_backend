@@ -1,12 +1,15 @@
 import request, { HttpVerb } from 'sync-request-curl';
 import { port, url } from '../config.json';
 
+/* ========================================================================= */
 // CONSTANTS //
+/* ========================================================================= */
 const SERVER_URL = `${url}:${port}`;
 const TIMEOUT_MS = 5 * 1000;
 
+/* ========================================================================= */
 // HELPER FUNCTIONS //
-
+/* ========================================================================= */
 export function requestHelper(method: HttpVerb, path: string, payload: { [key: string]: any }) {
   let qs = {};
   let json = {};
@@ -21,9 +24,10 @@ export function requestHelper(method: HttpVerb, path: string, payload: { [key: s
   return request(method, path, { qs, json, headers, timeout: TIMEOUT_MS });
 }
 
+/* ========================================================================= */
 // ITER 2 V1 HTTP REQUESTS //
 // THESE FUNCTIONS DON'T NEED A TOKEN SO THEY DON'T NEED TO BE UPDATED TO V2 //
-
+/* ========================================================================= */
 export const clear = () => {
   request('DELETE', SERVER_URL + '/v1/clear', {
     timeout: TIMEOUT_MS
@@ -56,11 +60,14 @@ export const adminAuthLogin = (
   });
 };
 
+/* ========================================================================= */
 // UPDATED ITER 2 V2 HTTP REQUESTS //
 // THESE FUNCTIONS NEED A TOKEN SO THEY NEED TO BE UPDATED TO V2 //
+/* ========================================================================= */
 
+/* ========================================================================= */
 // ADMIN/AUTH REQUESTS //
-
+/* ========================================================================= */
 export const adminUserDetails = (
   payload: {
     token: string
@@ -120,8 +127,9 @@ export const adminUserPasswordUpdate = (
   });
 };
 
+/* ========================================================================= */
 // QUIZ REQUESTS //
-
+/* ========================================================================= */
 export const adminQuizList = (
   payload: {
     token: string,
@@ -277,8 +285,9 @@ export const adminQuizTransfer = (
   });
 };
 
+/* ========================================================================= */
 // QUIZ QUESTION REQUESTS //
-
+/* ========================================================================= */
 export const adminQuizQuestionCreate = (
   payload: {
     token: string,
