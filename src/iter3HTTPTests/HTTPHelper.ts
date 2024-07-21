@@ -217,7 +217,7 @@ export const adminQuizDescriptionUpdate = (
       token: payload.token
     },
     json: {
-      name: payload.description
+      description: payload.description
     },
     timeout: TIMEOUT_MS
   });

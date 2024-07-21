@@ -1,7 +1,9 @@
 import * as HTTP from './HTTPHelper';
 
+// CONSTANTS //
 const ERROR = { error: expect.any(String) };
 
+// TESTING //
 beforeEach(() => {
   HTTP.clear();
 });

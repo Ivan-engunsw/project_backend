@@ -1,5 +1,6 @@
 import * as HTTP from './HTTPHelper';
 
+// CONSTANTS //
 const INPUT_USER_1 = {
   email: 'betty@unsw.com',
   password: 'password1',
@@ -14,6 +15,7 @@ const INPUT_USER_2 = {
 };
 const ERROR = { error: expect.any(String) };
 
+// TESTING //
 beforeEach(() => {
   HTTP.clear();
 });

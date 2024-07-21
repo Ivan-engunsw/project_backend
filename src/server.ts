@@ -648,6 +648,35 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
   }
 });
 
+// Quiz description update
+app.put('/v2/admin/quiz/:quizid/description', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const {
+    description
+  } = req.body;
+  const quizId = parseInt(req.params.quizid.toString());
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = quiz.adminQuizDescriptionUpdate(user.authUserId, quizId, description);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // Quiz transfer
 app.post('/v2/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
