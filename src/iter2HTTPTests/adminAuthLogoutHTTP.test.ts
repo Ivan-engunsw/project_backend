@@ -17,6 +17,12 @@ beforeEach(() => {
   });
 });
 
+afterEach(() => {
+  request('DELETE', SERVER_URL + '/v1/clear', {
+    timeout: TIMEOUT_MS
+  });
+});
+
 describe('POST /v1/admin/auth/logout', () => {
   let token: {
     token: string

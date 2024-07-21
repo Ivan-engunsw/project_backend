@@ -12,6 +12,12 @@ describe('adminQuizViewTrash', () => {
     });
   });
 
+  afterEach(() => {
+    request('DELETE', SERVER_URL + '/v1/clear', {
+      timeout: TIMEOUT_MS
+    });
+  });
+
   test('AuthUserId is not a valid user', () => {
     const resUser = request('POST', SERVER_URL + '/v1/admin/auth/register', {
       json: {

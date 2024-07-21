@@ -47,6 +47,12 @@ beforeEach(() => {
   request('POST', SERVER_URL + '/v1/admin/auth/register', createUser);
 });
 
+afterEach(() => {
+  request('DELETE', SERVER_URL + '/v1/clear', {
+    timeout: TIMEOUT_MS
+  });
+});
+
 describe('POST /v1/admin/auth/login', () => {
   describe('Error Testing', () => {
     test('Has incorrect email', () => {

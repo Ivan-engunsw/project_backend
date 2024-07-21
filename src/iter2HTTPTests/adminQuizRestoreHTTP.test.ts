@@ -12,6 +12,12 @@ describe('adminQuizRestore', () => {
     });
   });
 
+  afterEach(() => {
+    request('DELETE', SERVER_URL + '/v1/clear', {
+      timeout: TIMEOUT_MS
+    });
+  });
+
   test('Quiz ID refers to a quiz that is not currently in the trash', () => {
     const resUser = request('POST', SERVER_URL + '/v1/admin/auth/register', {
       json: {
