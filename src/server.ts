@@ -71,6 +71,10 @@ const setError = (error: ErrorObject, res: Response) =>
     error: error.errorMsg
   });
 
+// ====================================================================
+//  ========================= ITER 2 ROUTES ==========================
+// ====================================================================
+
 app.delete('/v1/clear', (req: Request, res: Response) => {
   const result = clear();
   res.json(result);
@@ -159,9 +163,7 @@ app.put('/v1/admin/user/password', (req: Request, res: Response) => {
 });
 
 app.post('/v1/admin/auth/logout', (req: Request, res: Response) => {
-  const {
-    token
-  } = req.body;
+  const token = req.body.token;
   const result = removeToken(token);
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
@@ -404,6 +406,22 @@ app.post('/v1/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   if ('errorMsg' in result) {
     return setError(result as ErrorObject, res);
   }
+  res.json(result);
+});
+
+// ====================================================================
+//  ========================= ITER 3 ROUTES ==========================
+// ====================================================================
+
+app.get('/v2/admin/user/details', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const user = validToken(token);
+  if ('errorMsg' in user) {
+    return setError(user, res);
+  }
+
+  const result = adminUserDetails(user.authUserId);
+
   res.json(result);
 });
 

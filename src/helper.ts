@@ -1,8 +1,5 @@
 import isEmail from 'validator/lib/isEmail';
 import {
-  Random
-} from 'random-js';
-import {
   Data,
   EmptyObject,
   Quiz,
@@ -45,10 +42,9 @@ export const getQuizById = (data: Data, id: number) =>
   data.quizzes.find(quiz => id === quiz.quizId);
 export const generateQuizId = () => {
   const data = getData();
-  const random = new Random();
   let quizId: number;
   do {
-    quizId = random.integer(0, Number.MAX_SAFE_INTEGER);
+    quizId = generateId('number') as number;
   }
   while (data.quizzes.find(quiz => quiz.quizId === quizId) ||
   data.trash.find(quiz => quiz.quizId === quizId));
@@ -73,7 +69,7 @@ export const validQuestionBody =
   }
 
   // Check the duration
-  if (questionBody.duration < 0) {
+  if (questionBody.duration <= 0) {
     return error.invalidDuration(questionBody.duration);
   }
 
@@ -113,10 +109,9 @@ const validQuestion = (question: string) => /^.{5,50}$/.test(question);
 export const generateQuestionId = (quizId: number) => {
   const data = getData();
   const quiz = getQuizById(data, quizId);
-  const random = new Random();
   let questionId: number;
   do {
-    questionId = random.integer(0, Number.MAX_SAFE_INTEGER);
+    questionId = generateId('number') as number;
   }
   while (quiz.questions.find(question => question.questionId === questionId));
   return questionId;
@@ -135,4 +130,9 @@ export function generateId(type: TypeOptions = 'number'): string | number {
     case 'string': return crypto.randomBytes(16).toString('base64url');
     case 'number': return crypto.randomBytes(4).readUInt32BE();
   }
+}
+
+// Hash the given string
+export function hash(plaintext: string) {
+  return crypto.createHash('sha256').update(plaintext).digest('hex');
 }

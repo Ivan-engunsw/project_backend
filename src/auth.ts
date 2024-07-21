@@ -12,7 +12,8 @@ import {
   takenEmail,
   validEmail,
   validUserName,
-  validUserPass
+  validUserPass,
+  hash
 } from './helper';
 
 /**
@@ -51,7 +52,7 @@ export function adminAuthRegister(email: string, password: string, nameFirst: st
     userId: authUserId,
     name: nameFirst + ' ' + nameLast,
     email: email,
-    password: password,
+    password: hash(password),
     numSuccessfulLogins: 1,
     numFailedPasswordsSinceLastLogin: 0,
   });
@@ -80,7 +81,7 @@ export function adminAuthLogin(email: string, password: string): {
     return error.EmailNotFound(email);
   }
 
-  if (password !== user.password) {
+  if (hash(password) !== user.password) {
     user.numFailedPasswordsSinceLastLogin++;
     setData(data);
     return error.UserPassCurrIncorrect();
@@ -191,13 +192,13 @@ export function adminUserPasswordUpdate
   // }
 
   // Conditions for checking if the input is correct
-  if (user.password !== oldPassword) {
+  if (user.password !== hash(oldPassword)) {
     return error.UserPassOldIncorrect();
   }
-  if (oldPassword === newPassword) {
+  if (hash(oldPassword) === hash(newPassword)) {
     return error.UserPassNewNotNew();
   }
-  if (user.oldPwords && user.oldPwords.includes(newPassword)) {
+  if (user.oldPwords && user.oldPwords.includes(hash(newPassword))) {
     return error.UserPassNewNotNew();
   }
   if (!validUserPass(newPassword)) {
@@ -205,8 +206,8 @@ export function adminUserPasswordUpdate
   }
 
   // Updating the Password
-  (user.oldPwords) ? user.oldPwords.push(oldPassword) : user.oldPwords = [oldPassword];
-  user.password = newPassword;
+  (user.oldPwords) ? user.oldPwords.push(hash(oldPassword)) : user.oldPwords = [hash(oldPassword)];
+  user.password = hash(newPassword);
 
   setData(data);
 
