@@ -625,6 +625,19 @@ app.post('/v2/admin/quiz', (req: Request, res: Response) => {
   }
 });
 
+// Quiz list
+app.get('/v2/admin/quiz/list', (req: Request, res: Response) => {
+  let authUser;
+  try {
+    authUser = validToken(req.headers.token.toString());
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  const result = quiz.adminQuizList(authUser.authUserId);
+  res.json(result);
+});
+
 // Quiz info
 app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
   let user;
@@ -642,6 +655,35 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
 
   try {
     const result = quiz.adminQuizInfo(user.authUserId, parseInt(req.params.quizid as string));
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// Quiz name update
+app.put('/v2/admin/quiz/:quizid/name', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const {
+    name
+  } = req.body;
+  const quizId = parseInt(req.params.quizid.toString());
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = quiz.adminQuizNameUpdate(user.authUserId, quizId, name);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
