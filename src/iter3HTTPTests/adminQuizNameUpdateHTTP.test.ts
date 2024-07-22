@@ -124,14 +124,14 @@ describe('PUT /v1/admin/quiz/:quizid/name', () => {
       const res = HTTP.adminQuizList({ token: token });
       expect(JSON.parse(res.body.toString())).toStrictEqual({
         quizzes: [
-        {
-          quizId: quizId,
-          name: 'New quiz1',
-        },
-        {
-          quizId: quizId2,
-          name: 'New quiz2',
-        },
+          {
+            quizId: quizId,
+            name: 'New quiz1',
+          },
+          {
+            quizId: quizId2,
+            name: 'New quiz2',
+          },
         ]
       });
     });

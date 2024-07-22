@@ -68,7 +68,7 @@ describe('GET /v1/admin/quiz/list', () => {
       test('Returning the correct details when multiple quizzes is created', () => {
         const resQuiz2 = HTTP.adminQuizCreate({ token: token, name: 'quiz 2', description: 'English Quiz' });
         const quizId2 = JSON.parse(resQuiz2.body.toString()).quizId;
-        const resQuizInfo2 = HTTP.adminQuizInfo({ token: token, quizid: quizId2 })
+        const resQuizInfo2 = HTTP.adminQuizInfo({ token: token, quizid: quizId2 });
         const quizDetails2 = JSON.parse(resQuizInfo2.body.toString());
 
         const resUser2 = HTTP.adminAuthRegister({
@@ -76,7 +76,7 @@ describe('GET /v1/admin/quiz/list', () => {
           password: 'helloWorld5',
           nameFirst: 'Ronaldo',
           nameLast: 'Suiii'
-        })
+        });
         const token2 = JSON.parse(resUser2.body.toString()).token;
         HTTP.adminQuizCreate({ token: token2, name: 'quiz 1', description: 'English Quiz' });
 
