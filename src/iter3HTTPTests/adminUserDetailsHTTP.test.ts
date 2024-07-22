@@ -45,6 +45,10 @@ beforeEach(() => {
   clear();
 });
 
+afterEach(() => {
+  clear();
+});
+
 describe('GET /v1/admin/user/details', () => {
   let token: {
     token: string

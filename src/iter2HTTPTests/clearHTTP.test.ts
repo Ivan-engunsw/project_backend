@@ -21,6 +21,12 @@ beforeEach(() => {
   );
 });
 
+afterEach(() => {
+  request('DELETE', SERVER_URL + '/v1/clear', {
+    timeout: TIMEOUT_MS
+  });
+});
+
 describe('DELETE /v1/clear', () => {
   test('has the correct return type', () => {
     const res = request(

@@ -60,6 +60,12 @@ beforeEach(() => {
   quizIds.push(quizId.quizId);
 });
 
+afterEach(() => {
+  request('DELETE', SERVER_URL + '/v1/clear', {
+    timeout: TIMEOUT_MS
+  });
+});
+
 describe('DELETE /v1/admin/quiz/trash/empty', () => {
   describe('Error Testing', () => {
     test('One of users quiz is not currently in the trash', () => {

@@ -11,6 +11,12 @@ beforeEach(() => {
   });
 });
 
+afterEach(() => {
+  request('DELETE', SERVER_URL + '/v1/clear', {
+    timeout: TIMEOUT_MS
+  });
+});
+
 describe('PUT /v1/admin/user/password', () => {
   test('Successfully updates the password', () => {
     const res1 = request('POST', SERVER_URL + '/v1/admin/auth/register', {

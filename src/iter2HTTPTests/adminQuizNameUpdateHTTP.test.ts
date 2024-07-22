@@ -18,6 +18,12 @@ beforeEach(() => {
   });
 });
 
+afterEach(() => {
+  request('DELETE', SERVER_URL + '/v1/clear', {
+    timeout: TIMEOUT_MS
+  });
+});
+
 describe('PUT /v1/admin/quiz/:quizid/name', () => {
   let token: {
     token: string
