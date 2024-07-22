@@ -383,3 +383,229 @@ export const adminQuizQuestionDuplicate = (
     timeout: TIMEOUT_MS
   });
 };
+
+/* ========================================================================= */
+// V1 ITER 3 ROUTES (NEW)
+/* ========================================================================= */
+
+/* ========================================================================= */
+// QUIZ REQUESTS
+/* ========================================================================= */
+export const adminQuizThumbnailUpdate = (
+  payload: {
+    token: string,
+    quizid: number,
+    imgUrl: string,
+  }
+) => {
+  return request('PUT', SERVER_URL + `/v1/admin/quiz/${payload.quizid}/thumbnail`, {
+    headers: {
+      token: payload.token
+    },
+    json: {
+      imgUrl: payload.imgUrl
+    },
+    timeout: TIMEOUT_MS
+  });
+};
+
+/* ========================================================================= */
+// SESSION REQUESTS
+/* ========================================================================= */
+export const adminQuizSessionView = (
+  payload: {
+    token: string,
+    quizid: number,
+  }
+) => {
+  return request('GET', SERVER_URL + `/v1/admin/quiz/${payload.quizid}/sessions`, {
+    headers: {
+      token: payload.token
+    },
+    timeout: TIMEOUT_MS
+  });
+};
+
+export const adminQuizSessionStart = (
+  payload: {
+    token: string,
+    quizid: number,
+    autoStartNum: number,
+  }
+) => {
+  return request('GET', SERVER_URL + `/v1/admin/quiz/${payload.quizid}/session/start`, {
+    headers: {
+      token: payload.token
+    },
+    json: {
+      autoStartNum: payload.autoStartNum
+    },
+    timeout: TIMEOUT_MS
+  });
+};
+
+export const adminQuizSessionUpdate = (
+  payload: {
+    token: string,
+    quizid: number,
+    sessionid: number,
+    action: string,
+  }
+) => {
+  return request('PUT', SERVER_URL + `/v1/admin/quiz/${payload.quizid}/session/${payload.sessionid}`, {
+    headers: {
+      token: payload.token
+    },
+    json: {
+      action: payload.action
+    },
+    timeout: TIMEOUT_MS
+  });
+};
+
+export const adminQuizSessionInfo = (
+  payload: {
+    token: string,
+    quizid: number,
+    sessionid: number,
+  }
+) => {
+  return request('GET', SERVER_URL + `/v1/admin/quiz/${payload.quizid}/session/${payload.sessionid}`, {
+    headers: {
+      token: payload.token
+    },
+    timeout: TIMEOUT_MS
+  });
+};
+
+export const adminQuizSessionResult = (
+  payload: {
+    token: string,
+    quizid: number,
+    sessionid: number,
+  }
+) => {
+  return request('GET', SERVER_URL + `/v1/admin/quiz/${payload.quizid}/session/${payload.sessionid}/results`, {
+    headers: {
+      token: payload.token
+    },
+    timeout: TIMEOUT_MS
+  });
+};
+
+export const adminQuizSessionResultCSV = (
+  payload: {
+    token: string,
+    quizid: number,
+    sessionid: number,
+  }
+) => {
+  return request('GET', SERVER_URL + `/v1/admin/quiz/${payload.quizid}/session/${payload.sessionid}/results/csv`, {
+    headers: {
+      token: payload.token
+    },
+    timeout: TIMEOUT_MS
+  });
+};
+
+/* ========================================================================= */
+// PLAYER REQUESTS
+/* ========================================================================= */
+export const playerSessionJoin = (
+  payload: {
+    sessionId: number,
+    name: string,
+  }
+) => {
+  return request('POST', SERVER_URL + '/v1/player/join', {
+    json: {
+      sessionId: payload.sessionId,
+      name: payload.name,
+    },
+    timeout: TIMEOUT_MS
+  });
+};
+
+export const playerStatus = (
+  payload: {
+    playerid: number,
+  }
+) => {
+  return request('GET', SERVER_URL + `/v1/player/${payload.playerid}`, {
+    timeout: TIMEOUT_MS
+  });
+};
+
+export const playerQuestionInfo = (
+  payload: {
+    playerid: number,
+    questionposition: number,
+  }
+) => {
+  return request('GET', SERVER_URL + `/v1/player/${payload.playerid}/question/${payload.questionposition}`, {
+    timeout: TIMEOUT_MS
+  });
+};
+
+export const playerQuestionAnswer = (
+  payload: {
+    playerid: number,
+    questionposition: number,
+    answerIds: number[],
+  }
+) => {
+  return request('PUT', SERVER_URL + `v1/player/${payload.playerid}/question/${payload.questionposition}/answer`, {
+    json: {
+      answerIds: payload.answerIds
+    },
+    timeout: TIMEOUT_MS
+  });
+};
+
+export const playerQuestionResult = (
+  payload: {
+    playerid: number,
+    questionposition: number,
+  }
+) => {
+  return request('GET', SERVER_URL + `v1/player/${payload.playerid}/question/${payload.questionposition}/results`, {
+    timeout: TIMEOUT_MS
+  });
+};
+
+export const playerResult = (
+  payload: {
+    playerid: number,
+  }
+) => {
+  return request('GET', SERVER_URL + `v1/player/${payload.playerid}/results`, {
+    timeout: TIMEOUT_MS
+  });
+};
+
+/* ========================================================================= */
+// CHAT REQUESTS
+/* ========================================================================= */
+export const playerChatView = (
+  payload: {
+    playerid: number,
+  }
+) => {
+  return request('GET', SERVER_URL + `v1/player/${payload.playerid}/chat`, {
+    timeout: TIMEOUT_MS
+  });
+};
+
+export const playerChatSend = (
+  payload: {
+    playerid: number,
+    message: { messageBody: string },
+  }
+) => {
+  return request('POST', SERVER_URL + `v1/player/${payload.playerid}/chat`, {
+    json: {
+      message: payload.message
+    },
+    timeout: TIMEOUT_MS
+  });
+};
