@@ -99,6 +99,21 @@ export const validQuestionBody =
     throw new Error(error.noCorrectAnswer());
   }
 
+  // Check the validity of the thumbnail
+  if (questionBody.thumbnailUrl.length === 0) {
+    throw new Error(error.invalidThumbnail(questionBody.thumbnailUrl));
+  }
+
+  if(!questionBody.thumbnailUrl.startsWith('http://') && !questionBody.thumbnailUrl.startsWith('https://')) {
+    throw new Error(error.invalidThumbnail(questionBody.thumbnailUrl));
+  }
+
+  if (!questionBody.thumbnailUrl.toLowerCase().endsWith('jpg') &&
+      !questionBody.thumbnailUrl.toLowerCase().endsWith('jpeg') &&
+      !questionBody.thumbnailUrl.toLowerCase().endsWith('png')) {
+    throw new Error(error.invalidThumbnail(questionBody.thumbnailUrl));
+  }
+
   return {};
 };
 
