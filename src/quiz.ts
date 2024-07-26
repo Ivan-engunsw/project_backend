@@ -33,6 +33,7 @@ export interface QuestionBody {
     answer: string,
     correct: boolean
   } [];
+  thumbnailUrl: string;
 }
 
 /**
@@ -104,6 +105,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     numQuestions: 0,
     questions: [],
     duration: 0,
+    thumbnailUrl: '',
   });
 
   setData(data);
@@ -498,6 +500,7 @@ export function adminQuizQuestionCreate
     duration: questionBody.duration,
     points: questionBody.points,
     answers: answers,
+    thumbnailUrl: questionBody.thumbnailUrl,
   };
 
   // Update the quiz
@@ -560,6 +563,7 @@ EmptyObject {
   existingQuestion.question = questionBody.question;
   existingQuestion.duration = questionBody.duration;
   existingQuestion.points = questionBody.points;
+  existingQuestion.thumbnailUrl = questionBody.thumbnailUrl;
 
   // Create the answers array
   const colours = ['red', 'blue', 'green', 'yellow', 'purple', 'brown', 'orange'];
@@ -707,6 +711,7 @@ export function adminQuizQuestionDuplicate
     duration: question.duration,
     points: question.points,
     answers: question.answers,
+    thumbnailUrl: question.thumbnailUrl,
   };
 
   // Check the duration of the quiz with the new question
