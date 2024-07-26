@@ -19,7 +19,7 @@ afterEach(() => {
   HTTP.clear();
 });
 
-describe('PUT /v1/admin/quiz/:quizid/name', () => {
+describe('PUT /v2/admin/quiz/:quizid/name', () => {
   let token: string;
   let quizId: number;
   beforeEach(() => {

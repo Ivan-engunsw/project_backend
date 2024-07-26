@@ -750,6 +750,33 @@ app.post('/v2/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
 });
 
 // QUESTION REQUESTS //
+app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const {
+    questionBody
+  } = req.body;
+  const quizId = parseInt(req.params.quizid.toString());
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = quiz.adminQuizQuestionCreate(user.authUserId, quizId, questionBody);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================

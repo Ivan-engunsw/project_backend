@@ -18,7 +18,7 @@ afterEach(() => {
   HTTP.clear();
 });
 
-describe('GET /v1/admin/user/details', () => {
+describe('GET /v2/admin/user/details', () => {
   let token: string;
   beforeEach(() => {
     const res = HTTP.adminAuthRegister(INPUT_USER);

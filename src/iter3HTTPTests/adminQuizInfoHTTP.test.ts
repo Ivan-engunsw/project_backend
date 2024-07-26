@@ -12,7 +12,7 @@ afterEach(() => {
   HTTP.clear();
 });
 
-describe('GET /v1/admin/quiz/:quizid', () => {
+describe('GET /v2/admin/quiz/:quizid', () => {
   let token: string;
   let quizId: number;
   beforeEach(() => {

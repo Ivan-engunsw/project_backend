@@ -13,7 +13,7 @@ afterEach(() => {
   HTTP.clear();
 });
 
-describe('GET /v1/admin/quiz/list', () => {
+describe('GET /v2/admin/quiz/list', () => {
   test('Token is non-existent', () => {
     const res = HTTP.adminQuizList({ token: '0' });
     expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
