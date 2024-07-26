@@ -18,7 +18,7 @@ afterEach(() => {
   HTTP.clear();
 });
 
-describe('POST /v1/admin/auth/logout', () => {
+describe('POST /v2/admin/auth/logout', () => {
   let token: string;
   beforeEach(() => {
     const res = HTTP.adminAuthRegister(INPUT_USER);

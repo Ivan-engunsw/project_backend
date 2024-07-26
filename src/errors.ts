@@ -69,3 +69,7 @@ export const invalidQuizDuration = (duration: number) =>
 // points
 export const invalidPoints = (points: number) =>
   `The points for the question: '${points}' is invalid`;
+
+// thumbnail
+export const invalidThumbnail = (thumbnailUrl: string) =>
+  `The thumbnailUrl: ${thumbnailUrl} is invalid`;

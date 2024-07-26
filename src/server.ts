@@ -276,7 +276,8 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 
   try {
     const result = quiz.adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
-    res.json(result);
+    const { thumbnailUrl, ...filtered } = result;
+    res.json(filtered);
   } catch (error) {
     return setError(res, error, 'p');
   }
@@ -749,6 +750,33 @@ app.post('/v2/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
 });
 
 // QUESTION REQUESTS //
+app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const {
+    questionBody
+  } = req.body;
+  const quizId = parseInt(req.params.quizid.toString());
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = quiz.adminQuizQuestionCreate(user.authUserId, quizId, questionBody);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
 
 app.put('/v2/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());

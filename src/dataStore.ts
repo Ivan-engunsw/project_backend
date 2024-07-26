@@ -21,6 +21,7 @@ export interface Quiz {
   numQuestions: number;
   questions: Question[];
   duration: number;
+  thumbnailUrl ? : string;
 }
 
 export interface Question {
@@ -29,6 +30,7 @@ export interface Question {
   duration: number;
   points: number;
   answers: Answer[];
+  thumbnailUrl ? : string;
 }
 
 export interface Answer {

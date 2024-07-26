@@ -59,7 +59,7 @@ export const sumDuration = (quiz: Quiz) =>
 export const validQuestionBody =
 (questionBody: QuestionBody, quiz: Quiz): EmptyObject => {
   // Check the length of the question
-  if (!(validQuestion(questionBody.question))) {
+  if (!/^.{5,50}$/.test(questionBody.question)) {
     throw new Error(error.invalidQuestion(questionBody.question));
   }
 
@@ -99,11 +99,34 @@ export const validQuestionBody =
     throw new Error(error.noCorrectAnswer());
   }
 
+  // Check the validity of the thumbnail
+  if (questionBody.thumbnailUrl != undefined) {
+    if (!validThumbnail(questionBody.thumbnailUrl)) {
+      throw new Error(error.invalidThumbnail(questionBody.thumbnailUrl));
+    }
+  }
+
   return {};
 };
 
-// Checks if a question string is of valid length
-const validQuestion = (question: string) => /^.{5,50}$/.test(question);
+// Checks the validity of a given thumbnail url
+const validThumbnail = (thumbnailUrl: string) => {
+  if (thumbnailUrl.length === 0) {
+    return false;
+  }
+
+  if (!thumbnailUrl.startsWith('http://') && !thumbnailUrl.startsWith('https://')) {
+    return false;
+  }
+
+  if (!thumbnailUrl.toLowerCase().endsWith('jpg') &&
+      !thumbnailUrl.toLowerCase().endsWith('jpeg') &&
+      !thumbnailUrl.toLowerCase().endsWith('png')) {
+    return false;
+  }
+
+  return true;
+};
 
 // Randomly generates a unique questionId
 export const generateQuestionId = (quizId: number) => {
