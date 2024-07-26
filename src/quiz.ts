@@ -654,7 +654,7 @@ EmptyObject {
 
   // Check the question exists
   const question: Question = getQuestionById(quiz, questionId);
-  if (!question) throw new Error(error.QuestionIdNotFound(quizId));
+  if (!question) throw new Error(error.QuestionIdNotFound(questionId));
 
   const currentPosition = quiz.questions.indexOf(question);
   if (validNewPosition(quiz, newPosition, currentPosition)) {
@@ -698,7 +698,7 @@ export function adminQuizQuestionDuplicate
 
   // Check the question exists
   const question: Question = getQuestionById(quiz, questionId);
-  if (!question) throw new Error(error.QuestionIdNotFound(quizId));
+  if (!question) throw new Error(error.QuestionIdNotFound(questionId));
 
   // Create the duplicated question
   const duplicateQuestion: Question = {
