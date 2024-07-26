@@ -12,7 +12,7 @@ afterEach(() => {
   HTTP.clear();
 });
 
-describe('POST /v1/admin/quiz', () => {
+describe('POST /v2/admin/quiz', () => {
   test('Token is non-existent', () => {
     const res = HTTP.adminQuizCreate({ token: '0', name: 'Betty boop quiz', description: 'Quiz for Betty boop' });
     expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);

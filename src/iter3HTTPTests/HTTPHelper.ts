@@ -324,7 +324,7 @@ export const adminQuizQuestionUpdate = (
     },
   }
 ) => {
-  return request('PUT', SERVER_URL + `/v2/admin/quiz/${payload.quizid}/question${payload.questionid}`, {
+  return request('PUT', SERVER_URL + `/v2/admin/quiz/${payload.quizid}/question/${payload.questionid}`, {
     headers: {
       token: payload.token
     },
@@ -342,7 +342,7 @@ export const adminQuizQuestionDelete = (
     questionid: number,
   }
 ) => {
-  return request('DELETE', SERVER_URL + `/v2/admin/quiz/${payload.quizid}/question${payload.questionid}`, {
+  return request('DELETE', SERVER_URL + `/v2/admin/quiz/${payload.quizid}/question/${payload.questionid}`, {
     headers: {
       token: payload.token
     },
@@ -358,7 +358,7 @@ export const adminQuizQuestionMove = (
     newPosition: number,
   }
 ) => {
-  return request('PUT', SERVER_URL + `/v2/admin/quiz/${payload.quizid}/question${payload.questionid}/move`, {
+  return request('PUT', SERVER_URL + `/v2/admin/quiz/${payload.quizid}/question/${payload.questionid}/move`, {
     headers: {
       token: payload.token
     },
@@ -376,7 +376,7 @@ export const adminQuizQuestionDuplicate = (
     questionid: number,
   }
 ) => {
-  return request('POST', SERVER_URL + `/v2/admin/quiz/${payload.quizid}/question${payload.questionid}/duplicate`, {
+  return request('POST', SERVER_URL + `/v2/admin/quiz/${payload.quizid}/question/${payload.questionid}/duplicate`, {
     headers: {
       token: payload.token
     },

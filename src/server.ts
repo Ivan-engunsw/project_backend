@@ -750,6 +750,61 @@ app.post('/v2/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
 
 // QUESTION REQUESTS //
 
+app.put('/v2/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const questionId = parseInt(req.params.questionid.toString());
+
+  const {
+    newPosition
+  } = req.body;
+  const token = req.headers.token as string;
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try { 
+    const result = quiz.adminQuizQuestionMove(user.authUserId, quizId, questionId, newPosition);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const questionId = parseInt(req.params.questionid.toString());
+
+  const token = req.headers.token as string;
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try { 
+    const result = quiz.adminQuizQuestionDuplicate(user.authUserId, quizId, questionId);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
