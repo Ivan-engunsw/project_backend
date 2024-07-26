@@ -33,7 +33,7 @@ export interface QuestionBody {
     answer: string,
     correct: boolean
   } [];
-  thumbnailUrl: string;
+  thumbnailUrl ? : string;
 }
 
 /**
@@ -105,7 +105,6 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
     numQuestions: 0,
     questions: [],
     duration: 0,
-    thumbnailUrl: '',
   });
 
   setData(data);
@@ -500,8 +499,11 @@ export function adminQuizQuestionCreate
     duration: questionBody.duration,
     points: questionBody.points,
     answers: answers,
-    thumbnailUrl: questionBody.thumbnailUrl,
   };
+
+  if (questionBody.thumbnailUrl) {
+    question.thumbnailUrl = questionBody.thumbnailUrl;
+  }
 
   // Update the quiz
   quiz.questions.push(question);

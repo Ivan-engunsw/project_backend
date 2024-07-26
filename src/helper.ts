@@ -100,21 +100,32 @@ export const validQuestionBody =
   }
 
   // Check the validity of the thumbnail
-  if (questionBody.thumbnailUrl.length === 0) {
-    throw new Error(error.invalidThumbnail(questionBody.thumbnailUrl));
-  }
-
-  if(!questionBody.thumbnailUrl.startsWith('http://') && !questionBody.thumbnailUrl.startsWith('https://')) {
-    throw new Error(error.invalidThumbnail(questionBody.thumbnailUrl));
-  }
-
-  if (!questionBody.thumbnailUrl.toLowerCase().endsWith('jpg') &&
-      !questionBody.thumbnailUrl.toLowerCase().endsWith('jpeg') &&
-      !questionBody.thumbnailUrl.toLowerCase().endsWith('png')) {
-    throw new Error(error.invalidThumbnail(questionBody.thumbnailUrl));
+  if (questionBody.thumbnailUrl) {
+    if (!validThumbnail(questionBody.thumbnailUrl)) {
+      throw new Error(error.invalidThumbnail(questionBody.thumbnailUrl));
+    }
   }
 
   return {};
+};
+
+// Checks the validity of a given thumbnail url
+const validThumbnail = (thumbnailUrl: string) => {
+  if (thumbnailUrl.length === 0) {
+    return false;
+  }
+
+  if (!thumbnailUrl.startsWith('http://') && !thumbnailUrl.startsWith('https://')) {
+    return false;
+  }
+
+  if (!thumbnailUrl.toLowerCase().endsWith('jpg') &&
+      !thumbnailUrl.toLowerCase().endsWith('jpeg') &&
+      !thumbnailUrl.toLowerCase().endsWith('png')) {
+    return false;
+  }
+
+  return true;
 };
 
 // Randomly generates a unique questionId

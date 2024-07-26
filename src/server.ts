@@ -276,7 +276,8 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
 
   try {
     const result = quiz.adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
-    res.json(result);
+    const { thumbnailUrl, ...filtered } = result;
+    res.json(filtered);
   } catch (error) {
     return setError(res, error, 'p');
   }
