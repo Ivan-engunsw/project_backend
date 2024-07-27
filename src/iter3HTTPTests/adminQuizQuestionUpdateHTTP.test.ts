@@ -197,6 +197,38 @@ describe('PUT /v2/admin/quiz/:quizid/question/:questionId', () => {
       expect(res2.statusCode).toStrictEqual(400);
     });
 
+    test('Case when updated duration causes quiz to exceed 3 mins', () => {
+      const inputQuestion = {
+        question: 'Where is the best place in the world?',
+        duration: 172,
+        points: 5,
+        answers: [
+          {
+            answer: 'Japan',
+            correct: true
+          },
+          {
+            answer: 'America',
+            correct: false
+          },
+          {
+            answer: 'Australia',
+            correct: false
+          },
+          {
+            answer: 'Germany',
+            correct: false
+          },
+        ],
+        thumbnailUrl: 'http://google.com/some/image/path.jpg',
+      };
+      HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion });
+
+      const res = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
+
     test('Case when points are out of valid range', () => {
       inputUpdate.points = 0;
       const res1 = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
