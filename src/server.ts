@@ -821,6 +821,7 @@ app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   }
 });
 
+// Question update
 app.put('/v2/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
   const token = req.headers.token.toString();
   const questionBody = req.body.questionBody;
@@ -848,6 +849,7 @@ app.put('/v2/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
   }
 });
 
+// Question move
 app.put('/v2/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const questionId = parseInt(req.params.questionid.toString());
@@ -875,6 +877,7 @@ app.put('/v2/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: 
   }
 });
 
+// Question delete
 app.delete('/v2/admin/quiz/:quizid/question/:questionid', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const questionId = parseInt(req.params.questionid.toString());
@@ -901,11 +904,12 @@ app.delete('/v2/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
   }
 });
 
+// Question duplicate
 app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const questionId = parseInt(req.params.questionid.toString());
   const token = req.headers.token as string;
-  
+
   let user;
   try {
     user = validToken(token);
