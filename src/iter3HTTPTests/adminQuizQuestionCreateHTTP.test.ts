@@ -33,14 +33,15 @@ describe('POST /v2/admin/quiz/{quizid}/question', () => {
       question: 'Who is the Monarch of England?',
       duration: 4,
       points: 5,
-      answers: [{
-        answer: 'Prince Charles',
-        correct: true
-      },
-      {
-        answer: 'Queen Elizabeth',
-        correct: false
-      },
+      answers: [
+        {
+          answer: 'Prince Charles',
+          correct: true
+        },
+        {
+          answer: 'Queen Elizabeth',
+          correct: false
+        },
       ],
       thumbnailUrl: 'http://google.com/some/image/path.jpg',
     };
