@@ -585,6 +585,28 @@ app.get('/v2/admin/user/details', (req: Request, res: Response) => {
   res.json(result);
 });
 
+// User password update
+app.put('/v2/admin/user/password', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const {
+    oldPassword,
+    newPassword
+  } = req.body;
+  let authUser;
+  try {
+    authUser = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    const result = adminUserPasswordUpdate(authUser.authUserId, oldPassword, newPassword);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // Auth logout
 app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
   const token = req.headers.token.toString();
