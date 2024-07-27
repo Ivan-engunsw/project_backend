@@ -34,7 +34,8 @@ describe('POST /v2/admin/quiz/{quizid}/question', () => {
       question: 'Who is the Monarch of England?',
       duration: 4,
       points: 5,
-      answers: [{
+      answers: [
+      {
         answer: 'Prince Charles',
         correct: true
       },
