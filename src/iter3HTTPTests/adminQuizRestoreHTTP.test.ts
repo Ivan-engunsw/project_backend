@@ -60,10 +60,10 @@ describe('POST /v2/admin/quiz/:quizid/restore', () => {
   test('Quiz ID does not refer to a quiz that this user owns', () => {
     const resUser2 = HTTP.adminAuthRegister({
       email: 'auth@two.com',
-        password: 'authtwo2',
-        nameFirst: 'auth',
-        nameLast: 'two'
-    })
+      password: 'authtwo2',
+      nameFirst: 'auth',
+      nameLast: 'two'
+    });
     const token2 = JSON.parse(resUser2.body.toString()).token;
 
     HTTP.adminQuizRemove({ token: token, quizid: quizId });

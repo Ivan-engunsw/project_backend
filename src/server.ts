@@ -585,6 +585,29 @@ app.get('/v2/admin/user/details', (req: Request, res: Response) => {
   res.json(result);
 });
 
+// User details update
+app.put('/v2/admin/user/details', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const {
+    email,
+    nameFirst,
+    nameLast
+  } = req.body;
+  let authUser;
+  try {
+    authUser = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    const result = adminUserDetailsUpdate(authUser.authUserId, email, nameFirst, nameLast);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // User password update
 app.put('/v2/admin/user/password', (req: Request, res: Response) => {
   const token = req.headers.token.toString();

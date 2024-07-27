@@ -26,10 +26,10 @@ describe('PUT /v2/admin/user/password', () => {
   });
 
   test('Successfully updates the password', () => {
-    const res1 = HTTP.adminUserPasswordUpdate({ 
-      token: token, 
-      oldPassword: '1234zyx#@', 
-      newPassword: 'newpass1' 
+    const res1 = HTTP.adminUserPasswordUpdate({
+      token: token,
+      oldPassword: '1234zyx#@',
+      newPassword: 'newpass1'
     });
     expect(JSON.parse(res1.body.toString())).toStrictEqual({});
 
@@ -40,56 +40,56 @@ describe('PUT /v2/admin/user/password', () => {
 
   describe('Error Testing', () => {
     test('Case when token is not valid', () => {
-      const res = HTTP.adminUserPasswordUpdate({ 
-        token: token + 1, 
-        oldPassword: '1234zyx#@', 
-        newPassword: 'newpass1' 
+      const res = HTTP.adminUserPasswordUpdate({
+        token: token + 1,
+        oldPassword: '1234zyx#@',
+        newPassword: 'newpass1'
       });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(401);
     });
 
     test('Case when old password is incorrect', () => {
-      const res = HTTP.adminUserPasswordUpdate({ 
-        token: token, 
-        oldPassword: 'wrongpassword', 
-        newPassword: 'newpass1' 
+      const res = HTTP.adminUserPasswordUpdate({
+        token: token,
+        oldPassword: 'wrongpassword',
+        newPassword: 'newpass1'
       });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
 
     test('Case when old and new passwords match', () => {
-      const res = HTTP.adminUserPasswordUpdate({ 
-        token: token, 
-        oldPassword: '1234zyx#@', 
-        newPassword: '1234zyx#@' 
+      const res = HTTP.adminUserPasswordUpdate({
+        token: token,
+        oldPassword: '1234zyx#@',
+        newPassword: '1234zyx#@'
       });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
 
     test('Case when new password has already been used before', () => {
-      HTTP.adminUserPasswordUpdate({ 
-        token: token, 
-        oldPassword: '1234zyx#@', 
-        newPassword: 'newpass1' 
+      HTTP.adminUserPasswordUpdate({
+        token: token,
+        oldPassword: '1234zyx#@',
+        newPassword: 'newpass1'
       });
 
-      const res = HTTP.adminUserPasswordUpdate({ 
-        token: token, 
-        oldPassword: 'newpass1', 
-        newPassword: '1234zyx#@' 
+      const res = HTTP.adminUserPasswordUpdate({
+        token: token,
+        oldPassword: 'newpass1',
+        newPassword: '1234zyx#@'
       });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
 
     test('Case when new password is less than 8 characters', () => {
-      const res = HTTP.adminUserPasswordUpdate({ 
-        token: token, 
-        oldPassword: '1234zyx#@', 
-        newPassword: 'short1' 
+      const res = HTTP.adminUserPasswordUpdate({
+        token: token,
+        oldPassword: '1234zyx#@',
+        newPassword: 'short1'
       });
 
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
@@ -97,10 +97,10 @@ describe('PUT /v2/admin/user/password', () => {
     });
 
     test('Case when new password does not contain at least one number and one letter', () => {
-      const res2 = HTTP.adminUserPasswordUpdate({ 
-        token: token, 
-        oldPassword: '1234zyx#@', 
-        newPassword: 'abcdefgh' 
+      const res2 = HTTP.adminUserPasswordUpdate({
+        token: token,
+        oldPassword: '1234zyx#@',
+        newPassword: 'abcdefgh'
       });
       expect(JSON.parse(res2.body.toString())).toStrictEqual(ERROR);
       expect(res2.statusCode).toStrictEqual(400);
