@@ -645,7 +645,7 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
   } catch (error) {
     return setError(res, error, 'q');
   }
-  
+
   const result = quiz.adminQuizInfo(parseInt(req.params.quizid as string));
   res.json(result);
 });
