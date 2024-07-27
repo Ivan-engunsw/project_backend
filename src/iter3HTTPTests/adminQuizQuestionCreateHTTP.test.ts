@@ -19,7 +19,6 @@ afterEach(() => {
   HTTP.clear();
 });
 
-
 describe('POST /v2/admin/quiz/{quizid}/question', () => {
   let token: string;
   let quizId: number;
@@ -72,34 +71,34 @@ describe('POST /v2/admin/quiz/{quizid}/question', () => {
       expect(res1.statusCode).toStrictEqual(400);
 
       inputQuestion.answers = [
-      {
-        answer: 'Prince Charles',
-        correct: true
-      },
-      {
-        answer: 'Queen Elizabeth',
-        correct: false
-      },
-      {
-        answer: 'Mary II',
-        correct: false
-      },
-      {
-        answer: 'Charles II',
-        correct: false
-      },
-      {
-        answer: 'King Arthur',
-        correct: false
-      },
-      {
-        answer: 'Henry VIII',
-        correct: false
-      },
-      {
-        answer: 'Edward VI',
-        correct: true
-      },
+        {
+          answer: 'Prince Charles',
+          correct: true
+        },
+        {
+          answer: 'Queen Elizabeth',
+          correct: false
+        },
+        {
+          answer: 'Mary II',
+          correct: false
+        },
+        {
+          answer: 'Charles II',
+          correct: false
+        },
+        {
+          answer: 'King Arthur',
+          correct: false
+        },
+        {
+          answer: 'Henry VIII',
+          correct: false
+        },
+        {
+          answer: 'Edward VI',
+          correct: true
+        },
       ];
       const res2 = HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion });
       expect(JSON.parse(res2.body.toString())).toStrictEqual(ERROR);
@@ -285,12 +284,12 @@ describe('POST /v2/admin/quiz/{quizid}/question', () => {
         questionId: expect.any(Number)
       });
 
-      inputQuestion.thumbnailUrl = 'https://google.com/some/image/path.jpg'
+      inputQuestion.thumbnailUrl = 'https://google.com/some/image/path.jpg';
       const res3 = HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion });
       expect(JSON.parse(res3.body.toString())).toStrictEqual({
         questionId: expect.any(Number)
       });
-    })
+    });
 
     test('correctly creates a question', () => {
       const resQues = HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion });
@@ -304,18 +303,18 @@ describe('POST /v2/admin/quiz/{quizid}/question', () => {
         duration: inputQuestion.duration,
         points: inputQuestion.points,
         answers: [
-        {
-          answerId: expect.any(Number),
-          answer: 'Prince Charles',
-          colour: expect.any(String),
-          correct: true,
-        },
-        {
-          answerId: expect.any(Number),
-          answer: 'Queen Elizabeth',
-          colour: expect.any(String),
-          correct: false,
-        },
+          {
+            answerId: expect.any(Number),
+            answer: 'Prince Charles',
+            colour: expect.any(String),
+            correct: true,
+          },
+          {
+            answerId: expect.any(Number),
+            answer: 'Queen Elizabeth',
+            colour: expect.any(String),
+            correct: false,
+          },
         ],
         thumbnailUrl: 'http://google.com/some/image/path.jpg',
       }]);

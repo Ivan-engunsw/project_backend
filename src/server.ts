@@ -799,7 +799,7 @@ app.put('/v2/admin/quiz/:quizid/question/:questionid/move', (req: Request, res: 
     return setError(res, error, 'q');
   }
 
-  try { 
+  try {
     const result = quiz.adminQuizQuestionMove(user.authUserId, quizId, questionId, newPosition);
     res.json(result);
   } catch (error) {
@@ -825,7 +825,7 @@ app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
     return setError(res, error, 'q');
   }
 
-  try { 
+  try {
     const result = quiz.adminQuizQuestionDuplicate(user.authUserId, quizId, questionId);
     res.json(result);
   } catch (error) {

@@ -36,7 +36,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-    HTTP.clear();
+  HTTP.clear();
 });
 
 describe('PUT /v2/admin/quiz/:quizId/question/:questionId/move', () => {
@@ -52,7 +52,7 @@ describe('PUT /v2/admin/quiz/:quizId/question/:questionId/move', () => {
   });
 
   describe('After creating tokens', () => {
-    let token: string
+    let token: string;
     beforeEach(() => {
       const res = HTTP.adminAuthRegister({
         email: 'bettyBoop@gmail.com',
@@ -181,7 +181,7 @@ describe('PUT /v2/admin/quiz/:quizId/question/:questionId/move', () => {
           });
           expect(JSON.parse(res1.body.toString())).toStrictEqual({});
           const time = timeNow();
-          const timeEditedRes = HTTP.adminQuizInfo({token: token, quizid: quiz1});
+          const timeEditedRes = HTTP.adminQuizInfo({ token: token, quizid: quiz1 });
           const timeLastEdited = parseInt(JSON.parse(timeEditedRes.body.toString()).timeLastEdited);
           expect(timeLastEdited).toBeGreaterThanOrEqual(time);
           expect(timeLastEdited).toBeLessThanOrEqual(time + 1);
@@ -196,7 +196,7 @@ describe('PUT /v2/admin/quiz/:quizId/question/:questionId/move', () => {
           });
           expect(JSON.parse(res1.body.toString())).toStrictEqual({});
 
-          const quizRes2 = HTTP.adminQuizInfo({token: token, quizid: quiz1});
+          const quizRes2 = HTTP.adminQuizInfo({ token: token, quizid: quiz1 });
           const quiz = JSON.parse(quizRes2.body.toString());
           expect(quiz.questions).toStrictEqual([{
             questionId: questionId2,
@@ -239,7 +239,7 @@ describe('PUT /v2/admin/quiz/:quizId/question/:questionId/move', () => {
           ]);
 
           const time = timeNow();
-          const timeEditedRes = HTTP.adminQuizInfo({token: token, quizid: quiz1});
+          const timeEditedRes = HTTP.adminQuizInfo({ token: token, quizid: quiz1 });
           const timeLastEdited = parseInt(JSON.parse(timeEditedRes.body.toString()).timeLastEdited);
           expect(timeLastEdited).toBeGreaterThanOrEqual(time);
           expect(timeLastEdited).toBeLessThanOrEqual(time + 1);
@@ -265,8 +265,7 @@ describe('PUT /v2/admin/quiz/:quizId/question/:questionId/move', () => {
             quizid: quiz1,
             questionBody: INPUT_QUESTION3
           });
-          let questionId3: number;
-          questionId3 = JSON.parse(questionRes3.body.toString()).questionId;
+          const questionId3 = JSON.parse(questionRes3.body.toString()).questionId;
           const res1 = HTTP.adminQuizQuestionMove({
             token: token,
             quizid: quiz1,
@@ -275,7 +274,7 @@ describe('PUT /v2/admin/quiz/:quizId/question/:questionId/move', () => {
           });
           expect(JSON.parse(res1.body.toString())).toStrictEqual({});
 
-          const quizRes2 = HTTP.adminQuizInfo({token: token, quizid: quiz1});
+          const quizRes2 = HTTP.adminQuizInfo({ token: token, quizid: quiz1 });
           const quiz = JSON.parse(quizRes2.body.toString());
           expect(quiz.questions).toStrictEqual([{
             questionId: questionId1,
@@ -337,7 +336,7 @@ describe('PUT /v2/admin/quiz/:quizId/question/:questionId/move', () => {
           ]);
 
           const time = timeNow();
-          const timeEditedRes = HTTP.adminQuizInfo({token: token, quizid: quiz1});
+          const timeEditedRes = HTTP.adminQuizInfo({ token: token, quizid: quiz1 });
           const timeLastEdited = parseInt(JSON.parse(timeEditedRes.body.toString()).timeLastEdited);
           expect(timeLastEdited).toBeGreaterThanOrEqual(time);
           expect(timeLastEdited).toBeLessThanOrEqual(time + 1);

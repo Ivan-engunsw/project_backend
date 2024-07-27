@@ -1,11 +1,7 @@
-import request from 'sync-request-curl';
-import { port, url } from '../config.json';
 import { timeNow } from '../helper';
 import * as HTTP from './HTTPHelper';
 
 const ERROR = { error: expect.any(String) };
-const SERVER_URL = `${url}:${port}`;
-const TIMEOUT_MS = 5 * 1000;
 const INPUT_QUESTION = {
   question: 'Who is the Monarch of England?',
   duration: 4,
@@ -40,12 +36,12 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-    HTTP.clear();
+  HTTP.clear();
 });
 
 describe('POST /v2/admin/quiz/:quizId/question/:questionId/duplicate', () => {
   test('Token is non-existent', () => {
-    const res = HTTP.adminQuizQuestionDuplicate({token: '0', quizid: 0, questionid: 0});
+    const res = HTTP.adminQuizQuestionDuplicate({ token: '0', quizid: 0, questionid: 0 });
     expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
     expect(res.statusCode).toStrictEqual(401);
   });
@@ -63,7 +59,7 @@ describe('POST /v2/admin/quiz/:quizId/question/:questionId/duplicate', () => {
     });
 
     test('Token is not a valid user', () => {
-      const res1 = HTTP.adminQuizQuestionDuplicate({token: token + 1, quizid: 0, questionid: 0});
+      const res1 = HTTP.adminQuizQuestionDuplicate({ token: token + 1, quizid: 0, questionid: 0 });
       expect(JSON.parse(res1.body.toString())).toStrictEqual(ERROR);
       expect(res1.statusCode).toStrictEqual(401);
     });
@@ -76,7 +72,7 @@ describe('POST /v2/admin/quiz/:quizId/question/:questionId/duplicate', () => {
       });
 
       test('QuizId does not exist', () => {
-        const res1 = HTTP.adminQuizQuestionDuplicate({token: token, quizid: quiz1 + 1, questionid: 0});
+        const res1 = HTTP.adminQuizQuestionDuplicate({ token: token, quizid: quiz1 + 1, questionid: 0 });
         expect(JSON.parse(res1.body.toString())).toStrictEqual(ERROR);
         expect(res1.statusCode).toStrictEqual(403);
       });
@@ -89,7 +85,7 @@ describe('POST /v2/admin/quiz/:quizId/question/:questionId/duplicate', () => {
           nameLast: 'two'
         });
         const token2 = JSON.parse(resUser2.body.toString()).token;
-        const res1 = HTTP.adminQuizQuestionDuplicate({token: token2, quizid: quiz1 + 1, questionid: 0});
+        const res1 = HTTP.adminQuizQuestionDuplicate({ token: token2, quizid: quiz1 + 1, questionid: 0 });
         expect(JSON.parse(res1.body.toString())).toStrictEqual(ERROR);
         expect(res1.statusCode).toStrictEqual(403);
       });
@@ -113,7 +109,7 @@ describe('POST /v2/admin/quiz/:quizId/question/:questionId/duplicate', () => {
         });
 
         test('QuestionId is not valid', () => {
-          const res1 = HTTP.adminQuizQuestionDuplicate({token: token, quizid: quiz1, questionid: questionId1 + 1});
+          const res1 = HTTP.adminQuizQuestionDuplicate({ token: token, quizid: quiz1, questionid: questionId1 + 1 });
           expect(JSON.parse(res1.body.toString())).toStrictEqual(ERROR);
           expect(res1.statusCode).toStrictEqual(400);
         });
@@ -121,33 +117,33 @@ describe('POST /v2/admin/quiz/:quizId/question/:questionId/duplicate', () => {
         test('New duration exceeds 3 mins', () => {
           const question = Object.assign({}, INPUT_QUESTION);
           question.duration = 100;
-          const resLong = HTTP.adminQuizQuestionCreate({token: token, quizid: quiz1, questionBody: question});
+          const resLong = HTTP.adminQuizQuestionCreate({ token: token, quizid: quiz1, questionBody: question });
           questionId1 = JSON.parse(resLong.body.toString()).questionId;
 
-          const res1 = HTTP.adminQuizQuestionDuplicate({token: token, quizid: quiz1, questionid: questionId1});
+          const res1 = HTTP.adminQuizQuestionDuplicate({ token: token, quizid: quiz1, questionid: questionId1 });
           expect(JSON.parse(res1.body.toString())).toStrictEqual(ERROR);
           expect(res1.statusCode).toStrictEqual(400);
         });
 
         test('Returns correct output and timeLastEdited', () => {
-          const res1 = HTTP.adminQuizQuestionDuplicate({token: token, quizid: quiz1, questionid: questionId1});
+          const res1 = HTTP.adminQuizQuestionDuplicate({ token: token, quizid: quiz1, questionid: questionId1 });
           expect(JSON.parse(res1.body.toString())).toStrictEqual({
             newQuestionId: expect.any(Number)
           });
           const time = timeNow();
-          const timeEditedRes = HTTP.adminQuizInfo({token: token, quizid: quiz1});
+          const timeEditedRes = HTTP.adminQuizInfo({ token: token, quizid: quiz1 });
           const timeLastEdited = parseInt(JSON.parse(timeEditedRes.body.toString()).timeLastEdited);
           expect(timeLastEdited).toBeGreaterThanOrEqual(time);
           expect(timeLastEdited).toBeLessThanOrEqual(time + 1);
         });
 
         test('Correctly duplicates a question', () => {
-          const res1 = HTTP.adminQuizQuestionDuplicate({token: token, quizid: quiz1, questionid: questionId1});
+          const res1 = HTTP.adminQuizQuestionDuplicate({ token: token, quizid: quiz1, questionid: questionId1 });
           expect(JSON.parse(res1.body.toString())).toStrictEqual({
             newQuestionId: expect.any(Number)
           });
           const questionId3 = JSON.parse(res1.body.toString()).newQuestionId;
-          const quizRes2 = HTTP.adminQuizInfo({token: token, quizid: quiz1});
+          const quizRes2 = HTTP.adminQuizInfo({ token: token, quizid: quiz1 });
           const quiz = JSON.parse(quizRes2.body.toString());
           expect(quiz.questions).toStrictEqual([{
             questionId: questionId1,
@@ -209,7 +205,7 @@ describe('POST /v2/admin/quiz/:quizId/question/:questionId/duplicate', () => {
           ]);
 
           const time = timeNow();
-          const timeEditedRes = HTTP.adminQuizInfo({token: token, quizid: quiz1});
+          const timeEditedRes = HTTP.adminQuizInfo({ token: token, quizid: quiz1 });
           const timeLastEdited = parseInt(JSON.parse(timeEditedRes.body.toString()).timeLastEdited);
           expect(timeLastEdited).toBeGreaterThanOrEqual(time);
           expect(timeLastEdited).toBeLessThanOrEqual(time + 1);
