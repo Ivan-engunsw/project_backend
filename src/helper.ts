@@ -100,7 +100,7 @@ export const validQuestionBody =
   }
 
   // Check the validity of the thumbnail
-  if (questionBody.thumbnailUrl != undefined) {
+  if (questionBody.thumbnailUrl !== undefined) {
     if (!validThumbnail(questionBody.thumbnailUrl)) {
       throw new Error(error.invalidThumbnail(questionBody.thumbnailUrl));
     }

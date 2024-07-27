@@ -1,9 +1,6 @@
 import * as HTTP from './HTTPHelper';
 import { timeNow } from '../helper';
 import { QuestionBody } from '../quiz';
-import { adminAuthRegister } from '../auth';
-
-const TIMEOUT_MS = 5 * 1000;
 
 // CONSTANTS //
 const ERROR = { error: expect.any(String) };
@@ -23,7 +20,7 @@ afterEach(() => {
   HTTP.clear();
 });
 
-describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
+describe('PUT /v2/admin/quiz/:quizid/question/:questionId', () => {
   let token: string;
   let quizId: number;
   let questionId: number;
@@ -39,14 +36,14 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
       duration: 4,
       points: 5,
       answers: [
-      {
-        answer: 'Prince Charles',
-        correct: true
-      },
-      {
-        answer: 'Queen Elizabeth',
-        correct: false
-      },
+        {
+          answer: 'Prince Charles',
+          correct: true
+        },
+        {
+          answer: 'Queen Elizabeth',
+          correct: false
+        },
       ],
       thumbnailUrl: 'http://google.com/some/image/path.jpg',
     };
@@ -58,14 +55,14 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
       duration: 9,
       points: 7,
       answers: [
-      {
-        answer: 'Bloody Mary',
-        correct: true
-      },
-      {
-        answer: 'King Elizabeth',
-        correct: false
-      }
+        {
+          answer: 'Bloody Mary',
+          correct: true
+        },
+        {
+          answer: 'King Elizabeth',
+          correct: false
+        }
       ],
       thumbnailUrl: 'http://baidu.com/new/picture/road.jpg',
     };
@@ -77,7 +74,7 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
       const res = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
       expect(JSON.parse(res.body.toString())).toStrictEqual({});
 
-      const resQuiz = HTTP.adminQuizInfo({ token: token, quizid: quizId })
+      const resQuiz = HTTP.adminQuizInfo({ token: token, quizid: quizId });
       const updatedQuestion = JSON.parse(resQuiz.body.toString()).questions;
       expect(updatedQuestion).toStrictEqual([{
         questionId: questionId,
@@ -85,18 +82,18 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
         duration: 9,
         points: 7,
         answers: [
-        {
-          answerId: expect.any(Number),
-          answer: 'Bloody Mary',  
-          colour: expect.any(String),
-          correct: true,
-        },
-        {
-          answerId: expect.any(Number),
-          answer: 'King Elizabeth',
-          colour: expect.any(String),
-          correct: false,
-        },
+          {
+            answerId: expect.any(Number),
+            answer: 'Bloody Mary',
+            colour: expect.any(String),
+            correct: true,
+          },
+          {
+            answerId: expect.any(Number),
+            answer: 'King Elizabeth',
+            colour: expect.any(String),
+            correct: false,
+          },
         ],
         thumbnailUrl: 'http://baidu.com/new/picture/road.jpg',
       }]);
@@ -136,7 +133,7 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
         answer: 'Prince Charles',
         correct: true
       }];
-      let res1 = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
+      const res1 = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
       expect(JSON.parse(res1.body.toString())).toStrictEqual(ERROR);
       expect(res1.statusCode).toStrictEqual(400);
 
@@ -260,7 +257,7 @@ describe('PUT /v1/admin/quiz/:quizid/question/:questionId', () => {
         password: 'helloEarth12',
         nameFirst: 'Betty',
         nameLast: 'Boop'
-      })
+      });
       const token2 = JSON.parse(resUser.body.toString()).token;
 
       const res1 = HTTP.adminQuizQuestionUpdate({ token: token2, quizid: quizId, questionid: questionId, questionBody: inputUpdate });

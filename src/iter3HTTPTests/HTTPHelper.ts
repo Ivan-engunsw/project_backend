@@ -260,7 +260,7 @@ export const adminQuizTrashEmpty = (
     headers: {
       token: payload.token
     },
-    json: {
+    qs: {
       quizIds: JSON.stringify(payload.quizIds)
     },
     timeout: TIMEOUT_MS

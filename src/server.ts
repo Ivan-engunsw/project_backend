@@ -251,7 +251,7 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
     return setError(res, error, 'q');
   }
 
-  const result = quiz.adminQuizRemove(authUser.authUserId, parseInt(req.params.quizid as string));
+  const result = quiz.adminQuizRemove(parseInt(req.params.quizid as string));
   res.json(result);
 });
 
@@ -634,6 +634,18 @@ app.get('/v2/admin/quiz/list', (req: Request, res: Response) => {
   res.json(result);
 });
 
+// Quiz trash view
+app.get('/v2/admin/quiz/trash', (req: Request, res: Response) => {
+  let authUser;
+  try {
+    authUser = validToken(req.headers.token.toString());
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  res.json(quiz.adminQuizTrashView(authUser.authUserId));
+});
+
 // Quiz info
 app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
   let user;
@@ -650,6 +662,25 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
   }
 
   const result = quiz.adminQuizInfo(parseInt(req.params.quizid as string));
+  res.json(result);
+});
+
+// Quiz remove
+app.delete('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
+  let authUser;
+  try {
+    authUser = validToken(req.headers.token.toString());
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(parseInt(req.params.quizid as string), authUser.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  const result = quiz.adminQuizRemove(parseInt(req.params.quizid as string));
   res.json(result);
 });
 
@@ -728,6 +759,34 @@ app.post('/v2/admin/quiz/:quizid/transfer', (req: Request, res: Response) => {
 
   try {
     const result = quiz.adminQuizTransfer(user.authUserId, quizId, userEmail);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// Quiz trash empty
+app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const quizIds = JSON.parse(req.query.quizIds.toString());
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  for (const quizId of quizIds) {
+    try {
+      validQuiz(quizId, user.authUserId, { trash: true });
+    } catch (error) {
+      return setError(res, error, 'q');
+    }
+  }
+
+  try {
+    const result = quiz.adminQuizTrashEmpty(quizIds);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');

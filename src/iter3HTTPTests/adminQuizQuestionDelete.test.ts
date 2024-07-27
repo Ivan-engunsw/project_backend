@@ -33,14 +33,14 @@ describe('DELETE /v2/admin/quiz/:quizid/question/:questionid', () => {
       duration: 4,
       points: 5,
       answers: [
-      {
-        answer: 'Prince Charles',
-        correct: true
-      },
-      {
-        answer: 'Queen Elizabeth',
-        correct: false
-      },
+        {
+          answer: 'Prince Charles',
+          correct: true
+        },
+        {
+          answer: 'Queen Elizabeth',
+          correct: false
+        },
       ],
       thumbnailUrl: 'http://google.com/some/image/path.jpg',
     };

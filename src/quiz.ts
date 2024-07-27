@@ -124,7 +124,7 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
  * @returns {{}} - return object
  */
 export function adminQuizRemove
-(authUserId: number, quizId: number): EmptyObject {
+(quizId: number): EmptyObject {
   const data: Data = getData();
 
   // Find the quiz
