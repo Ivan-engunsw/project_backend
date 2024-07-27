@@ -519,28 +519,14 @@ export function adminQuizQuestionDelete
  * @returns {{}} - empty object
  */
 export function adminQuizQuestionMove
-(authUserId: number, quizId: number, questionId: number, newPosition: number):
+(quizId: number, questionId: number, newPosition: number):
 EmptyObject {
   const data: Data = getData();
-
-  // SafeToRemove
-  // const user: User = getUserById(data, authUserId);
-  // if (!user) {
-  //   return error.UserIdNotFound(authUserId);
-  // }
-
-  // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
-  if (!quiz) throw new Error(error.QuizIdNotFound(quizId));
-
-  // Check the quiz belongs to the user
-  if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
-  }
 
   // Check the question exists
   const question: Question = getQuestionById(quiz, questionId);
-  if (!question) throw new Error(error.QuestionIdNotFound(quizId));
+  if (!question) throw new Error(error.QuestionIdNotFound(questionId));
 
   const currentPosition = quiz.questions.indexOf(question);
   if (validNewPosition(quiz, newPosition, currentPosition)) {
@@ -562,29 +548,15 @@ EmptyObject {
  * @returns {{newQuestionId}} - object containing new questionId
  */
 export function adminQuizQuestionDuplicate
-(authUserId: number, quizId: number, questionId: number): {
+(quizId: number, questionId: number): {
   newQuestionId: number
 } {
   const data: Data = getData();
-
-  // SafeToRemove
-  // const user: User = getUserById(data, authUserId);
-  // if (!user) {
-  //   return error.UserIdNotFound(authUserId);
-  // }
-
-  // Check the quiz exists
   const quiz: Quiz = getQuizById(data, quizId);
-  if (!quiz) throw new Error(error.QuizIdNotFound(quizId));
-
-  // Check the quiz belongs to the user
-  if (quiz.userId !== authUserId) {
-    throw new Error(error.QuizUnauthorised(quizId));
-  }
 
   // Check the question exists
   const question: Question = getQuestionById(quiz, questionId);
-  if (!question) throw new Error(error.QuestionIdNotFound(quizId));
+  if (!question) throw new Error(error.QuestionIdNotFound(questionId));
 
   // Create the duplicated question
   const duplicateQuestion: Question = {
@@ -593,8 +565,11 @@ export function adminQuizQuestionDuplicate
     duration: question.duration,
     points: question.points,
     answers: question.answers,
-    thumbnailUrl: question.thumbnailUrl,
   };
+
+  if (Object.keys(question).includes('thumbnailUrl')) {
+    duplicateQuestion.thumbnailUrl = question.thumbnailUrl;
+  }
 
   // Check the duration of the quiz with the new question
   if (sumDuration(quiz) + duplicateQuestion.duration > 180) {
