@@ -24,7 +24,7 @@ afterEach(() => {
   HTTP.clear();
 });
 
-describe('POST /v1/admin/quiz/:quizid/transfer', () => {
+describe('POST /v2/admin/quiz/:quizid/transfer', () => {
   let token1: string;
   let token2: string;
   let quizId: number;
