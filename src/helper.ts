@@ -69,7 +69,7 @@ export const validQuestionBody =
   }
 
   // Check the duration
-  if (questionBody.duration <= 0) {
+  if (questionBody.duration <= 0 || questionBody.duration > 180) {
     throw new Error(error.invalidDuration(questionBody.duration));
   }
 

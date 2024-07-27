@@ -251,12 +251,8 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
     return setError(res, error, 'q');
   }
 
-  try {
-    const result = quiz.adminQuizRemove(authUser.authUserId, parseInt(req.params.quizid as string));
-    res.json(result);
-  } catch (error) {
-    return setError(res, error, 'p');
-  }
+  const result = quiz.adminQuizRemove(authUser.authUserId, parseInt(req.params.quizid as string));
+  res.json(result);
 });
 
 // Quiz info
@@ -274,13 +270,9 @@ app.get('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
     return setError(res, error, 'q');
   }
 
-  try {
-    const result = quiz.adminQuizInfo(authUser.authUserId, parseInt(req.params.quizid as string));
-    const { thumbnailUrl, ...filtered } = result;
-    res.json(filtered);
-  } catch (error) {
-    return setError(res, error, 'p');
-  }
+  const result = quiz.adminQuizInfo(parseInt(req.params.quizid as string));
+  const { thumbnailUrl, ...filtered } = result;
+  res.json(filtered);
 });
 
 // Quiz restore
@@ -304,7 +296,7 @@ app.post('/v1/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
   }
 
   try {
-    const result = quiz.adminQuizRestore(user.authUserId, quizId);
+    const result = quiz.adminQuizRestore(quizId);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
@@ -362,7 +354,7 @@ app.put('/v1/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   }
 
   try {
-    const result = quiz.adminQuizDescriptionUpdate(user.authUserId, quizId, description);
+    const result = quiz.adminQuizDescriptionUpdate(quizId, description);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
@@ -419,7 +411,7 @@ app.delete('/v1/admin/quiz/trash/empty', (req: Request, res: Response) => {
   }
 
   try {
-    const result = quiz.adminQuizTrashEmpty(user.authUserId, quizIds);
+    const result = quiz.adminQuizTrashEmpty(quizIds);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
@@ -449,7 +441,7 @@ app.post('/v1/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   }
 
   try {
-    const result = quiz.adminQuizQuestionCreate(user.authUserId, quizId, questionBody);
+    const result = quiz.adminQuizQuestionCreate(quizId, questionBody);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
@@ -479,7 +471,7 @@ app.put('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Respo
   }
 
   try {
-    const result = quiz.adminQuizQuestionUpdate(user.authUserId, quizId, questionId, questionBody);
+    const result = quiz.adminQuizQuestionUpdate(quizId, questionId, questionBody);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
@@ -506,7 +498,7 @@ app.delete('/v1/admin/quiz/:quizid/question/:questionid', (req: Request, res: Re
   }
 
   try {
-    const result = quiz.adminQuizQuestionDelete(user.authUserId, quizId, questionId);
+    const result = quiz.adminQuizQuestionDelete(quizId, questionId);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
@@ -653,13 +645,9 @@ app.get('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
   } catch (error) {
     return setError(res, error, 'q');
   }
-
-  try {
-    const result = quiz.adminQuizInfo(user.authUserId, parseInt(req.params.quizid as string));
-    res.json(result);
-  } catch (error) {
-    return setError(res, error, 'p');
-  }
+  
+  const result = quiz.adminQuizInfo(parseInt(req.params.quizid as string));
+  res.json(result);
 });
 
 // Quiz name update
@@ -713,7 +701,7 @@ app.put('/v2/admin/quiz/:quizid/description', (req: Request, res: Response) => {
   }
 
   try {
-    const result = quiz.adminQuizDescriptionUpdate(user.authUserId, quizId, description);
+    const result = quiz.adminQuizDescriptionUpdate(quizId, description);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
@@ -771,7 +759,7 @@ app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
   }
 
   try {
-    const result = quiz.adminQuizQuestionCreate(user.authUserId, quizId, questionBody);
+    const result = quiz.adminQuizQuestionCreate(quizId, questionBody);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
