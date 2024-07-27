@@ -193,9 +193,14 @@ describe('POST /v2/admin/quiz/{quizid}/question', () => {
 
     test('returns an error when question duration exceeds 3 minutes', () => {
       inputQuestion.duration = 181;
-      const res = HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion });
-      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
-      expect(res.statusCode).toStrictEqual(400);
+      const res1= HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion });
+      expect(JSON.parse(res1.body.toString())).toStrictEqual(ERROR);
+      expect(res1.statusCode).toStrictEqual(400);
+
+      inputQuestion.duration = 0;
+      const res2 = HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion });
+      expect(JSON.parse(res2.body.toString())).toStrictEqual(ERROR);
+      expect(res2.statusCode).toStrictEqual(400);
     });
 
     test('returns an error when question causes quiz duration to exceed 3 minutes', () => {
