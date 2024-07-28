@@ -594,7 +594,7 @@ export function adminQuizThumbnailUpdate(quizId: number, imgUrl: string) {
   if (!validThumbnail(imgUrl)) {
     throw new Error(error.invalidThumbnail(imgUrl));
   }
-  
+
   const data = getData();
   const quiz = getQuizById(data, quizId);
   quiz.thumbnailUrl = imgUrl;

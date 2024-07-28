@@ -889,7 +889,7 @@ app.put('/v1/admin/quiz/:quizid/thumbnail', (req: Request, res: Response) => {
   } catch (error) {
     return setError(res, error, 'p');
   }
-})
+});
 
 // QUESTION REQUESTS //
 // Question create
