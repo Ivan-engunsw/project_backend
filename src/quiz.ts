@@ -22,7 +22,8 @@ import {
   generateQuestionId,
   getQuestionById,
   validNewPosition,
-  sumDuration
+  sumDuration,
+  validThumbnail,
 } from './helper';
 
 export interface QuestionBody {
@@ -587,4 +588,18 @@ export function adminQuizQuestionDuplicate
   return {
     newQuestionId: duplicateQuestion.questionId
   };
+}
+
+export function adminQuizThumbnailUpdate(quizId: number, imgUrl: string) {
+  if (!validThumbnail(imgUrl)) {
+    throw new Error(error.invalidThumbnail(imgUrl));
+  }
+  
+  const data = getData();
+  const quiz = getQuizById(data, quizId);
+  quiz.thumbnailUrl = imgUrl;
+  quiz.timeLastEdited = timeNow();
+  setData(data);
+
+  return {};
 }

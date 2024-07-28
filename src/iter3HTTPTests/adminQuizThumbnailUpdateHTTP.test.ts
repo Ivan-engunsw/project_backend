@@ -67,7 +67,7 @@ describe('PUT /v1/admin/quiz/:quizid/thumbnail', () => {
       expect(res.statusCode).toStrictEqual(401);
     });
 
-    test('returns an error for quizid', () => {
+    test('returns an error for invalid quizid', () => {
       const res = HTTP.adminQuizThumbnailUpdate({ token: token, quizid: quizId + 1, imgUrl: 'http://google.com/some/image/path.jpg' });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(403);
