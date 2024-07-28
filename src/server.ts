@@ -585,6 +585,51 @@ app.get('/v2/admin/user/details', (req: Request, res: Response) => {
   res.json(result);
 });
 
+// User details update
+app.put('/v2/admin/user/details', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const {
+    email,
+    nameFirst,
+    nameLast
+  } = req.body;
+  let authUser;
+  try {
+    authUser = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    const result = adminUserDetailsUpdate(authUser.authUserId, email, nameFirst, nameLast);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// User password update
+app.put('/v2/admin/user/password', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const {
+    oldPassword,
+    newPassword
+  } = req.body;
+  let authUser;
+  try {
+    authUser = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    const result = adminUserPasswordUpdate(authUser.authUserId, oldPassword, newPassword);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // Auth logout
 app.post('/v2/admin/auth/logout', (req: Request, res: Response) => {
   const token = req.headers.token.toString();
@@ -732,6 +777,32 @@ app.put('/v2/admin/quiz/:quizid/description', (req: Request, res: Response) => {
 
   try {
     const result = quiz.adminQuizDescriptionUpdate(quizId, description);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// Quiz restore
+app.post('/v2/admin/quiz/:quizid/restore', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const token = req.headers.token.toString();
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId, { trash: true });
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = quiz.adminQuizRestore(quizId);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');

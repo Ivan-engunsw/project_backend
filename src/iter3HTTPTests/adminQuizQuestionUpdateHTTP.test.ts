@@ -101,6 +101,20 @@ describe('PUT /v2/admin/quiz/:quizid/question/:questionId', () => {
       expect(JSON.parse(resQuiz.body.toString()).timeLastEdited).toBeLessThanOrEqual(time + 1);
       expect(JSON.parse(resQuiz.body.toString()).duration).toStrictEqual(inputUpdate.duration);
     });
+
+    test('accepts multiple thumbnail formats', () => {
+      inputUpdate.thumbnailUrl = 'http://baidu.com/new/picture/road.png';
+      const res1 = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
+      expect(JSON.parse(res1.body.toString())).toStrictEqual({});
+
+      inputUpdate.thumbnailUrl = 'http://baidu.com/new/picture/road.jpeg';
+      const res2 = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
+      expect(JSON.parse(res2.body.toString())).toStrictEqual({});
+
+      inputUpdate.thumbnailUrl = 'https://baidu.com/new/picture/road.jpg';
+      const res3 = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
+      expect(JSON.parse(res3.body.toString())).toStrictEqual({});
+    });
   });
 
   describe('Error Testing', () => {
@@ -183,6 +197,38 @@ describe('PUT /v2/admin/quiz/:quizid/question/:questionId', () => {
       expect(res2.statusCode).toStrictEqual(400);
     });
 
+    test('Case when updated duration causes quiz to exceed 3 mins', () => {
+      const inputQuestion = {
+        question: 'Where is the best place in the world?',
+        duration: 172,
+        points: 5,
+        answers: [
+          {
+            answer: 'Japan',
+            correct: true
+          },
+          {
+            answer: 'America',
+            correct: false
+          },
+          {
+            answer: 'Australia',
+            correct: false
+          },
+          {
+            answer: 'Germany',
+            correct: false
+          },
+        ],
+        thumbnailUrl: 'http://google.com/some/image/path.jpg',
+      };
+      HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion });
+
+      const res = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
+
     test('Case when points are out of valid range', () => {
       inputUpdate.points = 0;
       const res1 = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
@@ -249,6 +295,23 @@ describe('PUT /v2/admin/quiz/:quizid/question/:questionId', () => {
       const res = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
+    });
+
+    test('returns an error for an invalid thumbnail', () => {
+      inputUpdate.thumbnailUrl = '';
+      const res1 = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
+      expect(JSON.parse(res1.body.toString())).toStrictEqual(ERROR);
+      expect(res1.statusCode).toStrictEqual(400);
+
+      inputUpdate.thumbnailUrl = 'http://baidu.com/new/picture/road';
+      const res2 = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
+      expect(JSON.parse(res2.body.toString())).toStrictEqual(ERROR);
+      expect(res2.statusCode).toStrictEqual(400);
+
+      inputUpdate.thumbnailUrl = 'baidu.com/new/picture/road';
+      const res3 = HTTP.adminQuizQuestionUpdate({ token: token, quizid: quizId, questionid: questionId, questionBody: inputUpdate });
+      expect(JSON.parse(res3.body.toString())).toStrictEqual(ERROR);
+      expect(res3.statusCode).toStrictEqual(400);
     });
 
     test('Case when user is not an owner of the quiz or quiz does not exist', () => {
