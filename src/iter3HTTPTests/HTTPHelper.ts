@@ -412,7 +412,7 @@ export const adminQuizThumbnailUpdate = (
 /* ========================================================================= */
 // SESSION REQUESTS
 /* ========================================================================= */
-export const adminQuizSessionView = (
+export const adminQuizSessionsList = (
   payload: {
     token: string,
     quizid: number,
@@ -463,7 +463,7 @@ export const adminQuizSessionUpdate = (
   });
 };
 
-export const adminQuizSessionInfo = (
+export const adminQuizSessionStatus = (
   payload: {
     token: string,
     quizid: number,
@@ -526,7 +526,7 @@ export const playerSessionJoin = (
   });
 };
 
-export const playerStatus = (
+export const playerSessionStatus = (
   payload: {
     playerid: number,
   }
