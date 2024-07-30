@@ -591,6 +591,7 @@ export function adminQuizQuestionDuplicate
 }
 
 /**
+ * Updates the quiz with the given thumbnail url
  *
  * @param quizId - number
  * @param imgUrl - string
