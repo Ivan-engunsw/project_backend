@@ -1029,6 +1029,15 @@ app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   }
 });
 
+app.get('/v1/player/:playerid/results', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid.toString());
+  try {
+    playerId.playerResult(playerId);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
