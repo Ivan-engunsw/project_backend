@@ -51,7 +51,7 @@ export interface Session {
   atQuestion: number;
   players: Player[];
   metadata: Quiz;
-  questionResults: QuestionResults[];
+  questionResults: QuestionResult[];
   usersRankedByScore: UserScore[];
   messages: Message[];
 }
@@ -61,7 +61,7 @@ export interface Player {
   name: string;
 }
 
-export interface QuestionResults {
+export interface QuestionResult {
   questionId: number;
   playersCorrectList: string[];
   averageAnswerTime: number;
