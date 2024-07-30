@@ -2,6 +2,9 @@ import { Action, State, getData, setData } from './dataStore';
 import { findSessionBySessionId, findSessionsByQuizId, generateId, getQuizById } from './helper';
 import * as error from './errors';
 
+// CONSTANTS //
+const COUNTDOWN = 3;
+
 /**
  * Starts a new session with the given quizId
  * 
@@ -79,6 +82,10 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
         case Action.NEXT_QUESTION: 
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
+          const timeoutId = setTimeout(() => {
+            adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+          }, COUNTDOWN * 1000);
+          data.sessionIdtoTimerMap.set(sessionId, timeoutId);
           // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
           // Will also need another action to close a question which will also update info
           break;
@@ -90,11 +97,26 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
       }
       break;
     case State.QUESTION_COUNTDOWN:
+      let timeoutId;
       switch (action) {
         case Action.SKIP_COUNTDOWN:
-          session.state = State.QUESTION_OPEN;
           // Clear timeout created by NEXT_QUESTION
           // Create timeout for QUESTION_CLOSE
+          timeoutId = data.sessionIdtoTimerMap.get(sessionId);
+          clearTimeout(timeoutId);
+          data.sessionIdtoTimerMap.delete(sessionId);
+
+          adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+          break;
+        case Action.OPEN_QUESTION:
+          // Set timeout to close a question
+          data.sessionIdtoTimerMap.delete(sessionId);
+
+          const questionDuration = session.metadata.questions[session.atQuestion - 1].duration;
+          timeoutId = setTimeout(() => {
+            adminQuizSessionUpdate(quizId, sessionId, Action.CLOSE_QUESTION);
+          }, questionDuration * 1000);
+          data.sessionIdtoTimerMap.set(sessionId, timeoutId);
           break;
         case Action.END: 
           session.state = State.END;
@@ -105,6 +127,8 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
       break;
     case State.QUESTION_OPEN:
       switch (action) {
+        case Action.CLOSE_QUESTION:
+          session.state = State.QUESTION_CLOSE;
         case Action.GO_TO_ANSWER:
           session.state = State.ANSWER_SHOW;
           // Update info function
@@ -121,6 +145,10 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
         case Action.NEXT_QUESTION: 
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
+          const timeoutId = setTimeout(() => {
+            adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+          }, COUNTDOWN * 1000);
+          data.sessionIdtoTimerMap.set(sessionId, timeoutId);
           // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
           // Will also need another action to close a question
           break;
@@ -144,6 +172,10 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
         case Action.NEXT_QUESTION: 
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
+          const timeoutId = setTimeout(() => {
+            adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+          }, COUNTDOWN * 1000);
+          data.sessionIdtoTimerMap.set(sessionId, timeoutId);
           // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
           // Will also need another action to close a question
           break;

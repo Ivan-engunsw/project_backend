@@ -12,13 +12,17 @@ import { generateId } from './helper';
  */
 
 export function clear(): EmptyObject {
-  const dataStore = getData();
-  dataStore.users = [];
-  dataStore.quizzes = [];
-  dataStore.tokens = [];
-  dataStore.trash = [];
-  dataStore.sessions = [];
-  setData(dataStore);
+  const data = getData();
+  data.users = [];
+  data.quizzes = [];
+  data.tokens = [];
+  data.trash = [];
+  data.sessions = [];
+  data.sessionIdtoTimerMap.forEach((timeout, sessionId) => {
+    clearTimeout(timeout);
+    data.sessionIdtoTimerMap.delete(sessionId);
+  });
+  setData(data);
   return {};
 }
 

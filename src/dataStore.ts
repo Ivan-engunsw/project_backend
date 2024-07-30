@@ -105,6 +105,8 @@ export enum Action {
   GO_TO_ANSWER = 'GO_TO_ANSWER',
   GO_TO_FINAL_RESULTS = 'GO_TO_FINAL_RESULTS',
   END = 'END',
+  OPEN_QUESTION = 'OPEN_QUESTION',
+  CLOSE_QUESTION = 'CLOSE_QUESTION',
 }
 
 export interface Data {
@@ -113,6 +115,7 @@ export interface Data {
   tokens: Token[];
   trash: Quiz[];
   sessions: Session[];
+  sessionIdtoTimerMap: Map<number, ReturnType<typeof setTimeout>>;
 }
 
 let data: Data = {
@@ -121,6 +124,7 @@ let data: Data = {
   tokens: [],
   trash: [],
   sessions: [],
+  sessionIdtoTimerMap: new Map(),
 };
 
 // Use get() to access the data
