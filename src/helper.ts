@@ -3,6 +3,7 @@ import {
   Data,
   EmptyObject,
   Quiz,
+  Session,
   getData
 } from './dataStore';
 import {
@@ -181,3 +182,9 @@ export function validQuiz(quizId: number, authUserId: number, { trash }: { trash
 // sessions
 export const findSessionsByQuizId = (data: Data, quizId: number) =>
   data.sessions.filter(session => session.metadata.quizId === quizId);
+export const findSessionBySessionId = (data: Data, sessionId: number) =>
+  data.sessions.find(session => session.sessionId === sessionId);
+
+// player
+export const findPlayerByName = (session: Session, name: string) =>
+  session.players.find(player => player.name === name);

@@ -76,7 +76,7 @@ describe('POST /v1/player/join', () => {
         expect(JSON.parse(res.body.toString())).toHaveProperty('playerId', expect.any(Number));
       });
 
-      test.skip('player to successfully joins the session', () => {
+      test.skip('player successfully joins the session', () => {
         HTTP.playerSessionJoin({ sessionId: sessionId, name: 'Betty' });
         const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
         expect(JSON.parse(res.body.toString()).players).toContain('Betty');

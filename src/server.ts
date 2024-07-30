@@ -29,6 +29,7 @@ import {
 } from './auth';
 import * as quiz from './quiz';
 import * as session from './session';
+import * as player from './player';
 import { validQuiz } from './helper';
 
 // Set up web app
@@ -1051,6 +1052,18 @@ app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) =
 
   try {
     const result = session.adminQuizSessionStart(quizId, autoStartNum);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// PLAYER REQUESTS //
+app.post('/v1/player/join', (req: Request, res: Response) => {
+  const { sessionId, name } = req.body;
+
+  try {
+    const result = player.playerSessionJoin(sessionId, name);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
