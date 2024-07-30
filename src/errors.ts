@@ -1,4 +1,4 @@
-import { State } from "./dataStore";
+import { State } from './dataStore';
 
 // id
 export const QuizIdNotFound = (id: number) =>
