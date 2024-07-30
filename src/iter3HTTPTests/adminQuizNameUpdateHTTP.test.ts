@@ -83,7 +83,7 @@ describe('PUT /v2/admin/quiz/:quizid/name', () => {
       const resQuiz2 = HTTP.adminQuizCreate({ token: token2, name: 'Quiz2', description: 'Norman\'s quiz' });
       const quizId2 = JSON.parse(resQuiz2.body.toString()).quizId;
 
-      const res = HTTP.adminQuizNameUpdate({ token: token, quizid: quizId2, name: 'Quiz2' });
+      const res = HTTP.adminQuizNameUpdate({ token: token, quizid: quizId2, name: 'Quiz1' });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(403);
     });

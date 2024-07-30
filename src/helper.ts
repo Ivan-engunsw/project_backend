@@ -110,7 +110,7 @@ export const validQuestionBody =
 };
 
 // Checks the validity of a given thumbnail url
-const validThumbnail = (thumbnailUrl: string) => {
+export const validThumbnail = (thumbnailUrl: string) => {
   if (thumbnailUrl.length === 0) {
     return false;
   }

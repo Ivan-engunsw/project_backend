@@ -864,6 +864,33 @@ app.delete('/v2/admin/quiz/trash/empty', (req: Request, res: Response) => {
   }
 });
 
+// Quiz thumbnail update
+app.put('/v1/admin/quiz/:quizid/thumbnail', (req: Request, res: Response) => {
+  const token = req.headers.token.toString();
+  const quizId = parseInt(req.params.quizid.toString());
+  const imgUrl = req.body.imgUrl;
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = quiz.adminQuizThumbnailUpdate(quizId, imgUrl);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // QUESTION REQUESTS //
 // Question create
 app.post('/v2/admin/quiz/:quizid/question', (req: Request, res: Response) => {
