@@ -433,7 +433,7 @@ export const adminQuizSessionStart = (
     autoStartNum: number,
   }
 ) => {
-  return request('GET', SERVER_URL + `/v1/admin/quiz/${payload.quizid}/session/start`, {
+  return request('POST', SERVER_URL + `/v1/admin/quiz/${payload.quizid}/session/start`, {
     headers: {
       token: payload.token
     },

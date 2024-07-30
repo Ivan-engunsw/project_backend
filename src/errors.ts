@@ -73,3 +73,13 @@ export const invalidPoints = (points: number) =>
 // thumbnail
 export const invalidThumbnail = (thumbnailUrl: string) =>
   `The thumbnailUrl: ${thumbnailUrl} is invalid`;
+
+// sessions
+export const invalidAutoStartNum = (autoStartNum: number) => 
+  `autoStartNum: ${autoStartNum} is invalid`;
+export const tooManySessions = (quizId: number) =>
+  `There are already 10 sessions for the quizId: ${quizId}`;
+export const noQuestions = (quizId: number) =>
+  `There are no questions for the quizId: ${quizId}`;
+export const quizInTrash = (quizId: number) =>
+  `The quizId: ${quizId} is in the trash`;

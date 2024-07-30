@@ -177,3 +177,7 @@ export function validQuiz(quizId: number, authUserId: number, { trash }: { trash
     throw new Error(error.QuizUnauthorised(quizId));
   }
 }
+
+// sessions
+export const findSessionsByQuizId = (data: Data, quizId: number) => 
+  data.sessions.filter(session => session.metadata.quizId === quizId);
