@@ -1,6 +1,7 @@
-import { Action, State, getData, setData } from './dataStore';
+import { Action, State, getData, mapDelete, mapSet, setData } from './dataStore';
 import { findSessionBySessionId, findSessionsByQuizId, generateId, getQuizById } from './helper';
 import * as error from './errors';
+import { adminQuizInfo } from './quiz';
 
 // CONSTANTS //
 const COUNTDOWN = 3;
@@ -51,7 +52,7 @@ export function adminQuizSessionStart(quizId: number, autoStartNum: number) {
     state: State.LOBBY,
     atQuestion: 0,
     players: [],
-    metadata: quiz,
+    metadata: adminQuizInfo(quizId),
     questionResults: [],
     usersRankedByScore: [],
     messages: [],
@@ -85,7 +86,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
           const timeoutId = setTimeout(() => {
             adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
           }, COUNTDOWN * 1000);
-          data.sessionIdtoTimerMap.set(sessionId, timeoutId);
+          mapSet(sessionId, timeoutId);
           // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
           // Will also need another action to close a question which will also update info
           break;
@@ -102,21 +103,19 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
         case Action.SKIP_COUNTDOWN:
           // Clear timeout created by NEXT_QUESTION
           // Create timeout for QUESTION_CLOSE
-          timeoutId = data.sessionIdtoTimerMap.get(sessionId);
-          clearTimeout(timeoutId);
-          data.sessionIdtoTimerMap.delete(sessionId);
-
+          mapDelete(sessionId);
           adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
           break;
         case Action.OPEN_QUESTION:
           // Set timeout to close a question
-          data.sessionIdtoTimerMap.delete(sessionId);
+          mapDelete(sessionId);
 
+          session.state = State.QUESTION_OPEN;
           const questionDuration = session.metadata.questions[session.atQuestion - 1].duration;
           timeoutId = setTimeout(() => {
             adminQuizSessionUpdate(quizId, sessionId, Action.CLOSE_QUESTION);
           }, questionDuration * 1000);
-          data.sessionIdtoTimerMap.set(sessionId, timeoutId);
+          mapSet(sessionId, timeoutId);
           break;
         case Action.END: 
           session.state = State.END;
@@ -148,7 +147,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
           const timeoutId = setTimeout(() => {
             adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
           }, COUNTDOWN * 1000);
-          data.sessionIdtoTimerMap.set(sessionId, timeoutId);
+          mapSet(sessionId, timeoutId);
           // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
           // Will also need another action to close a question
           break;
@@ -175,7 +174,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
           const timeoutId = setTimeout(() => {
             adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
           }, COUNTDOWN * 1000);
-          data.sessionIdtoTimerMap.set(sessionId, timeoutId);
+          mapSet(sessionId, timeoutId);
           // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
           // Will also need another action to close a question
           break;
@@ -206,4 +205,24 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
   setData(data);
 
   return {};
+}
+
+export function adminQuizSessionStatus(quizId: number, sessionId: number) {
+  const data = getData();
+
+  // Check the sessionId is for the correct quizId
+  const session = findSessionBySessionId(data, sessionId);
+  if (session.metadata.quizId !== quizId) {
+    throw new Error(error.invalidSessionIdforQuizId(quizId, sessionId));
+  }
+
+  // Return the session status
+  const playerNames = session.players.reduce((arr, name) => arr.push(name) && arr, []);
+
+  return {
+    state: session.state,
+    atQuestion: session.atQuestion,
+    players: playerNames,
+    metadata: session.metadata,
+  }
 }

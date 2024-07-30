@@ -1032,6 +1032,7 @@ app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 });
 
 // SESSION REQUESTS //
+// Session start
 app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const token = req.headers.token.toString();
@@ -1058,6 +1059,7 @@ app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) =
   }
 });
 
+// Session update
 app.put('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid as string);
   const sessionId = parseInt(req.params.sessionid as string);
@@ -1085,7 +1087,35 @@ app.put('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Respons
   }
 });
 
+// Session status
+app.get('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.params.sessionid as string);
+  const token = req.headers.token as string;
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = session.adminQuizSessionStatus(quizId, sessionId);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+})
+
 // PLAYER REQUESTS //
+// Player join
 app.post('/v1/player/join', (req: Request, res: Response) => {
   const { sessionId, name } = req.body;
 

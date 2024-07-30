@@ -1,7 +1,8 @@
 import {
   getData,
   setData,
-  EmptyObject
+  EmptyObject,
+  clearMap
 } from './dataStore';
 import * as error from './errors';
 import { generateId } from './helper';
@@ -18,10 +19,7 @@ export function clear(): EmptyObject {
   data.tokens = [];
   data.trash = [];
   data.sessions = [];
-  data.sessionIdtoTimerMap.forEach((timeout, sessionId) => {
-    clearTimeout(timeout);
-    data.sessionIdtoTimerMap.delete(sessionId);
-  });
+  clearMap();
   setData(data);
   return {};
 }

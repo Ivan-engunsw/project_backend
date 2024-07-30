@@ -89,14 +89,14 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
       expect(JSON.parse(res.body.toString())).toStrictEqual({
         state: State.LOBBY,
         atQuestion: 0,
-        players: expect.arrayContaining(expect.any(String)),
+        players: [],
         metadata: {
           quizId: quizId,
           name: 'Quiz1',
           timeCreated: expect.any(Number),
           timeLastEdited: expect.any(Number),
           description: 'Betty\'s quiz',
-          numQuestion: 1,
+          numQuestions: 1,
           questions: [
             {
               questionId: expect.any(Number),
@@ -119,7 +119,8 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
               ],
               thumbnailUrl: 'http://google.com/some/image/path.jpg',
             }
-          ]
+          ],
+          duration: 10,
         }
       });
     });
