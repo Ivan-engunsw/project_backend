@@ -1029,6 +1029,32 @@ app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   }
 });
 
+app.get('/v1/admin/quiz/:quizid/session/:sessionid/results', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const sessionId = parseInt(req.params.sessionid.toString());
+  const token = req.headers.token as string;
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = player.adminQuizSessionResult(token, quizId, sessionId);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
