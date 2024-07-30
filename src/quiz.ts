@@ -591,7 +591,7 @@ export function adminQuizQuestionDuplicate
 }
 
 /**
- * 
+ *
  * @param quizId - number
  * @param imgUrl - string
  * @returns {} - empty object

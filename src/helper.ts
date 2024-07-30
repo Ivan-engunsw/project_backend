@@ -179,5 +179,5 @@ export function validQuiz(quizId: number, authUserId: number, { trash }: { trash
 }
 
 // sessions
-export const findSessionsByQuizId = (data: Data, quizId: number) => 
+export const findSessionsByQuizId = (data: Data, quizId: number) =>
   data.sessions.filter(session => session.metadata.quizId === quizId);

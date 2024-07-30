@@ -75,7 +75,7 @@ export const invalidThumbnail = (thumbnailUrl: string) =>
   `The thumbnailUrl: ${thumbnailUrl} is invalid`;
 
 // sessions
-export const invalidAutoStartNum = (autoStartNum: number) => 
+export const invalidAutoStartNum = (autoStartNum: number) =>
   `autoStartNum: ${autoStartNum} is invalid`;
 export const tooManySessions = (quizId: number) =>
   `There are already 10 sessions for the quizId: ${quizId}`;
