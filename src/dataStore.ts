@@ -47,6 +47,7 @@ export interface Token {
 
 export interface Session {
   sessionId: number;
+  autoStartNum: number;
   state: State;
   atQuestion: number;
   players: Player[];
