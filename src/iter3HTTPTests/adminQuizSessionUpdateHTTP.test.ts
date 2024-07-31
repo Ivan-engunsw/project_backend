@@ -31,7 +31,7 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
     quizId = JSON.parse(resQuiz.body.toString()).quizId;
     const inputQuestion = {
       question: 'Who is the Monarch of England?',
-      duration: 5,
+      duration: 1,
       points: 5,
       answers: [
         {
@@ -114,7 +114,7 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
 
-      slync(5 * 1000);
+      slync(1 * 1000);
       const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
       const sessionInfo = JSON.parse(resInfo.body.toString());
       expect(sessionInfo).toHaveProperty('state', State.QUESTION_CLOSE);
@@ -209,47 +209,149 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
       expect(JSON.parse(res.body.toString())).toStrictEqual({});
     });
 
-    describe.skip('tests to skip', () => {
-      test('correctly updates a session to QUESTION_COUNTDOWN', () => {
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
-        const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-        const sessionInfo = JSON.parse(resInfo.body.toString());
-        expect(sessionInfo).toHaveProperty('state', State.QUESTION_COUNTDOWN);
-      });
+    test('session automatically moves into QUESTION_OPEN', () => {
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
 
-      test('correctly updates a session to QUESTION_OPEN', () => {
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
-        const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-        const sessionInfo = JSON.parse(resInfo.body.toString());
-        expect(sessionInfo).toHaveProperty('state', State.QUESTION_OPEN);
-      });
+      slync(3 * 1000);
+      const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      const sessionStatus = JSON.parse(res.body.toString());
+      expect(sessionStatus).toHaveProperty('state', State.QUESTION_OPEN);
+    });
 
-      test('correctly updates a session to ANSWER_SHOW', () => {
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.GO_TO_ANSWER });
-        const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-        const sessionInfo = JSON.parse(resInfo.body.toString());
-        expect(sessionInfo).toHaveProperty('state', State.ANSWER_SHOW);
-      });
+    test.each([
+      Action.NEXT_QUESTION,
+      Action.END
+    ])('session correctly updates from LOBBY state', (action) => {
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
+      let res;
+      switch (action) {
+        case Action.NEXT_QUESTION:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.QUESTION_COUNTDOWN);
+          break;
+        case Action.END:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.END);
+          break;
+      }
+    });
 
-      test('correctly updates a session to FINAL_RESULTS', () => {
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.GO_TO_ANSWER });
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.GO_TO_FINAL_RESULTS });
-        const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-        const sessionInfo = JSON.parse(resInfo.body.toString());
-        expect(sessionInfo).toHaveProperty('state', State.FINAL_RESULTS);
-      });
+    test.each([
+      Action.SKIP_COUNTDOWN,
+      Action.END
+    ])('session correctly updates from QUESTION_COUNTDOWN state', (action) => {
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
+      let res;
+      switch (action) {
+        case Action.SKIP_COUNTDOWN:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.QUESTION_OPEN);
+          break;
+        case Action.END:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.END);
+          break;
+      }
+    });
 
-      test('correctly updates a session to END', () => {
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.END });
-        const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-        const sessionInfo = JSON.parse(resInfo.body.toString());
-        expect(sessionInfo).toHaveProperty('state', State.END);
-      });
+    test.each([
+      Action.GO_TO_ANSWER,
+      Action.END
+    ])('session correctly updates from QUESTION_OPEN state', (action) => {
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
+      let res;
+      switch (action) {
+        case Action.GO_TO_ANSWER:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.ANSWER_SHOW);
+          break;
+        case Action.END:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.END);
+          break;
+      }
+    });
+
+    test('session automatically moves into QUESTION_CLOSE state', () => {
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
+
+      slync(1 * 1000);
+      const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      const sessionInfo = JSON.parse(res.body.toString());
+      expect(sessionInfo).toHaveProperty('state', State.QUESTION_CLOSE);
+    });
+
+    test.each([
+      Action.NEXT_QUESTION,
+      Action.GO_TO_ANSWER,
+      Action.GO_TO_FINAL_RESULTS,
+      Action.END
+    ])('session correctly updates from QUESTION_CLOSE state', (action) => {
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
+
+      slync(1 * 1000);
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
+      let res;
+      switch (action) {
+        case Action.NEXT_QUESTION:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.QUESTION_COUNTDOWN);
+          break;
+        case Action.GO_TO_ANSWER:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.ANSWER_SHOW);
+          break;
+        case Action.GO_TO_FINAL_RESULTS:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.FINAL_RESULTS);
+          break;
+        case Action.END:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.END);
+          break;
+      }
+    });
+
+    test.each([
+      Action.NEXT_QUESTION,
+      Action.GO_TO_FINAL_RESULTS,
+      Action.END,
+    ])('session correctly updates from ANSWER_SHOW state', (action) => {
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.GO_TO_ANSWER });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
+      let res;
+      switch (action) {
+        case Action.NEXT_QUESTION:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.QUESTION_COUNTDOWN);
+          break;
+        case Action.GO_TO_FINAL_RESULTS:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.FINAL_RESULTS);
+          break;
+        case Action.END:
+          res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+          expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.END);
+          break;
+      }
+    });
+
+    test('session correctly updates from FINAL_RESULTS state', () => {
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.GO_TO_ANSWER });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.GO_TO_FINAL_RESULTS });
+
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.END });
+      const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      expect(JSON.parse(res.body.toString())).toHaveProperty('state', State.END);
     });
   });
 });
