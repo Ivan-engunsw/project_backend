@@ -28,6 +28,8 @@ import {
   adminUserPasswordUpdate
 } from './auth';
 import * as quiz from './quiz';
+import * as session from './session';
+import * as player from './player';
 import { validQuiz } from './helper';
 
 // Set up web app
@@ -1029,10 +1031,49 @@ app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
   }
 });
 
+// SESSION REQUESTS //
+app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const token = req.headers.token.toString();
+  const autoStartNum = req.body.autoStartNum;
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId, { trash: true });
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = session.adminQuizSessionStart(quizId, autoStartNum);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// PLAYER REQUESTS //
+app.post('/v1/player/join', (req: Request, res: Response) => {
+  const { sessionId, name } = req.body;
+
+  try {
+    const result = player.playerSessionJoin(sessionId, name);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 app.get('/v1/player/:playerid/results', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid.toString());
   try {
-    playerId.playerResult(playerId);
+    player.playerResult(playerId);
   } catch (error) {
     return setError(res, error, 'p');
   }
