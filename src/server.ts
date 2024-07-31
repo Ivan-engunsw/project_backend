@@ -254,8 +254,12 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
     return setError(res, error, 'q');
   }
 
-  const result = quiz.adminQuizRemove(parseInt(req.params.quizid as string));
-  res.json(result);
+  try {
+    const result = quiz.adminQuizRemove(parseInt(req.params.quizid as string));
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
 });
 
 // Quiz info
@@ -728,8 +732,12 @@ app.delete('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
     return setError(res, error, 'q');
   }
 
-  const result = quiz.adminQuizRemove(parseInt(req.params.quizid as string));
-  res.json(result);
+  try {
+    const result = quiz.adminQuizRemove(parseInt(req.params.quizid as string));
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
 });
 
 // Quiz name update

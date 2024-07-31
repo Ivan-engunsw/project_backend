@@ -29,6 +29,23 @@ describe('DELETE /v2/admin/quiz/:quizid', () => {
   });
 
   test('Session not in END state', () => {
+    const inputQuestion = {
+      question: 'Who is the Monarch of England?',
+      duration: 1,
+      points: 5,
+      answers: [
+        {
+          answer: 'Prince Charles',
+          correct: true
+        },
+        {
+          answer: 'Queen Elizabeth',
+          correct: false
+        },
+      ],
+      thumbnailUrl: 'http://google.com/some/image/path.jpg',
+    };
+    HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion });
     HTTP.adminQuizSessionStart({ token: token, quizid: quizId, autoStartNum: 3 });
 
     const res = HTTP.adminQuizRemove({ token: token, quizid: quizId });

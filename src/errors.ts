@@ -93,6 +93,8 @@ export const invalidAction = (action: string) =>
   `The action: ${action} is invalid`;
 export const invalidSessionIdforQuizId = (quizId: number, sessionId: number) =>
   `The sessionId: ${sessionId} is not for the quizId: ${quizId}`;
+export const sessionsNotEnded = () =>
+  `Some sessions are not in END state yet`;
 
 // players
 export const nameTaken = (name: string) =>
