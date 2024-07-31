@@ -51,8 +51,17 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
   });
 
   describe('error testing', () => {
-    test('returns an error for a sessionId that isn\'t for the quiz', () => {
+    test('returns an error for an invalid sessionId', () => {
       const res = HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId + 1, action: Action.END });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
+
+    test('retusn an error for a sessionId that doesn\'t match the quizId', () => {
+      const resQuiz2 = HTTP.adminQuizCreate({ token: token, name: 'Quiz2', description: 'Betty\'s quiz' });
+      const quizId2 = JSON.parse(resQuiz2.body.toString()).quizId;
+
+      const res = HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId2, sessionid: sessionId, action: Action.END });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
@@ -279,10 +288,12 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
 
-      slync(1 * 1000);
-      const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-      const sessionInfo = JSON.parse(res.body.toString());
-      expect(sessionInfo).toHaveProperty('state', State.QUESTION_CLOSE);
+      const res1 = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      expect(JSON.parse(res1.body.toString())).toHaveProperty('state', State.QUESTION_OPEN);
+
+      slync(2 * 1000);
+      const res2 = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      expect(JSON.parse(res2.body.toString())).toHaveProperty('state', State.QUESTION_CLOSE);
     });
 
     test.each([

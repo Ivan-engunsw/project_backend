@@ -85,7 +85,11 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
 
   describe('functionality testing', () => {
     test('has the correct return type', () => {
-      const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      HTTP.adminQuizThumbnailUpdate({ token: token, quizid: quizId, imgUrl: 'http://google.com/some/image/path.jpg' });
+      const start = HTTP.adminQuizSessionStart({ token: token, quizid: quizId, autoStartNum: 3 });
+      const sessionId2 = JSON.parse(start.body.toString()).sessionId;
+
+      const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId2 });
       expect(JSON.parse(res.body.toString())).toStrictEqual({
         state: State.LOBBY,
         atQuestion: 0,
@@ -121,6 +125,7 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
             }
           ],
           duration: 10,
+          thumbnailUrl: 'http://google.com/some/image/path.jpg',
         }
       });
     });

@@ -70,8 +70,13 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
 
   const data = getData();
 
-  // Check the sessionId is for the correct quizId
+  // Check the session exists
   const session = findSessionBySessionId(data, sessionId);
+  if (!session) {
+    throw new Error(error.SessionIdNotFound(sessionId));
+  }
+
+  // Check the sessionId is for the correct quizId
   if (session.metadata.quizId !== quizId) {
     throw new Error(error.invalidSessionIdforQuizId(quizId, sessionId));
   }
@@ -84,7 +89,11 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
           const timeoutId = setTimeout(() => {
-            adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+            try {
+              adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+            } catch (error) {
+              console.log(`Failed to move from QUESTION_COUNTDOWN to QUESTION_OPEN because ${error.message}`);
+            }
           }, COUNTDOWN * 1000);
           mapSet(sessionId, timeoutId);
           // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
@@ -112,7 +121,11 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
           session.state = State.QUESTION_OPEN;
           const questionDuration = session.metadata.questions[session.atQuestion - 1].duration;
           const timeoutId = setTimeout(() => {
-            adminQuizSessionUpdate(quizId, sessionId, Action.CLOSE_QUESTION);
+            try {
+              adminQuizSessionUpdate(quizId, sessionId, Action.CLOSE_QUESTION);
+            } catch (error) {
+              console.log(`Failed to move from QUESTION_OPEN to QUESTION_CLOSE because ${error.message}`);
+            }
           }, questionDuration * 1000);
           mapSet(sessionId, timeoutId);
           break;
@@ -127,8 +140,11 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
       switch (action) {
         case Action.CLOSE_QUESTION:
           session.state = State.QUESTION_CLOSE;
+          // Update info function
           break;
         case Action.GO_TO_ANSWER:
+          // Clear timeout created by QUESTION_CLOSE
+          mapDelete(sessionId);
           session.state = State.ANSWER_SHOW;
           // Update info function
           break;
@@ -145,7 +161,11 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
           const timeoutId = setTimeout(() => {
-            adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+            try {
+              adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+            } catch (error) {
+              console.log(`Failed to move from QUESTION_COUNTDOWN to QUESTION_OPEN because ${error.message}`);
+            }
           }, COUNTDOWN * 1000);
           mapSet(sessionId, timeoutId);
           // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
@@ -172,7 +192,11 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
           const timeoutId = setTimeout(() => {
-            adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+            try {
+              adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+            } catch (error) {
+              console.log(`Failed to move from QUESTION_COUNTDOWN to QUESTION_OPEN because ${error.message}`);
+            }
           }, COUNTDOWN * 1000);
           mapSet(sessionId, timeoutId);
           // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
@@ -210,8 +234,13 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
 export function adminQuizSessionStatus(quizId: number, sessionId: number) {
   const data = getData();
 
-  // Check the sessionId is for the correct quizId
+  // Check the session exists
   const session = findSessionBySessionId(data, sessionId);
+  if (!session) {
+    throw new Error(error.SessionIdNotFound(sessionId));
+  }
+
+  // Check the sessionId is for the correct quizId
   if (session.metadata.quizId !== quizId) {
     throw new Error(error.invalidSessionIdforQuizId(quizId, sessionId));
   }
