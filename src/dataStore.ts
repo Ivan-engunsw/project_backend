@@ -45,18 +45,82 @@ export interface Token {
   authUserId: number;
 }
 
+export interface Session {
+  sessionId: number;
+  autoStartNum: number;
+  state: State;
+  atQuestion: number;
+  players: Player[];
+  metadata: Quiz;
+  questionResults: QuestionResult[];
+  usersRankedByScore: UserScore[];
+  messages: Message[];
+}
+
+export interface Player {
+  playerId: number;
+  name: string;
+}
+
+export interface QuestionResult {
+  questionId: number;
+  playersCorrectList: string[];
+  averageAnswerTime: number;
+  percentCorrect: number;
+  submissions: Submission[];
+  scores: UserScore[];
+}
+
+export interface Submission {
+  name: string;
+  answers: number[];
+  timeSubmitted: number;
+}
+
+export interface UserScore {
+  name: string;
+  score: number;
+}
+
+export interface Message {
+  messageBody: string;
+  playerId: number;
+  playerName: string;
+  timeSent: number;
+}
+
+export enum State {
+  LOBBY = 'LOBBY',
+  QUESTION_COUNTDOWN = 'QUESTION_COUNTDOWN',
+  QUESTION_OPEN = 'QUESTION_OPEN',
+  QUESTION_CLOSE = 'QUESTION_CLOSE',
+  ANSWER_SHOW = 'ANSWER_SHOW',
+  FINAL_RESULTS = 'FINAL_RESULTS',
+  END = 'END',
+}
+
+export enum Action {
+  NEXT_QUESTION = 'NEXT_QUESTION',
+  SKIP_COUNTDOWN = 'SKIP_COUNTDOWN',
+  GO_TO_ANSWER = 'GO_TO_ANSWER',
+  GO_TO_FINAL_RESULTS = 'GO_TO_FINAL_RESULTS',
+  END = 'END',
+}
+
 export interface Data {
   users: User[];
   quizzes: Quiz[];
   tokens: Token[];
   trash: Quiz[];
+  sessions: Session[];
 }
 
 let data: Data = {
   users: [],
   quizzes: [],
   tokens: [],
-  trash: []
+  trash: [],
+  sessions: [],
 };
 
 // Use get() to access the data
