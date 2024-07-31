@@ -28,6 +28,14 @@ describe('DELETE /v2/admin/quiz/:quizid', () => {
     quizId = JSON.parse(resQuiz.body.toString()).quizId;
   });
 
+  test('Session not in END state', () => {
+    HTTP.adminQuizSessionStart({ token: token, quizid: quizId, autoStartNum: 3 });
+
+    const res = HTTP.adminQuizRemove({ token: token, quizid: quizId });
+    expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+    expect(res.statusCode).toStrictEqual(400);
+  })
+
   test('Invalid token', () => {
     const res = HTTP.adminQuizRemove({ token: token + 1, quizid: quizId });
     expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
