@@ -590,6 +590,12 @@ export function adminQuizQuestionDuplicate
   };
 }
 
+/**
+ *
+ * @param quizId - number
+ * @param imgUrl - string
+ * @returns {} - empty object
+ */
 export function adminQuizThumbnailUpdate(quizId: number, imgUrl: string) {
   if (!validThumbnail(imgUrl)) {
     throw new Error(error.invalidThumbnail(imgUrl));
