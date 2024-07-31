@@ -82,148 +82,104 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
   }
 
   // Check the action can be executed from current state and execute the action
-  let timeoutId: ReturnType<typeof setTimeout>;
-  const questionDuration = session.metadata.questions[session.atQuestion - 1].duration;
-  switch (session.state) {
-    case State.LOBBY:
-      switch (action) {
-        case Action.NEXT_QUESTION:
-          session.state = State.QUESTION_COUNTDOWN;
-          session.atQuestion++;
-          timeoutId = setTimeout(() => {
-            try {
-              adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
-            } catch (error) {
-              console.log(`Failed to move from QUESTION_COUNTDOWN to QUESTION_OPEN because ${error.message}`);
-            }
-          }, COUNTDOWN * 1000);
-          mapSet(sessionId, timeoutId);
-          // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
-          // Will also need another action to close a question which will also update info
-          break;
-        case Action.END:
-          session.state = State.END;
-          session.atQuestion = 0;
-          break;
-        default: throw new Error(error.invalidAction(action));
+  const actions = {
+    [Action.NEXT_QUESTION]: () => {
+      // Check state
+      if (session.state !== State.LOBBY && session.state !== State.QUESTION_CLOSE && session.state !== State.ANSWER_SHOW) {
+        throw new Error(error.invalidAction(action));
       }
-      break;
-    case State.QUESTION_COUNTDOWN:
-      switch (action) {
-        case Action.SKIP_COUNTDOWN:
-          // Clear timeout created by NEXT_QUESTION
-          // Create timeout for QUESTION_CLOSE
-          mapDelete(sessionId);
-          adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
-          break;
-        case Action.OPEN_QUESTION:
-          // Set timeout to close a question
-          mapDelete(sessionId);
 
-          session.state = State.QUESTION_OPEN;
-          timeoutId = setTimeout(() => {
-            try {
-              adminQuizSessionUpdate(quizId, sessionId, Action.CLOSE_QUESTION);
-            } catch (error) {
-              console.log(`Failed to move from QUESTION_OPEN to QUESTION_CLOSE because ${error.message}`);
-            }
-          }, questionDuration * 1000);
-          mapSet(sessionId, timeoutId);
-          break;
-        case Action.END:
-          session.state = State.END;
-          session.atQuestion = 0;
-          break;
-        default: throw new Error(error.invalidAction(action));
+      // Create timeout to OPEN_QUESTION
+      session.state = State.QUESTION_COUNTDOWN;
+      session.atQuestion++;
+      const timeoutId = setTimeout(() => {
+        try {
+          adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+        } catch (error) {
+          console.log(`Failed to move from QUESTION_COUNTDOWN to QUESTION_OPEN because ${error.message}`);
+        }
+      }, COUNTDOWN * 1000);
+      mapSet(sessionId, timeoutId);
+    },
+    [Action.SKIP_COUNTDOWN]: () => {
+      // Check state
+      if (session.state !== State.QUESTION_COUNTDOWN) {
+        throw new Error(error.invalidAction(action));
       }
-      break;
-    case State.QUESTION_OPEN:
-      switch (action) {
-        case Action.CLOSE_QUESTION:
-          session.state = State.QUESTION_CLOSE;
-          // Update info function
-          break;
-        case Action.GO_TO_ANSWER:
-          // Clear timeout created by QUESTION_CLOSE
-          mapDelete(sessionId);
-          session.state = State.ANSWER_SHOW;
-          // Update info function
-          break;
-        case Action.END:
-          session.state = State.END;
-          session.atQuestion = 0;
-          break;
-        default: throw new Error(error.invalidAction(action));
+
+      // Delete QUESTION_COUNTDOWN timeout and OPEN_QUESTION
+      mapDelete(sessionId);
+      adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
+    },
+    [Action.OPEN_QUESTION]: () => {
+      // Check state
+      if (session.state !== State.QUESTION_COUNTDOWN) {
+        throw new Error(error.invalidAction(action));
       }
-      break;
-    case State.QUESTION_CLOSE:
-      switch (action) {
-        case Action.NEXT_QUESTION:
-          session.state = State.QUESTION_COUNTDOWN;
-          session.atQuestion++;
-          timeoutId = setTimeout(() => {
-            try {
-              adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
-            } catch (error) {
-              console.log(`Failed to move from QUESTION_COUNTDOWN to QUESTION_OPEN because ${error.message}`);
-            }
-          }, COUNTDOWN * 1000);
-          mapSet(sessionId, timeoutId);
-          // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
-          // Will also need another action to close a question
-          break;
-        case Action.GO_TO_ANSWER:
-          session.state = State.ANSWER_SHOW;
-          // Dont need update info function
-          break;
-        case Action.GO_TO_FINAL_RESULTS:
-          session.state = State.FINAL_RESULTS;
-          session.atQuestion = 0;
-          break;
-        case Action.END:
-          session.state = State.END;
-          session.atQuestion = 0;
-          break;
-        default: throw new Error(error.invalidAction(action));
+
+      // Clear existing timeout and create timeout to CLOSE_QUESTION
+      mapDelete(sessionId);
+      session.state = State.QUESTION_OPEN;
+      const questionDuration = session.metadata.questions[session.atQuestion - 1].duration;
+      const timeoutId = setTimeout(() => {
+        try {
+          adminQuizSessionUpdate(quizId, sessionId, Action.CLOSE_QUESTION);
+        } catch (error) {
+          console.log(`Failed to move from QUESTION_OPEN to QUESTION_CLOSE because ${error.message}`);
+        }
+      }, questionDuration * 1000);
+      mapSet(sessionId, timeoutId);
+    },
+    [Action.CLOSE_QUESTION]: () => {
+      // Check state
+      if (session.state !== State.QUESTION_OPEN) {
+        throw new Error(error.invalidAction(action));
       }
-      break;
-    case State.ANSWER_SHOW:
-      switch (action) {
-        case Action.NEXT_QUESTION:
-          session.state = State.QUESTION_COUNTDOWN;
-          session.atQuestion++;
-          timeoutId = setTimeout(() => {
-            try {
-              adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
-            } catch (error) {
-              console.log(`Failed to move from QUESTION_COUNTDOWN to QUESTION_OPEN because ${error.message}`);
-            }
-          }, COUNTDOWN * 1000);
-          mapSet(sessionId, timeoutId);
-          // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
-          // Will also need another action to close a question
-          break;
-        case Action.GO_TO_FINAL_RESULTS:
-          session.state = State.FINAL_RESULTS;
-          session.atQuestion = 0;
-          break;
-        case Action.END:
-          session.state = State.END;
-          session.atQuestion = 0;
-          break;
-        default: throw new Error(error.invalidAction(action));
+
+      // CLOSE_QUESTION
+      session.state = State.QUESTION_CLOSE;
+
+      // Update results
+    },
+    [Action.GO_TO_ANSWER]: () => {
+      // Check state
+      if (session.state !== State.QUESTION_OPEN && session.state !== State.QUESTION_CLOSE) {
+        throw new Error(error.invalidAction(action));
       }
-      break;
-    case State.FINAL_RESULTS:
-      switch (action) {
-        case Action.END:
-          session.state = State.END;
-          session.atQuestion = 0;
-          break;
-        default: throw new Error(error.invalidAction(action));
+
+      // Delete CLOSE_QUESTION timeout and update results if coming from QUESTION_OPEN
+      if (session.state === State.QUESTION_OPEN) {
+        mapDelete(sessionId);
       }
-      break;
-    case State.END: throw new Error(error.invalidAction(action));
+
+      session.state = State.ANSWER_SHOW;
+    },
+    [Action.GO_TO_FINAL_RESULTS]: () => {
+      // Check state
+      if (session.state !== State.QUESTION_CLOSE && session.state !== State.ANSWER_SHOW) {
+        throw new Error(error.invalidAction(action));
+      }
+
+      // GO_TO_FINAL_RESULTS
+      session.state = State.FINAL_RESULTS;
+      session.atQuestion = 0;
+    },
+    [Action.END]: () => {
+      // Check state
+      if (session.state === State.END) {
+        throw new Error(error.invalidAction(action));
+      }
+
+      // END
+      session.state = State.END;
+      session.atQuestion = 0;
+    }
+  };
+
+  try {
+    actions[action]();
+  } catch (error) {
+    throw new Error(error.message);
   }
 
   // Update session state
