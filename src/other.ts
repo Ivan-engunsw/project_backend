@@ -17,6 +17,7 @@ export function clear(): EmptyObject {
   dataStore.quizzes = [];
   dataStore.tokens = [];
   dataStore.trash = [];
+  dataStore.sessions = [];
   setData(dataStore);
   return {};
 }
