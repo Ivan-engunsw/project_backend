@@ -51,7 +51,7 @@ describe('DELETE /v2/admin/quiz/:quizid', () => {
     const res = HTTP.adminQuizRemove({ token: token, quizid: quizId });
     expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
     expect(res.statusCode).toStrictEqual(400);
-  })
+  });
 
   test('Invalid token', () => {
     const res = HTTP.adminQuizRemove({ token: token + 1, quizid: quizId });

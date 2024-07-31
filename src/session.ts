@@ -81,14 +81,16 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
     throw new Error(error.invalidSessionIdforQuizId(quizId, sessionId));
   }
 
-  // Check the action can be executed from current state
+  // Check the action can be executed from current state and execute the action
+  let timeoutId: ReturnType<typeof setTimeout>;
+  const questionDuration = session.metadata.questions[session.atQuestion - 1].duration;
   switch (session.state) {
     case State.LOBBY:
       switch (action) {
         case Action.NEXT_QUESTION:
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
-          const timeoutId = setTimeout(() => {
+          timeoutId = setTimeout(() => {
             try {
               adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
             } catch (error) {
@@ -119,8 +121,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
           mapDelete(sessionId);
 
           session.state = State.QUESTION_OPEN;
-          const questionDuration = session.metadata.questions[session.atQuestion - 1].duration;
-          const timeoutId = setTimeout(() => {
+          timeoutId = setTimeout(() => {
             try {
               adminQuizSessionUpdate(quizId, sessionId, Action.CLOSE_QUESTION);
             } catch (error) {
@@ -160,7 +161,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
         case Action.NEXT_QUESTION:
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
-          const timeoutId = setTimeout(() => {
+          timeoutId = setTimeout(() => {
             try {
               adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
             } catch (error) {
@@ -191,7 +192,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
         case Action.NEXT_QUESTION:
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
-          const timeoutId = setTimeout(() => {
+          timeoutId = setTimeout(() => {
             try {
               adminQuizSessionUpdate(quizId, sessionId, Action.OPEN_QUESTION);
             } catch (error) {

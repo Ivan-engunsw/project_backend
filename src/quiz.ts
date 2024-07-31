@@ -132,7 +132,7 @@ export function adminQuizRemove
 
   // Check if there are any quiz sessions not in END state
   const sessions = findSessionsByQuizId(data, quizId);
-  if (sessions.some(session => session.state != State.END)) {
+  if (sessions.some(session => session.state !== State.END)) {
     throw new Error(error.sessionsNotEnded());
   }
 
@@ -265,7 +265,7 @@ export function adminQuizTransfer
 
   // Check if there are any quiz sessions not in END state
   const sessions = findSessionsByQuizId(data, quizId);
-  if (sessions.some(session => session.state != State.END)) {
+  if (sessions.some(session => session.state !== State.END)) {
     throw new Error(error.sessionsNotEnded());
   }
 
@@ -514,7 +514,7 @@ export function adminQuizQuestionDelete
 
   // Check if there are any quiz sessions not in END state
   const sessions = findSessionsByQuizId(data, quizId);
-  if (sessions.some(session => session.state != State.END)) {
+  if (sessions.some(session => session.state !== State.END)) {
     throw new Error(error.sessionsNotEnded());
   }
 
