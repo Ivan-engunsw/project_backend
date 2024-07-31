@@ -50,8 +50,17 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
   });
 
   describe('error testing', () => {
-    test('returns an error for a sessionId that isn\'t for the quiz', () => {
+    test('returns an error for an invalid sessionId', () => {
       const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId + 1 });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
+
+    test('retusn an error for a sessionId that doesn\'t match the quizId', () => {
+      const resQuiz2 = HTTP.adminQuizCreate({ token: token, name: 'Quiz2', description: 'Betty\'s quiz' });
+      const quizId2 = JSON.parse(resQuiz2.body.toString()).quizId;
+
+      const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId2, sessionid: sessionId });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
