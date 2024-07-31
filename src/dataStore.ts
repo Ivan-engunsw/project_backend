@@ -129,11 +129,6 @@ const sessionIdtoTimerMap: Map<number, ReturnType<typeof setTimeout>> = new Map(
 
 // Use get() to access the data
 export function getData(): Data {
-  if (fs.existsSync('src/dataStoreSave.json')) {
-    data = JSON.parse(fs.readFileSync('src/dataStoreSave.json', {
-      flag: 'r'
-    }).toString());
-  }
   return data;
 }
 

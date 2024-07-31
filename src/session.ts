@@ -8,7 +8,7 @@ const COUNTDOWN = 3;
 
 /**
  * Starts a new session with the given quizId
- * 
+ *
  * @param quizId - number
  * @param autoStartNum - number
  * @returns { sessionId: number }
@@ -80,7 +80,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
   switch (session.state) {
     case State.LOBBY:
       switch (action) {
-        case Action.NEXT_QUESTION: 
+        case Action.NEXT_QUESTION:
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
           const timeoutId = setTimeout(() => {
@@ -90,7 +90,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
           // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
           // Will also need another action to close a question which will also update info
           break;
-        case Action.END: 
+        case Action.END:
           session.state = State.END;
           session.atQuestion = 0;
           break;
@@ -98,7 +98,6 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
       }
       break;
     case State.QUESTION_COUNTDOWN:
-      let timeoutId;
       switch (action) {
         case Action.SKIP_COUNTDOWN:
           // Clear timeout created by NEXT_QUESTION
@@ -112,12 +111,12 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
 
           session.state = State.QUESTION_OPEN;
           const questionDuration = session.metadata.questions[session.atQuestion - 1].duration;
-          timeoutId = setTimeout(() => {
+          const timeoutId = setTimeout(() => {
             adminQuizSessionUpdate(quizId, sessionId, Action.CLOSE_QUESTION);
           }, questionDuration * 1000);
           mapSet(sessionId, timeoutId);
           break;
-        case Action.END: 
+        case Action.END:
           session.state = State.END;
           session.atQuestion = 0;
           break;
@@ -128,6 +127,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
       switch (action) {
         case Action.CLOSE_QUESTION:
           session.state = State.QUESTION_CLOSE;
+          break;
         case Action.GO_TO_ANSWER:
           session.state = State.ANSWER_SHOW;
           // Update info function
@@ -141,7 +141,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
       break;
     case State.QUESTION_CLOSE:
       switch (action) {
-        case Action.NEXT_QUESTION: 
+        case Action.NEXT_QUESTION:
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
           const timeoutId = setTimeout(() => {
@@ -151,15 +151,15 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
           // Set timeout for QUESTION_OPEN (need another action to open a question which will also set a timeout for QUESTION_CLOSE)
           // Will also need another action to close a question
           break;
-        case Action.GO_TO_ANSWER: 
+        case Action.GO_TO_ANSWER:
           session.state = State.ANSWER_SHOW;
           // Dont need update info function
           break;
-        case Action.GO_TO_FINAL_RESULTS: 
+        case Action.GO_TO_FINAL_RESULTS:
           session.state = State.FINAL_RESULTS;
           session.atQuestion = 0;
           break;
-        case Action.END: 
+        case Action.END:
           session.state = State.END;
           session.atQuestion = 0;
           break;
@@ -168,7 +168,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
       break;
     case State.ANSWER_SHOW:
       switch (action) {
-        case Action.NEXT_QUESTION: 
+        case Action.NEXT_QUESTION:
           session.state = State.QUESTION_COUNTDOWN;
           session.atQuestion++;
           const timeoutId = setTimeout(() => {
@@ -217,12 +217,13 @@ export function adminQuizSessionStatus(quizId: number, sessionId: number) {
   }
 
   // Return the session status
-  const playerNames = session.players.reduce((arr, name) => arr.push(name) && arr, []);
+  const playerNames: string[] = [];
+  session.players.forEach(player => playerNames.push(player.name));
 
   return {
     state: session.state,
     atQuestion: session.atQuestion,
     players: playerNames,
     metadata: session.metadata,
-  }
+  };
 }

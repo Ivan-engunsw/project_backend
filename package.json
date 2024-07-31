@@ -11,12 +11,14 @@
         "cleanup-sync-request": "pkill -f node_modules/sync-rpc/lib/worker.js > /dev/null 2>&1",
         "posttest": "npm run cleanup-sync-request || true",
         "ts-node-coverage": "nyc --reporter=text --reporter=lcov ts-node -T src/server.ts",
-        "ts-node-dev": "ts-node-dev -T src/server.ts"
+        "ts-node-dev": "ts-node-dev -T src/server.ts",
+        "ts-node": "ts-node"
     },
     "dependencies": {
         "cors": "^2.8.5",
         "express": "^4.19.2",
         "morgan": "^1.10.0",
+        "slync": "^1.0.2",
         "ts-node": "^10.9.2",
         "validator": "^13.12.0"
     },

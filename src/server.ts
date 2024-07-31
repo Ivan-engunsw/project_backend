@@ -31,6 +31,7 @@ import * as quiz from './quiz';
 import * as session from './session';
 import * as player from './player';
 import { validQuiz } from './helper';
+import { setData } from './dataStore';
 
 // Set up web app
 const app = express();
@@ -1112,7 +1113,7 @@ app.get('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Respons
   } catch (error) {
     return setError(res, error, 'p');
   }
-})
+});
 
 // PLAYER REQUESTS //
 // Player join
@@ -1152,6 +1153,12 @@ app.use((req: Request, res: Response) => {
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
   console.log(`⚡️ Server started on port ${PORT} at ${HOST}`);
+  if (fs.existsSync('src/dataStoreSave.json')) {
+    const data = JSON.parse(fs.readFileSync('src/dataStoreSave.json', {
+      flag: 'r'
+    }).toString());
+    setData(data);
+  }
 });
 
 // For coverage, handle Ctrl+C gracefully

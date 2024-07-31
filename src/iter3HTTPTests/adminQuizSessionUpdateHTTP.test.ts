@@ -1,5 +1,6 @@
 import * as HTTP from './HTTPHelper';
 import { State, Action } from '../dataStore';
+import slync from 'slync';
 
 // CONSTANTS //
 const ERROR = { error: expect.any(String) };
@@ -30,7 +31,7 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
     quizId = JSON.parse(resQuiz.body.toString()).quizId;
     const inputQuestion = {
       question: 'Who is the Monarch of England?',
-      duration: 10,
+      duration: 5,
       points: 5,
       answers: [
         {
@@ -67,9 +68,9 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
       Action.GO_TO_ANSWER,
       Action.GO_TO_FINAL_RESULTS,
     ])('returns an error for an action that cannot be done while in LOBBY state', (action) => {
-    //   const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-    //   const sessionInfo = JSON.parse(resInfo.body.toString());
-    //   expect(sessionInfo).toHaveProperty('state', State.LOBBY);
+      const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      const sessionInfo = JSON.parse(resInfo.body.toString());
+      expect(sessionInfo).toHaveProperty('state', State.LOBBY);
 
       const res = HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
@@ -82,9 +83,9 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
       Action.GO_TO_FINAL_RESULTS,
     ])('returns an error for an action that cannot be done while in QUESTION_COUNTDOWN state', (action) => {
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
-      //   const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-      //   const sessionInfo = JSON.parse(resInfo.body.toString());
-      //   expect(sessionInfo).toHaveProperty('state', State.QUESTION_COUNTDOWN);
+      const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      const sessionInfo = JSON.parse(resInfo.body.toString());
+      expect(sessionInfo).toHaveProperty('state', State.QUESTION_COUNTDOWN);
 
       const res = HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
@@ -98,9 +99,9 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
     ])('returns an error for an action that cannot be done while in QUESTION_OPEN state', (action) => {
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
-      //   const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-      //   const sessionInfo = JSON.parse(resInfo.body.toString());
-      //   expect(sessionInfo).toHaveProperty('state', State.QUESTION_OPEN);
+      const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      const sessionInfo = JSON.parse(resInfo.body.toString());
+      expect(sessionInfo).toHaveProperty('state', State.QUESTION_OPEN);
 
       const res = HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
@@ -113,16 +114,14 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
 
-      let res;
-      setTimeout(() => {
-        // const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-        // const sessionInfo = JSON.parse(resInfo.body.toString());
-        // expect(sessionInfo).toHaveProperty('state', State.QUESTION_CLOSE);
+      slync(5 * 1000);
+      const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      const sessionInfo = JSON.parse(resInfo.body.toString());
+      expect(sessionInfo).toHaveProperty('state', State.QUESTION_CLOSE);
 
-        res = HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
-        expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
-        expect(res.statusCode).toStrictEqual(400);
-      }, 1000 * 15);
+      const res = HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
     });
 
     test.each([
@@ -132,9 +131,9 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.GO_TO_ANSWER });
-      //   const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-      //   const sessionInfo = JSON.parse(resInfo.body.toString());
-      //   expect(sessionInfo).toHaveProperty('state', State.ANSWER_SHOW);
+      const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      const sessionInfo = JSON.parse(resInfo.body.toString());
+      expect(sessionInfo).toHaveProperty('state', State.ANSWER_SHOW);
 
       const res = HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
@@ -151,9 +150,9 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.GO_TO_ANSWER });
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.GO_TO_FINAL_RESULTS });
-      //   const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-      //   const sessionInfo = JSON.parse(resInfo.body.toString());
-      //   expect(sessionInfo).toHaveProperty('state', State.FINAL_RESULTS);
+      const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      const sessionInfo = JSON.parse(resInfo.body.toString());
+      expect(sessionInfo).toHaveProperty('state', State.FINAL_RESULTS);
 
       const res = HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
@@ -168,9 +167,9 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
       Action.END,
     ])('returns an error for an action that cannot be done while in END state', (action) => {
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.END });
-      //   const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-      //   const sessionInfo = JSON.parse(resInfo.body.toString());
-      //   expect(sessionInfo).toHaveProperty('state', State.END);
+      const resInfo = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      const sessionInfo = JSON.parse(resInfo.body.toString());
+      expect(sessionInfo).toHaveProperty('state', State.END);
 
       const res = HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: action });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
