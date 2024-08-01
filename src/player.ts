@@ -1,6 +1,7 @@
-import { EmptyObject, State, getData, setData } from './dataStore';
+import { Action, EmptyObject, State, getData, setData } from './dataStore';
 import { findPlayerByName, findSessionByPlayerId, findSessionBySessionId, generateId, timeNow, validAnswerIds, validPosition } from './helper';
 import * as error from './errors';
+import { adminQuizSessionUpdate } from './session';
 
 export function playerSessionJoin(sessionId: number, name: string) {
   const data = getData();
@@ -36,6 +37,9 @@ export function playerSessionJoin(sessionId: number, name: string) {
   });
 
   // Check if autoStartNum has been reached
+  if (session.players.length === session.autoStartNum) {
+    adminQuizSessionUpdate(session.metadata.quizId, session.sessionId, Action.NEXT_QUESTION);
+  }
 
   setData(data);
 

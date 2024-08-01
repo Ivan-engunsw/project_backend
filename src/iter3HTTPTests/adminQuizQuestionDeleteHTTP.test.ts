@@ -91,5 +91,13 @@ describe('DELETE /v2/admin/quiz/:quizid/question/:questionid', () => {
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(403);
     });
+
+    test('Case when quiz has sessions not in END state', () => {
+      HTTP.adminQuizSessionStart({ token: token, quizid: quizId, autoStartNum: 3 });
+
+      const res = HTTP.adminQuizQuestionDelete({ token: token, quizid: quizId, questionid: questionId });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
   });
 });

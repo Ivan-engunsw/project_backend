@@ -143,7 +143,7 @@ export const generateQuestionId = (quizId: number) => {
 
 export const getQuestionById = (quiz: Quiz, id: number) =>
   quiz.questions.find(question => id === question.questionId);
-export const validPosition = (quiz: Quiz, position: number) =>
+export const validPosition = (quiz: Omit<Quiz, "userId">, position: number) =>
   (position >= 0 && position < quiz.questions.length);
 export const validNewPosition = (quiz: Quiz, position: number, currentPosition: number) =>
   (position >= 0 && position < quiz.questions.length && position !== currentPosition);
@@ -190,8 +190,69 @@ export const findSessionByPlayerId = (playerId: number) =>
   getData().sessions.find(session =>
     session.players.some(player => player.playerId === playerId));
 
+export function updateSessionResults(session: Session) {
+  // Sort submissions by timesubmitted
+  const submissions = session.questionResults[session.atQuestion - 1].submissions;
+  submissions.sort((a, b) => a.timeSubmitted - b.timeSubmitted);
+
+  // Create the correct answer set
+  const correctAnswers = new Set();
+  const answers = session.metadata.questions[session.atQuestion - 1].answers;
+  answers.forEach((answer) => {
+    if (answer.correct) {
+      correctAnswers.add(answer.answerId);
+    }
+  });
+
+  // Find all correct submissions and update the scores and playersCorrectList
+  const points = session.metadata.questions[session.atQuestion - 1].points;
+  const questionResults = session.questionResults[session.atQuestion - 1];
+  submissions.forEach((submission) => {
+    if (submission.answers.length === correctAnswers.size && submission.answers.every(answerId => correctAnswers.has(answerId))) {
+      const name = submission.name;
+      const score = points / (questionResults.scores.length + 1);
+
+      questionResults.scores.push({
+        name: name,
+        score: score,
+      });
+
+      questionResults.playersCorrectList.push(name);
+    }
+  });
+
+  // Sort playersCorrectList alphabetically
+  questionResults.playersCorrectList.sort();
+
+  // Calculate average answer time from submissions
+  if (submissions.length !== 0) {
+    questionResults.averageAnswerTime = Math.round(submissions.reduce((total, submission) => total + (submission.timeSubmitted - questionResults.timeStarted), 0) / submissions.length);
+  } else {
+    questionResults.averageAnswerTime = 0;
+  }
+
+  // Calculate percent correct
+  questionResults.percentCorrect = Math.round((questionResults.playersCorrectList.length / session.players.length) * 100);
+
+  // Update usersRankedByScore
+  questionResults.scores.forEach((userScore) => {
+    const existingScore = session.usersRankedByScore.find(user => user.name === userScore.name);
+    if (existingScore) { // Update existing score
+      existingScore.score += userScore.score;
+    } else { // Create new score if it doesn't exist
+      session.usersRankedByScore.push({
+        name: userScore.name,
+        score: userScore.score,
+      });
+    }
+  });
+
+  // Sort the scores
+  session.usersRankedByScore.sort((a, b) => b.score - a.score);
+}
+
 // player
 export const findPlayerByName = (session: Session, name: string) =>
   session.players.find(player => player.name === name);
-export const validAnswerIds = (quiz: Quiz, position: number, answerIds: number[]) =>
+export const validAnswerIds = (quiz: Omit<Quiz, "userId">, position: number, answerIds: number[]) =>
   answerIds.every(id => quiz.questions[position].answers.some(ans => ans.answerId === id));
