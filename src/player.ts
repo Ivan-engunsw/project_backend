@@ -47,13 +47,11 @@ export function playerSessionJoin(sessionId: number, name: string) {
 }
 
 export function playerChatView(playerid: number) {
-  const data = getData();
-
   const session = findSessionByPlayerId(playerid);
-  if(!session) {
+  if (!session) {
     throw new Error(error.playerIdNotFound(playerid));
   }
 
-  const messageList = session.messages
+  const messageList = session.messages;
   return { messageList };
 }
