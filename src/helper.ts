@@ -2,6 +2,7 @@ import isEmail from 'validator/lib/isEmail';
 import {
   Data,
   EmptyObject,
+  QuestionResult,
   Quiz,
   Session,
   getData
@@ -247,6 +248,11 @@ export function updateSessionResults(session: Session) {
   // Sort the scores
   session.usersRankedByScore.sort((a, b) => b.score - a.score);
 }
+
+export function filterFinalResults(questionResult: QuestionResult) {
+  const {submissions, scores, timeStarted, ... filter} = questionResult;
+  return filter;
+};
 
 // player
 export const findPlayerByName = (session: Session, name: string) =>

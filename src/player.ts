@@ -1,22 +1,17 @@
-import { Action, State, getData, setData } from './dataStore';
-import { findPlayerByName, findSessionByPlayerId, findSessionBySessionId, generateId } from './helper';
+import { Action, State, UserScore, getData, setData } from './dataStore';
+import { filterFinalResults, findPlayerByName, findSessionByPlayerId, findSessionBySessionId, generateId } from './helper';
 import * as error from './errors';
 import { adminQuizSessionUpdate } from './session';
-
-interface UsersRank {
-  name: string;
-  score: number;
-}
 
 interface questionResult {
   questionId: number;
   playersCorrectList: string[];
-  averageAnswerTime: number;
-  percentCorrect: number;
+  averageAnswerTime?: number;
+  percentCorrect?: number;
 }
 
 export interface finalResults {
-  usersRankedByScore: UsersRank[];
+  usersRankedByScore: UserScore[];
   questionResults: questionResult[];
 }
 
@@ -80,5 +75,8 @@ export function playerResult(playerId: number): finalResults {
   }
 
   const { sessionId, autoStartNum, state, atQuestion, players, metadata, messages, ... filtered} = session;
+  let questionResultsFiltered;
+  filtered.questionResults.forEach((questionResult) => questionResultsFiltered.push(filterFinalResults(questionResult)));
+  filtered.questionResults = questionResultsFiltered;
   return filtered;
 }
