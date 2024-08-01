@@ -29,7 +29,7 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
     token = JSON.parse(resUser.body.toString()).token;
     const resQuiz = HTTP.adminQuizCreate({ token: token, name: 'Quiz1', description: 'Betty\'s quiz' });
     quizId = JSON.parse(resQuiz.body.toString()).quizId;
-    const inputQuestion = {
+    const inputQuestion1 = {
       question: 'Who is the Monarch of England?',
       duration: 1,
       points: 5,
@@ -45,7 +45,24 @@ describe('PUT /v1/admin/quiz/:quizid/session/:sessionid', () => {
       ],
       thumbnailUrl: 'http://google.com/some/image/path.jpg',
     };
-    HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion });
+    HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion1 });
+    const inputQuestion2 = {
+      question: 'Why are cats so cute?',
+      duration: 1,
+      points: 5,
+      answers: [
+        {
+          answer: 'Because whiskers nyan',
+          correct: true
+        },
+        {
+          answer: 'Because ears nyan',
+          correct: false
+        },
+      ],
+      thumbnailUrl: 'http://google.com/some/image/path.jpg',
+    };
+    HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion2 });
     const start = HTTP.adminQuizSessionStart({ token: token, quizid: quizId, autoStartNum: 3 });
     sessionId = JSON.parse(start.body.toString()).sessionId;
   });

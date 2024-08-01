@@ -65,10 +65,11 @@ export interface Player {
 export interface QuestionResult {
   questionId: number;
   playersCorrectList: string[];
-  averageAnswerTime: number;
-  percentCorrect: number;
+  averageAnswerTime ? : number;
+  percentCorrect ? : number;
   submissions: Submission[];
   scores: UserScore[];
+  timeStarted: number;
 }
 
 export interface Submission {
