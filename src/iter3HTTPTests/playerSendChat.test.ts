@@ -98,7 +98,7 @@ describe('POST /v1/player/{playerid}/chat', () => {
         messages: [
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: expect.any(Number),
+            playerId: expect.any(Number),
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           }
@@ -115,7 +115,7 @@ describe('POST /v1/player/{playerid}/chat', () => {
         messages: [
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: playerId,
+            playerId: playerId,
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           }
@@ -132,7 +132,7 @@ describe('POST /v1/player/{playerid}/chat', () => {
         messages: [
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: expect.any(Number),
+            playerId: expect.any(Number),
             playerName: 'Ronaldo Sui',
             timeSent: expect.any(Number)
           }
@@ -152,14 +152,14 @@ describe('POST /v1/player/{playerid}/chat', () => {
         messages: [
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: expect.any(Number),
+            playerId: expect.any(Number),
             playerName: expect.any(String),
             timeSent: expect.any(Number),
           }
         ]
       });
-      expect(chatView.timeSent).toBeGreaterThanOrEqual(time);
-      expect(chatView.timeSent).toBeLessThanOrEqual(time + 1);
+      expect(chatView.messages[0].timeSent).toBeGreaterThanOrEqual(time);
+      expect(chatView.messages[0].timeSent).toBeLessThanOrEqual(time + 1);
     });
 
     test('If multiple messages can be sent by the same user', () => {
@@ -173,13 +173,13 @@ describe('POST /v1/player/{playerid}/chat', () => {
         messages: [
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: playerId,
+            playerId: playerId,
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           },
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: playerId,
+            playerId: playerId,
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           }
@@ -201,13 +201,13 @@ describe('POST /v1/player/{playerid}/chat', () => {
         messages: [
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: playerId,
+            playerId: playerId,
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           },
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: playerId2,
+            playerId: playerId2,
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           }

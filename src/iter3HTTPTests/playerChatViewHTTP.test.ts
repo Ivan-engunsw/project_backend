@@ -79,7 +79,7 @@ describe('POST /v1/player/{playerid}/chat', () => {
         messages: [
           {
             messageBody: expect.any(String),
-            playerid: expect.any(Number),
+            playerId: expect.any(Number),
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           }
@@ -97,15 +97,15 @@ describe('POST /v1/player/{playerid}/chat', () => {
         messages: [
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: playerId,
+            playerId: playerId,
             playerName: 'Ronaldo Sui',
             timeSent: expect.any(Number)
           }
         ]
       });
 
-      expect(chatView.timeSent).toBeGreaterThanOrEqual(time);
-      expect(chatView.timeSent).toBeLessThanOrEqual(time + 1);
+      expect(chatView.messages[0].timeSent).toBeGreaterThanOrEqual(time);
+      expect(chatView.messages[0].timeSent).toBeLessThanOrEqual(time + 1);
     });
 
     test('If multiple messages can be viewed', () => {
@@ -123,19 +123,19 @@ describe('POST /v1/player/{playerid}/chat', () => {
         messages: [
           {
             messageBody: expect.any(String),
-            playerid: expect.any(Number),
+            playerId: expect.any(Number),
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           },
           {
             messageBody: expect.any(String),
-            playerid: expect.any(Number),
+            playerId: expect.any(Number),
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           },
           {
             messageBody: expect.any(String),
-            playerid: expect.any(Number),
+            playerId: expect.any(Number),
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           }
@@ -165,19 +165,19 @@ describe('POST /v1/player/{playerid}/chat', () => {
         messages: [
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: playerId,
+            playerId: playerId,
             playerName: 'Ronaldo Sui',
             timeSent: expect.any(Number)
           },
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: playerId1,
+            playerId: playerId1,
             playerName: 'Bobs Bob',
             timeSent: expect.any(Number)
           },
           {
             messageBody: 'Hello everyone! Imma beat u.',
-            playerid: playerId2,
+            playerId: playerId2,
             playerName: 'Betty Boop',
             timeSent: expect.any(Number)
           }

@@ -104,4 +104,3 @@ export const playerIdNotFound = (playerId: number) =>
 
 export const invalidMessageLength = () =>
   'The message needs to be at least 1 character and no more than 100 characters';
-
