@@ -250,10 +250,7 @@ export function updateSessionResults(session: Session) {
 export const findPlayerByName = (session: Session, name: string) =>
   session.players.find(player => player.name === name);
 
-
 export const findSessionByPlayerId = (playerId: number) => {
-
-  
 /*
   for (const session of getData().sessions) {
     for (const player of session.players) {
@@ -263,8 +260,8 @@ export const findSessionByPlayerId = (playerId: number) => {
     }
   }
 */
-  return getData().sessions.find(session => session.players.some(player => player.playerId == playerId));
-}
+  return getData().sessions.find(session => session.players.some(player => player.playerId === playerId));
+};
 
 export const findPlayerNameByID = (playerId: number) => {
   for (const session of getData().sessions) {
@@ -274,8 +271,7 @@ export const findPlayerNameByID = (playerId: number) => {
       }
     }
   }
-}
-
+};
 
 export const validMessageLength = (message: string) =>
-  1 <= message.length && message.length <= 100
+  message.length >= 1 && message.length <= 100;

@@ -4,10 +4,10 @@ import * as HTTP from './HTTPHelper';
 // CONSTANTS //
 const ERROR = { error: expect.any(String) };
 const INPUT_USER = {
-    email: 'validemail1@gmail.com',
-    password: 'password1!',
-    nameFirst: 'Bobby',
-    nameLast: 'Bob'
+  email: 'validemail1@gmail.com',
+  password: 'password1!',
+  nameFirst: 'Bobby',
+  nameLast: 'Bob'
 };
 const INPUT_QUESTION = {
   question: 'Who is the Monarch of England?',
@@ -26,16 +26,16 @@ const INPUT_QUESTION = {
   thumbnailUrl: 'http://google.com/some/image/path.jpg',
 };
 
-const MESSAGE = { 
-  messageBody: "Hello everyone! Imma beat u." 
-}
+const MESSAGE = {
+  messageBody: 'Hello everyone! Imma beat u.'
+};
 
-const SHORT_MESSAGE = { 
-  messageBody: "" 
-}
+const SHORT_MESSAGE = {
+  messageBody: ''
+};
 const LONG_MESSAGE = {
-  messageBody: "a".repeat(101)
-}
+  messageBody: 'a'.repeat(101)
+};
 
 // TESTING //
 beforeEach(() => {
@@ -51,7 +51,7 @@ describe('POST /v1/player/{playerid}/chat', () => {
   let quizId: number;
   let sessionid: number;
   let playerId: number;
-  
+
   beforeEach(() => {
     const resUser = HTTP.adminAuthRegister(INPUT_USER);
     token = JSON.parse(resUser.body.toString()).token;
@@ -70,7 +70,7 @@ describe('POST /v1/player/{playerid}/chat', () => {
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
-    
+
     test('If message body is less than 1 char', () => {
       const res = HTTP.playerChatSend({ playerid: playerId + 1, message: SHORT_MESSAGE });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
@@ -83,21 +83,21 @@ describe('POST /v1/player/{playerid}/chat', () => {
       expect(res.statusCode).toStrictEqual(400);
     });
   });
-  
+
   describe('Functionality testing', () => {
     test('Has the correct return type', () => {
       const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
+      expect(JSON.parse(res.body.toString())).toStrictEqual({});
     });
 
     test('If the correct message content is sent', () => {
       const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
-      const resChatView = HTTP.playerChatView( {playerid: playerId} );
+      expect(JSON.parse(res.body.toString())).toStrictEqual({});
+      const resChatView = HTTP.playerChatView({ playerid: playerId });
       expect(JSON.parse(resChatView.body.toString())).toStrictEqual({
         messages: [
           {
-            messageBody: "Hello everyone! Imma beat u.",
+            messageBody: 'Hello everyone! Imma beat u.',
             playerid: expect.any(Number),
             playerName: expect.any(String),
             timeSent: expect.any(Number)
@@ -108,13 +108,13 @@ describe('POST /v1/player/{playerid}/chat', () => {
 
     test('If the playerid is correctly linked to the message', () => {
       const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
+      expect(JSON.parse(res.body.toString())).toStrictEqual({});
 
-      const resChatView = HTTP.playerChatView( {playerid: playerId} );
+      const resChatView = HTTP.playerChatView({ playerid: playerId });
       expect(JSON.parse(resChatView.body.toString())).toStrictEqual({
         messages: [
           {
-            messageBody: "Hello everyone! Imma beat u.",
+            messageBody: 'Hello everyone! Imma beat u.',
             playerid: playerId,
             playerName: expect.any(String),
             timeSent: expect.any(Number)
@@ -125,15 +125,15 @@ describe('POST /v1/player/{playerid}/chat', () => {
 
     test('If the playerName is correctly linked to the message', () => {
       const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
+      expect(JSON.parse(res.body.toString())).toStrictEqual({});
 
-      const resChatView = HTTP.playerChatView( {playerid: playerId} );
+      const resChatView = HTTP.playerChatView({ playerid: playerId });
       expect(JSON.parse(resChatView.body.toString())).toStrictEqual({
         messages: [
           {
-            messageBody: "Hello everyone! Imma beat u.",
+            messageBody: 'Hello everyone! Imma beat u.',
             playerid: expect.any(Number),
-            playerName: "Ronaldo Sui",
+            playerName: 'Ronaldo Sui',
             timeSent: expect.any(Number)
           }
         ]
@@ -142,16 +142,16 @@ describe('POST /v1/player/{playerid}/chat', () => {
 
     test('If the timeSent is correctly linked to the message', () => {
       const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      let time = timeNow();
-      
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
+      const time = timeNow();
 
-      const resChatView = HTTP.playerChatView( {playerid: playerId} );
+      expect(JSON.parse(res.body.toString())).toStrictEqual({});
+
+      const resChatView = HTTP.playerChatView({ playerid: playerId });
       const chatView = JSON.parse(resChatView.body.toString());
       expect(chatView).toStrictEqual({
         messages: [
           {
-            messageBody: "Hello everyone! Imma beat u.",
+            messageBody: 'Hello everyone! Imma beat u.',
             playerid: expect.any(Number),
             playerName: expect.any(String),
             timeSent: expect.any(Number),
@@ -165,20 +165,20 @@ describe('POST /v1/player/{playerid}/chat', () => {
     test('If multiple messages can be sent by the same user', () => {
       const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
       const res2 = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
-      expect(JSON.parse(res2.body.toString())).toStrictEqual( {} );
+      expect(JSON.parse(res.body.toString())).toStrictEqual({});
+      expect(JSON.parse(res2.body.toString())).toStrictEqual({});
 
-      const resChatView = HTTP.playerChatView( {playerid: playerId} );
+      const resChatView = HTTP.playerChatView({ playerid: playerId });
       expect(JSON.parse(resChatView.body.toString())).toStrictEqual({
         messages: [
           {
-            messageBody: "Hello everyone! Imma beat u.",
+            messageBody: 'Hello everyone! Imma beat u.',
             playerid: playerId,
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           },
           {
-            messageBody: "Hello everyone! Imma beat u.",
+            messageBody: 'Hello everyone! Imma beat u.',
             playerid: playerId,
             playerName: expect.any(String),
             timeSent: expect.any(Number)
@@ -189,24 +189,24 @@ describe('POST /v1/player/{playerid}/chat', () => {
 
     test('If multiple different users can send messages', () => {
       const resPlayer2 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Bobby Bob' });
-      let playerId2 = JSON.parse(resPlayer2.body.toString()).playerId;
+      const playerId2 = JSON.parse(resPlayer2.body.toString()).playerId;
 
       const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
       const res2 = HTTP.playerChatSend({ playerid: playerId2, message: MESSAGE });
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
-      expect(JSON.parse(res2.body.toString())).toStrictEqual( {} );
+      expect(JSON.parse(res.body.toString())).toStrictEqual({});
+      expect(JSON.parse(res2.body.toString())).toStrictEqual({});
 
-      const resChatView = HTTP.playerChatView( {playerid: playerId} );
+      const resChatView = HTTP.playerChatView({ playerid: playerId });
       expect(JSON.parse(resChatView.body.toString())).toStrictEqual({
         messages: [
           {
-            messageBody: "Hello everyone! Imma beat u.",
+            messageBody: 'Hello everyone! Imma beat u.',
             playerid: playerId,
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           },
           {
-            messageBody: "Hello everyone! Imma beat u.",
+            messageBody: 'Hello everyone! Imma beat u.',
             playerid: playerId2,
             playerName: expect.any(String),
             timeSent: expect.any(Number)

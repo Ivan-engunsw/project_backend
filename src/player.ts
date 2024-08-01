@@ -1,9 +1,10 @@
 import { Action, State, getData, setData } from './dataStore';
-import { timeNow, findPlayerByName, findSessionBySessionId, findSessionByPlayerId, 
-  findPlayerNameByID, validMessageLength, generateId } from './helper';
+import {
+  timeNow, findPlayerByName, findSessionBySessionId, findSessionByPlayerId,
+  findPlayerNameByID, validMessageLength, generateId
+} from './helper';
 import * as error from './errors';
 import { adminQuizSessionUpdate } from './session';
-
 
 export interface body {
   message: {
@@ -11,18 +12,18 @@ export interface body {
   }
 }
 
-export function playerChatSend(playerid: number, body: body ) {
+export function playerChatSend(playerid: number, body: body) {
   const data = getData();
 
   const session = findSessionByPlayerId(playerid);
   if (!session) {
     throw new Error(error.playerIdNotFound(playerid));
   }
-  
+
   if (!validMessageLength(body.message.messageBody)) {
     throw new Error(error.invalidMessageLength());
   }
-  
+
   const name = findPlayerNameByID(playerid);
   const time = timeNow();
 
@@ -35,9 +36,8 @@ export function playerChatSend(playerid: number, body: body ) {
 
   setData(data);
 
-  return {};  
+  return {};
 }
-
 
 export function playerSessionJoin(sessionId: number, name: string) {
   const data = getData();
