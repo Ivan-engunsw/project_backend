@@ -85,6 +85,11 @@ describe('POST /v1/player/{playerid}/chat', () => {
   });
   
   describe('Functionality testing', () => {
+    test('Has the correct return type', () => {
+      const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
+      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
+    });
+
     test('If the correct message content is sent', () => {
       const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
       expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
@@ -183,7 +188,7 @@ describe('POST /v1/player/{playerid}/chat', () => {
     });
 
     test('If multiple different users can send messages', () => {
-      const resPlayer2 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Ronaldo Sui' });
+      const resPlayer2 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Bobby Bob' });
       let playerId2 = JSON.parse(resPlayer2.body.toString()).playerId;
 
       const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
@@ -209,8 +214,5 @@ describe('POST /v1/player/{playerid}/chat', () => {
         ]
       });
     });
-
   });
-
-
 });

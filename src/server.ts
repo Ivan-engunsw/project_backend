@@ -1137,10 +1137,11 @@ app.post('/v1/player/join', (req: Request, res: Response) => {
 });
 
 app.post('/v1/player/:playerid/chat', (req: Request, res: Response) => {
-  const { messageBody } = req.body;
+  const message = req.body.message;
+ 
   const playerId = parseInt(req.params.playerid.toString());
   try {
-    const result = player.playerChatSend(playerId, messageBody);
+    const result = player.playerChatSend(playerId, { message: message });
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
