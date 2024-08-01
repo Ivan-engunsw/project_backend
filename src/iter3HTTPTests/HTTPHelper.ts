@@ -578,7 +578,7 @@ export const playerResult = (
     playerid: number,
   }
 ) => {
-  return request('GET', SERVER_URL + `v1/player/${payload.playerid}/results`, {
+  return request('GET', SERVER_URL + `/v1/player/${payload.playerid}/results`, {
     timeout: TIMEOUT_MS
   });
 };

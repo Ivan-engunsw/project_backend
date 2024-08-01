@@ -1,7 +1,24 @@
 import { Action, State, getData, setData } from './dataStore';
-import { findPlayerByName, findSessionBySessionId, generateId } from './helper';
+import { findPlayerByName, findSessionByPlayerId, findSessionBySessionId, generateId } from './helper';
 import * as error from './errors';
 import { adminQuizSessionUpdate } from './session';
+
+interface UsersRank {
+  name: string;
+  score: number;
+}
+
+interface questionResult {
+  questionId: number;
+  playersCorrectList: string[];
+  averageAnswerTime: number;
+  percentCorrect: number;
+}
+
+export interface finalResults {
+  usersRankedByScore: UsersRank[];
+  questionResults: questionResult[];
+}
 
 export function playerSessionJoin(sessionId: number, name: string) {
   const data = getData();
@@ -44,4 +61,24 @@ export function playerSessionJoin(sessionId: number, name: string) {
   setData(data);
 
   return { playerId: playerId };
+}
+
+/**
+ * 
+ * @param playerId - the id of a player
+ * @returns {{finalResults}} - object containing ranks of users and results of each question
+ */
+export function playerResult(playerId: number): finalResults {
+  const data = getData();
+  if (!findSessionByPlayerId(data, playerId)) {
+    throw new Error(error.invalidPlayer(playerId));
+  }
+
+  const session = findSessionByPlayerId(data, playerId);
+  if (session.state !== State.FINAL_RESULTS) {
+    throw new Error(error.sessionsNotInFinal_ResultsState());
+  }
+
+  const { sessionId, autoStartNum, state, atQuestion, players, metadata, messages, ... filtered} = session;
+  return filtered;
 }

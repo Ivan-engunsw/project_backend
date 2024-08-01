@@ -184,7 +184,11 @@ export const findSessionsByQuizId = (data: Data, quizId: number) =>
   data.sessions.filter(session => session.metadata.quizId === quizId);
 export const findSessionBySessionId = (data: Data, sessionId: number) =>
   data.sessions.find(session => session.sessionId === sessionId);
+export const findSessionByPlayerId = (data: Data, playerId: number) =>
+  data.sessions.find(session => session.players.find(player => player.playerId === playerId));
 
 // player
 export const findPlayerByName = (session: Session, name: string) =>
   session.players.find(player => player.name === name);
+export const findPlayerByPlayerId = (session: Session, playerId: number) =>
+  session.players.find(player => player.playerId === playerId);

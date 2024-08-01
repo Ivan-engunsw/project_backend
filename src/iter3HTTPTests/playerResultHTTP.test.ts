@@ -1,5 +1,4 @@
 import * as HTTP from './HTTPHelper';
-import { State } from '../dataStore';
 
 // CONSTANTS //
 const ERROR = { error: expect.any(String) };
