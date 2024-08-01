@@ -44,7 +44,9 @@ describe('POST /v1/player/{playerid}/chat', () => {
   let quizId: number;
   let sessionid: number;
   let playerId: number;
-  
+  let playerId1: number;
+  let playerId2: number;
+
   beforeEach(() => {
     const resUser = HTTP.adminAuthRegister(INPUT_USER);
     token = JSON.parse(resUser.body.toString()).token;
@@ -60,95 +62,80 @@ describe('POST /v1/player/{playerid}/chat', () => {
 
   describe('Error testing', () => {
     test('PlayerID does not exist', () => {
-      const res = HTTP.playerChatSend({ playerid: playerId + 1, message: MESSAGE });
+      HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
+      const res = HTTP.playerChatView({ playerid: playerId + 1 });
+
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
   });
   
   describe('Functionality testing', () => {
-    test('If the correct message content is sent', () => {
-        
-
-
-
-      });
-    });
-
-    test('If the playerid is correctly linked to the message', () => {
-      const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
-
-      const resChatView = HTTP.playerChatView( {playerid: playerId} );
-      expect(JSON.parse(resChatView.body.toString())).toStrictEqual({
+    test('If only 1 message is sent', () => {
+      HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
+      const res = HTTP.playerChatView( {playerid: playerId} );
+      
+      expect(JSON.parse(res.body.toString())).toStrictEqual({
         messages: [
           {
-            messageBody: "Hello everyone! Imma beat u.",
-            playerid: playerId,
+            messageBody: expect.any(String),
+            playerid: expect.any(Number),
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           }
         ]
-      });
+      })
     });
 
-    test('If the playerName is correctly linked to the message', () => {
-      const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
+    test('If the correct details are stored with one message sent', () => {
+      HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
+      let time = timeNow();
 
-      const resChatView = HTTP.playerChatView( {playerid: playerId} );
-      expect(JSON.parse(resChatView.body.toString())).toStrictEqual({
+      const res = HTTP.playerChatView( {playerid: playerId} );
+      const chatView = JSON.parse(res.body.toString());
+      expect(chatView).toStrictEqual({
         messages: [
           {
             messageBody: "Hello everyone! Imma beat u.",
-            playerid: expect.any(Number),
+            playerid: playerId,
             playerName: "Ronaldo Sui",
             timeSent: expect.any(Number)
           }
         ]
       });
-    });
-
-    test('If the timeSent is correctly linked to the message', () => {
-      const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      let time = timeNow();
       
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
-
-      const resChatView = HTTP.playerChatView( {playerid: playerId} );
-      const chatView = JSON.parse(resChatView.body.toString());
-      expect(chatView).toStrictEqual({
-        messages: [
-          {
-            messageBody: "Hello everyone! Imma beat u.",
-            playerid: expect.any(Number),
-            playerName: expect.any(String),
-            timeSent: expect.any(Number),
-          }
-        ]
-      });
       expect(chatView.timeSent).toBeGreaterThanOrEqual(time);
       expect(chatView.timeSent).toBeLessThanOrEqual(time + 1);
     });
 
-    test('If multiple messages can be sent by the same user', () => {
-      const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      const res2 = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
-      expect(JSON.parse(res2.body.toString())).toStrictEqual( {} );
+    test('If multiple messages can be viewed', () => {
+      const resPlayer1 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Bobs Bob' });
+      const resPlayer2 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Betty Boop' });
+      playerId1 = JSON.parse(resPlayer1.body.toString()).sessionId;
+      playerId2 = JSON.parse(resPlayer2.body.toString()).sessionId;
 
-      const resChatView = HTTP.playerChatView( {playerid: playerId} );
-      expect(JSON.parse(resChatView.body.toString())).toStrictEqual({
+      HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
+      HTTP.playerChatSend({ playerid: playerId1, message: MESSAGE });
+      HTTP.playerChatSend({ playerid: playerId2, message: MESSAGE });
+
+      const res = HTTP.playerChatView( {playerid: playerId} );
+      expect(JSON.parse(res.body.toString())).toStrictEqual({
         messages: [
           {
-            messageBody: "Hello everyone! Imma beat u.",
-            playerid: playerId,
+            messageBody: expect.any(String),
+            playerid: expect.any(Number),
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           },
           {
-            messageBody: "Hello everyone! Imma beat u.",
-            playerid: playerId,
+            messageBody: expect.any(String),
+            playerid: expect.any(Number),
+            playerName: expect.any(String),
+            timeSent: expect.any(Number)
+          },
+          {
+            messageBody: expect.any(String),
+            playerid: expect.any(Number),
             playerName: expect.any(String),
             timeSent: expect.any(Number)
           }
@@ -156,34 +143,54 @@ describe('POST /v1/player/{playerid}/chat', () => {
       });
     });
 
-    test('If multiple different users can send messages', () => {
-      const resPlayer2 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Ronaldo Sui' });
-      let playerId2 = JSON.parse(resPlayer2.body.toString()).sessionId;
+    test('If the messages are returned in the correct order', () => {
+      const resPlayer1 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Bobs Bob' });
+      const resPlayer2 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Betty Boop' });
+      playerId1 = JSON.parse(resPlayer1.body.toString()).sessionId;
+      playerId2 = JSON.parse(resPlayer2.body.toString()).sessionId;
 
-      const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
-      const res2 = HTTP.playerChatSend({ playerid: playerId2, message: MESSAGE });
-      expect(JSON.parse(res.body.toString())).toStrictEqual( {} );
-      expect(JSON.parse(res2.body.toString())).toStrictEqual( {} );
+      HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
+      let time = timeNow();
+      HTTP.playerChatSend({ playerid: playerId1, message: MESSAGE });
+      let time1 = timeNow();
+      HTTP.playerChatSend({ playerid: playerId2, message: MESSAGE });
+      let time2 = timeNow();
 
-      const resChatView = HTTP.playerChatView( {playerid: playerId} );
-      expect(JSON.parse(resChatView.body.toString())).toStrictEqual({
+      expect(time < time1 && time < time2);
+      expect(time1 < time2);
+
+      const res = HTTP.playerChatView( {playerid: playerId} );
+      const chatView = JSON.parse(res.body.toString());
+      expect(chatView).toStrictEqual({
         messages: [
           {
             messageBody: "Hello everyone! Imma beat u.",
             playerid: playerId,
-            playerName: expect.any(String),
+            playerName: "Ronaldo Sui",
+            timeSent: expect.any(Number)
+          },
+          {
+            messageBody: "Hello everyone! Imma beat u.",
+            playerid: playerId1,
+            playerName: "Bobs Bob",
             timeSent: expect.any(Number)
           },
           {
             messageBody: "Hello everyone! Imma beat u.",
             playerid: playerId2,
-            playerName: expect.any(String),
+            playerName: "Betty Boop",
             timeSent: expect.any(Number)
           }
         ]
       });
+      
+      expect(chatView.messages[0].timeSent).toBeGreaterThanOrEqual(time);
+      expect(chatView.messages[0].timeSent).toBeLessThanOrEqual(time + 1);
+      expect(chatView.messages[1].timeSent).toBeGreaterThanOrEqual(time1);
+      expect(chatView.messages[1].timeSent).toBeLessThanOrEqual(time1 + 1);
+      expect(chatView.messages[2].timeSent).toBeGreaterThanOrEqual(time2);
+      expect(chatView.messages[2].timeSent).toBeLessThanOrEqual(time2 + 1);
     });
-
   });
-
 });
+  
