@@ -1,5 +1,6 @@
 import * as HTTP from './HTTPHelper';
 import { State } from '../dataStore';
+import slync from 'slync';
 
 // CONSTANTS //
 const ERROR = { error: expect.any(String) };
@@ -113,7 +114,7 @@ describe('POST /v1/admin/quiz/:quizid/session/start', () => {
       expect(JSON.parse(res.body.toString())).toHaveProperty('sessionId', expect.any(Number));
     });
 
-    test.skip('correctly creates the session', () => {
+    test('correctly creates the session', () => {
       const start = HTTP.adminQuizSessionStart({ token: token, quizid: quizId, autoStartNum: 3 });
       const sessionId = JSON.parse(start.body.toString()).sessionId;
 
@@ -125,20 +126,7 @@ describe('POST /v1/admin/quiz/:quizid/session/start', () => {
       expect(sessionInfo).toHaveProperty('metadata.quizId', quizId);
     });
 
-    test.skip('session correctly autostarts', () => {
-      const start = HTTP.adminQuizSessionStart({ token: token, quizid: quizId, autoStartNum: 1 });
-      const sessionId = JSON.parse(start.body.toString()).sessionId;
-      HTTP.playerSessionJoin({ sessionId: sessionId, name: 'Betty' });
-
-      const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
-      const sessionInfo = JSON.parse(res.body.toString());
-      expect(sessionInfo).toHaveProperty('state', State.QUESTION_COUNTDOWN);
-      expect(sessionInfo).toHaveProperty('atQuestion', 1);
-      expect(sessionInfo).toHaveProperty('players', ['Betty']);
-      expect(sessionInfo).toHaveProperty('metadata.quizId', quizId);
-    });
-
-    test.skip('session doesn\'t autostart', () => {
+    test('session doesn\'t autostart', () => {
       const start = HTTP.adminQuizSessionStart({ token: token, quizid: quizId, autoStartNum: 0 });
       const sessionId = JSON.parse(start.body.toString()).sessionId;
       HTTP.playerSessionJoin({ sessionId: sessionId, name: 'Betty' });
@@ -147,6 +135,20 @@ describe('POST /v1/admin/quiz/:quizid/session/start', () => {
       const sessionInfo = JSON.parse(res.body.toString());
       expect(sessionInfo).toHaveProperty('state', State.LOBBY);
       expect(sessionInfo).toHaveProperty('atQuestion', 0);
+      expect(sessionInfo).toHaveProperty('players', ['Betty']);
+      expect(sessionInfo).toHaveProperty('metadata.quizId', quizId);
+    });
+
+    test('session correctly autostarts', () => {
+      const start = HTTP.adminQuizSessionStart({ token: token, quizid: quizId, autoStartNum: 1 });
+      const sessionId = JSON.parse(start.body.toString()).sessionId;
+      HTTP.playerSessionJoin({ sessionId: sessionId, name: 'Betty' });
+
+      slync(1 * 1000);
+      const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
+      const sessionInfo = JSON.parse(res.body.toString());
+      expect(sessionInfo).toHaveProperty('state', State.QUESTION_COUNTDOWN);
+      expect(sessionInfo).toHaveProperty('atQuestion', 1);
       expect(sessionInfo).toHaveProperty('players', ['Betty']);
       expect(sessionInfo).toHaveProperty('metadata.quizId', quizId);
     });

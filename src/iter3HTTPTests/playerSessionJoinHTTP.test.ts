@@ -63,7 +63,7 @@ describe('POST /v1/player/join', () => {
       expect(res.statusCode).toStrictEqual(400);
     });
 
-    test.skip('returns an error for a session not in LOBBY state', () => {
+    test('returns an error for a session not in LOBBY state', () => {
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.END });
       const res = HTTP.playerSessionJoin({ sessionId: sessionId, name: 'Betty' });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
@@ -76,13 +76,13 @@ describe('POST /v1/player/join', () => {
         expect(JSON.parse(res.body.toString())).toHaveProperty('playerId', expect.any(Number));
       });
 
-      test.skip('player successfully joins the session', () => {
+      test('player successfully joins the session', () => {
         HTTP.playerSessionJoin({ sessionId: sessionId, name: 'Betty' });
         const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
         expect(JSON.parse(res.body.toString()).players).toContain('Betty');
       });
 
-      test.skip('generates a random name for an empty string', () => {
+      test('generates a random name for an empty string', () => {
         HTTP.playerSessionJoin({ sessionId: sessionId, name: '' });
         const res = HTTP.adminQuizSessionStatus({ token: token, quizid: quizId, sessionid: sessionId });
         expect(JSON.parse(res.body.toString())).toHaveProperty('players', [expect.any(String)]);

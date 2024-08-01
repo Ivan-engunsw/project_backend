@@ -1,4 +1,4 @@
-import request, { HttpVerb } from 'sync-request-curl';
+import request from 'sync-request-curl';
 import { port, url } from '../config.json';
 
 /* ========================================================================= */
@@ -10,19 +10,19 @@ const TIMEOUT_MS = 5 * 1000;
 /* ========================================================================= */
 // HELPER FUNCTIONS //
 /* ========================================================================= */
-export function requestHelper(method: HttpVerb, path: string, payload: { [key: string]: any }) {
-  let qs = {};
-  let json = {};
-  const headers = { token: payload.token };
-  if (['GET', 'DELETE'].includes(method)) {
-    qs = payload;
-  } else {
-    // PUT/POST
-    json = payload;
-  }
+// export function requestHelper(method: HttpVerb, path: string, payload: { [key: string]: any }) {
+//   let qs = {};
+//   let json = {};
+//   const headers = { token: payload.token };
+//   if (['GET', 'DELETE'].includes(method)) {
+//     qs = payload;
+//   } else {
+//     // PUT/POST
+//     json = payload;
+//   }
 
-  return request(method, path, { qs, json, headers, timeout: TIMEOUT_MS });
-}
+//   return request(method, path, { qs, json, headers, timeout: TIMEOUT_MS });
+// }
 
 /* ========================================================================= */
 // ITER 2 V1 HTTP REQUESTS //

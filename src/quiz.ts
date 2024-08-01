@@ -6,7 +6,8 @@ import {
   Quiz,
   Question,
   Answer,
-  EmptyObject
+  EmptyObject,
+  State
 } from './dataStore';
 import * as error from './errors';
 import {
@@ -24,6 +25,7 @@ import {
   validNewPosition,
   sumDuration,
   validThumbnail,
+  findSessionsByQuizId,
 } from './helper';
 
 export interface QuestionBody {
@@ -127,6 +129,12 @@ export function adminQuizCreate(authUserId: number, name: string, description: s
 export function adminQuizRemove
 (quizId: number): EmptyObject {
   const data: Data = getData();
+
+  // Check if there are any quiz sessions not in END state
+  const sessions = findSessionsByQuizId(data, quizId);
+  if (sessions.some(session => session.state !== State.END)) {
+    throw new Error(error.sessionsNotEnded());
+  }
 
   // Find the quiz
   const i: number = data.quizzes.findIndex(quiz => quiz.quizId === quizId);
@@ -253,6 +261,12 @@ export function adminQuizTransfer
   // Check the target does not have an overlapping name
   if (takenQuizName(data, targetUser.userId, quiz.name)) {
     throw new Error(error.QuizNameTaken(quiz.name));
+  }
+
+  // Check if there are any quiz sessions not in END state
+  const sessions = findSessionsByQuizId(data, quizId);
+  if (sessions.some(session => session.state !== State.END)) {
+    throw new Error(error.sessionsNotEnded());
   }
 
   // Transfer ownership of the quiz
@@ -498,6 +512,12 @@ export function adminQuizQuestionDelete
   const question: Question = getQuestionById(quiz, questionId);
   if (!question) throw new Error(error.QuestionIdNotFound(questionId));
 
+  // Check if there are any quiz sessions not in END state
+  const sessions = findSessionsByQuizId(data, quizId);
+  if (sessions.some(session => session.state !== State.END)) {
+    throw new Error(error.sessionsNotEnded());
+  }
+
   // Remove the question from the quiz
   const questionIndex = quiz.questions.indexOf(question);
   quiz.questions.splice(questionIndex, 1);
@@ -591,6 +611,7 @@ export function adminQuizQuestionDuplicate
 }
 
 /**
+ * Updates the quiz with the given thumbnail url
  *
  * @param quizId - number
  * @param imgUrl - string
