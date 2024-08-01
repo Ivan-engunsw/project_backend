@@ -58,6 +58,31 @@ describe('POST /v2/admin/quiz/:quizid/transfer', () => {
       expect(res.statusCode).toStrictEqual(400);
     });
 
+    test('cannot transfer a quiz with sessions not in END state', () => {
+      const inputQuestion = {
+        question: 'Who is the Monarch of England?',
+        duration: 4,
+        points: 5,
+        answers: [
+          {
+            answer: 'Prince Charles',
+            correct: true
+          },
+          {
+            answer: 'Queen Elizabeth',
+            correct: false
+          },
+        ],
+        thumbnailUrl: 'http://google.com/some/image/path.jpg',
+      };
+      HTTP.adminQuizQuestionCreate({ token: token1, quizid: quizId, questionBody: inputQuestion });
+      HTTP.adminQuizSessionStart({ token: token1, quizid: quizId, autoStartNum: 3 });
+
+      const res = HTTP.adminQuizTransfer({ token: token1, quizid: quizId, userEmail: INPUT_USER_2.email });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
+
     test('returns an error for a quiz not owned by this user', () => {
       const resQuiz2 = HTTP.adminQuizCreate({ token: token2, name: 'Quiz1', description: 'Norman\'s quiz' });
       const quizId2 = JSON.parse(resQuiz2.body.toString()).quizId;
