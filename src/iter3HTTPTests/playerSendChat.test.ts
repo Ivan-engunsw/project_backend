@@ -61,7 +61,7 @@ describe('POST /v1/player/{playerid}/chat', () => {
     const resSession = HTTP.adminQuizSessionStart({ token: token, quizid: quizId, autoStartNum: 3 });
     sessionid = JSON.parse(resSession.body.toString()).sessionId;
     const resPlayer = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Ronaldo Sui' });
-    playerId = JSON.parse(resPlayer.body.toString()).sessionId;
+    playerId = JSON.parse(resPlayer.body.toString()).playerId;
   });
 
   describe('Error testing', () => {
@@ -184,7 +184,7 @@ describe('POST /v1/player/{playerid}/chat', () => {
 
     test('If multiple different users can send messages', () => {
       const resPlayer2 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Ronaldo Sui' });
-      let playerId2 = JSON.parse(resPlayer2.body.toString()).sessionId;
+      let playerId2 = JSON.parse(resPlayer2.body.toString()).playerId;
 
       const res = HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
       const res2 = HTTP.playerChatSend({ playerid: playerId2, message: MESSAGE });

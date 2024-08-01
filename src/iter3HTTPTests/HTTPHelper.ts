@@ -591,7 +591,7 @@ export const playerChatView = (
     playerid: number,
   }
 ) => {
-  return request('GET', SERVER_URL + `v1/player/${payload.playerid}/chat`, {
+  return request('GET', SERVER_URL + `/v1/player/${payload.playerid}/chat`, {
     timeout: TIMEOUT_MS
   });
 };
@@ -602,7 +602,7 @@ export const playerChatSend = (
     message: { messageBody: string },
   }
 ) => {
-  return request('POST', SERVER_URL + `v1/player/${payload.playerid}/chat`, {
+  return request('POST', SERVER_URL + `/v1/player/${payload.playerid}/chat`, {
     json: {
       message: payload.message
     },
