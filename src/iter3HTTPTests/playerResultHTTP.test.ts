@@ -1,4 +1,5 @@
 import * as HTTP from './HTTPHelper';
+import slync from 'slync';
 
 // CONSTANTS //
 const ERROR = { error: expect.any(String) };
@@ -30,7 +31,7 @@ describe('GET /v1/player/:playerid/results', () => {
     quizId = JSON.parse(resQuiz.body.toString()).quizId;
     const inputQuestion = {
       question: 'Who is the Monarch of England?',
-      duration: 10,
+      duration: 3,
       points: 5,
       answers: [
         {
@@ -72,7 +73,8 @@ describe('GET /v1/player/:playerid/results', () => {
     test('returns the correct output', () => {
         HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'NEXT_QUESTION'});
         HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'SKIP_COUNTDOWN'});
-        HTTP.playerQuestionAnswer({ playerid: playerId1, questionposition: 1, answerIds: [0]});
+        HTTP.playerQuestionAnswer({ answerIds: [0], playerid: playerId1, questionposition: 1 });
+        slync(3 * 1000);
         HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'GO_TO_FINAL_RESULTS'});
         const resResults = HTTP.playerResult({playerid: playerId1});
         expect(JSON.parse(resResults.body.toString())).toStrictEqual({
@@ -99,7 +101,7 @@ describe('GET /v1/player/:playerid/results', () => {
 
         const inputQuestion2 = {
           question: 'Who is Ronaldo?',
-          duration: 10,
+          duration: 3,
           points: 3,
           answers: [
             {
@@ -118,10 +120,12 @@ describe('GET /v1/player/:playerid/results', () => {
 
         HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'NEXT_QUESTION'});
         HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'SKIP_COUNTDOWN'});
+        slync(3 * 1000);
         HTTP.playerQuestionAnswer({ playerid: playerId1, questionposition: 1, answerIds: [0]});
         HTTP.playerQuestionAnswer({ playerid: playerId2, questionposition: 1, answerIds: [0]});
         HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'NEXT_QUESTION'});
         HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'SKIP_COUNTDOWN'});
+        slync(3 * 1000);
         HTTP.playerQuestionAnswer({ playerid: playerId1, questionposition: 2, answerIds: [1]});
         HTTP.playerQuestionAnswer({ playerid: playerId2, questionposition: 2, answerIds: [0]});
         HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'GO_TO_FINAL_RESULTS'});
