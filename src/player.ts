@@ -1,5 +1,5 @@
 import { Action, State, getData, setData } from './dataStore';
-import { findPlayerByName, findSessionBySessionId, generateId } from './helper';
+import { findPlayerByName, findSessionBySessionId, findSessionByPlayerId, generateId } from './helper';
 import * as error from './errors';
 import { adminQuizSessionUpdate } from './session';
 
@@ -44,4 +44,16 @@ export function playerSessionJoin(sessionId: number, name: string) {
   setData(data);
 
   return { playerId: playerId };
+}
+
+export function playerChatView(playerid: number) {
+  const data = getData();
+
+  const session = findSessionByPlayerId(playerid);
+  if(!session) {
+    throw new Error(error.playerIdNotFound(playerid));
+  }
+
+  const messageList = session.messages
+  return { messageList };
 }
