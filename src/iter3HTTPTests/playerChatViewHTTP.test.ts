@@ -57,7 +57,7 @@ describe('POST /v1/player/{playerid}/chat', () => {
     sessionid = JSON.parse(resSession.body.toString()).sessionId;
 
     const resPlayer = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Ronaldo Sui' });
-    playerId = JSON.parse(resPlayer.body.toString()).sessionId;
+    playerId = JSON.parse(resPlayer.body.toString()).playerId;
   });
 
   describe('Error testing', () => {
@@ -111,8 +111,8 @@ describe('POST /v1/player/{playerid}/chat', () => {
     test('If multiple messages can be viewed', () => {
       const resPlayer1 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Bobs Bob' });
       const resPlayer2 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Betty Boop' });
-      playerId1 = JSON.parse(resPlayer1.body.toString()).sessionId;
-      playerId2 = JSON.parse(resPlayer2.body.toString()).sessionId;
+      playerId1 = JSON.parse(resPlayer1.body.toString()).playerId;
+      playerId2 = JSON.parse(resPlayer2.body.toString()).playerId;
 
       HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
       HTTP.playerChatSend({ playerid: playerId1, message: MESSAGE });
@@ -146,8 +146,8 @@ describe('POST /v1/player/{playerid}/chat', () => {
     test('If the messages are returned in the correct order', () => {
       const resPlayer1 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Bobs Bob' });
       const resPlayer2 = HTTP.playerSessionJoin({ sessionId: sessionid, name: 'Betty Boop' });
-      playerId1 = JSON.parse(resPlayer1.body.toString()).sessionId;
-      playerId2 = JSON.parse(resPlayer2.body.toString()).sessionId;
+      playerId1 = JSON.parse(resPlayer1.body.toString()).playerId;
+      playerId2 = JSON.parse(resPlayer2.body.toString()).playerId;
 
       HTTP.playerChatSend({ playerid: playerId, message: MESSAGE });
       let time = timeNow();
