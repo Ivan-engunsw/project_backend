@@ -1136,6 +1136,17 @@ app.post('/v1/player/join', (req: Request, res: Response) => {
   }
 });
 
+app.get('/v1/player/:playerid/chat', (req: Request, res: Response) => {
+  const playerid = parseInt(req.params.playerid as string);
+
+  try {
+    const result = player.playerChatView(playerid);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
 // ====================================================================
