@@ -28,6 +28,31 @@ describe('DELETE /v2/admin/quiz/:quizid', () => {
     quizId = JSON.parse(resQuiz.body.toString()).quizId;
   });
 
+  test('Session not in END state', () => {
+    const inputQuestion = {
+      question: 'Who is the Monarch of England?',
+      duration: 1,
+      points: 5,
+      answers: [
+        {
+          answer: 'Prince Charles',
+          correct: true
+        },
+        {
+          answer: 'Queen Elizabeth',
+          correct: false
+        },
+      ],
+      thumbnailUrl: 'http://google.com/some/image/path.jpg',
+    };
+    HTTP.adminQuizQuestionCreate({ token: token, quizid: quizId, questionBody: inputQuestion });
+    HTTP.adminQuizSessionStart({ token: token, quizid: quizId, autoStartNum: 3 });
+
+    const res = HTTP.adminQuizRemove({ token: token, quizid: quizId });
+    expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+    expect(res.statusCode).toStrictEqual(400);
+  });
+
   test('Invalid token', () => {
     const res = HTTP.adminQuizRemove({ token: token + 1, quizid: quizId });
     expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);

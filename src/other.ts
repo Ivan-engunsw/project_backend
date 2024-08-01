@@ -1,7 +1,8 @@
 import {
   getData,
   setData,
-  EmptyObject
+  EmptyObject,
+  clearMap
 } from './dataStore';
 import * as error from './errors';
 import { generateId } from './helper';
@@ -12,13 +13,14 @@ import { generateId } from './helper';
  */
 
 export function clear(): EmptyObject {
-  const dataStore = getData();
-  dataStore.users = [];
-  dataStore.quizzes = [];
-  dataStore.tokens = [];
-  dataStore.trash = [];
-  dataStore.sessions = [];
-  setData(dataStore);
+  const data = getData();
+  data.users = [];
+  data.quizzes = [];
+  data.tokens = [];
+  data.trash = [];
+  data.sessions = [];
+  clearMap();
+  setData(data);
   return {};
 }
 

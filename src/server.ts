@@ -31,6 +31,7 @@ import * as quiz from './quiz';
 import * as session from './session';
 import * as player from './player';
 import { validQuiz } from './helper';
+import { setData } from './dataStore';
 
 // Set up web app
 const app = express();
@@ -253,8 +254,12 @@ app.delete('/v1/admin/quiz/:quizid', (req: Request, res: Response) => {
     return setError(res, error, 'q');
   }
 
-  const result = quiz.adminQuizRemove(parseInt(req.params.quizid as string));
-  res.json(result);
+  try {
+    const result = quiz.adminQuizRemove(parseInt(req.params.quizid as string));
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
 });
 
 // Quiz info
@@ -727,8 +732,12 @@ app.delete('/v2/admin/quiz/:quizid', (req: Request, res: Response) => {
     return setError(res, error, 'q');
   }
 
-  const result = quiz.adminQuizRemove(parseInt(req.params.quizid as string));
-  res.json(result);
+  try {
+    const result = quiz.adminQuizRemove(parseInt(req.params.quizid as string));
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
 });
 
 // Quiz name update
@@ -1032,6 +1041,7 @@ app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 });
 
 // SESSION REQUESTS //
+// Session start
 app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
   const token = req.headers.token.toString();
@@ -1058,7 +1068,63 @@ app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) =
   }
 });
 
+// Session update
+app.put('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.params.sessionid as string);
+  const token = req.headers.token as string;
+  const action = req.body.action;
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = session.adminQuizSessionUpdate(quizId, sessionId, action);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// Session status
+app.get('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.params.sessionid as string);
+  const token = req.headers.token as string;
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = session.adminQuizSessionStatus(quizId, sessionId);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // PLAYER REQUESTS //
+// Player join
 app.post('/v1/player/join', (req: Request, res: Response) => {
   const { sessionId, name } = req.body;
 
@@ -1106,6 +1172,12 @@ app.use((req: Request, res: Response) => {
 const server = app.listen(PORT, HOST, () => {
   // DO NOT CHANGE THIS LINE
   console.log(`⚡️ Server started on port ${PORT} at ${HOST}`);
+  if (fs.existsSync('src/dataStoreSave.json')) {
+    const data = JSON.parse(fs.readFileSync('src/dataStoreSave.json', {
+      flag: 'r'
+    }).toString());
+    setData(data);
+  }
 });
 
 // For coverage, handle Ctrl+C gracefully

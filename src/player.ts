@@ -1,7 +1,8 @@
-import { State, getData, setData } from './dataStore';
+import { Action, State, getData, setData } from './dataStore';
 import { timeNow, findPlayerByName, findSessionBySessionId, findSessionByPlayerId, 
   findPlayerNameByID, validMessageLength, generateId } from './helper';
 import * as error from './errors';
+import { adminQuizSessionUpdate } from './session';
 
 
 export interface body {
@@ -72,6 +73,9 @@ export function playerSessionJoin(sessionId: number, name: string) {
   });
 
   // Check if autoStartNum has been reached
+  if (session.players.length === session.autoStartNum) {
+    adminQuizSessionUpdate(session.metadata.quizId, session.sessionId, Action.NEXT_QUESTION);
+  }
 
   setData(data);
 
