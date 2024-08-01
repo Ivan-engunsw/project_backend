@@ -81,3 +81,13 @@ export function playerSessionJoin(sessionId: number, name: string) {
 
   return { playerId: playerId };
 }
+
+export function playerChatView(playerid: number) {
+  const session = findSessionByPlayerId(playerid);
+  if (!session) {
+    throw new Error(error.playerIdNotFound(playerid));
+  }
+
+  const messages = session.messages;
+  return { messages };
+}
