@@ -76,6 +76,7 @@ export function playerResult(playerId: number): finalResults {
 
   const { sessionId, autoStartNum, state, atQuestion, players, metadata, messages, ... filtered} = session;
   let questionResultsFiltered;
+  filtered.usersRankedByScore.forEach((rank) => rank.score = Math.round(rank.score));
   filtered.questionResults.forEach((questionResult) => questionResultsFiltered.push(filterFinalResults(questionResult)));
   filtered.questionResults = questionResultsFiltered;
   return filtered;
