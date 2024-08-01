@@ -99,3 +99,5 @@ export const sessionsNotEnded = () =>
 // players
 export const nameTaken = (name: string) =>
   `The name: ${name} is already taken by another player`;
+export const playerIdNotFound = (playerId: number) =>
+  `The playerId: ${playerId} does not exist`;

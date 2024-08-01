@@ -249,3 +249,36 @@ export function updateSessionResults(session: Session) {
 // player
 export const findPlayerByName = (session: Session, name: string) =>
   session.players.find(player => player.name === name);
+
+
+export const findSessionByPlayerId = (playerId: number) => {
+
+  
+/*
+  for (const session of getData().sessions) {
+    for (const player of session.players) {
+      if (player.playerId === playerId) {
+        return session;
+      }
+    }
+  }
+*/
+  return getData().sessions.find(session => session.players.some(player => player.playerId == playerId));
+}
+
+export const findPlayerNameByID = (playerId: number) => {
+  for (const session of getData().sessions) {
+    for (const player of session.players) {
+      if (player.playerId === playerId) {
+        return player.name;
+      }
+    }
+  }
+}
+
+
+export const validMessageLength = (message: string) =>
+  1 <= message.length && message.length <= 100
+
+
+
