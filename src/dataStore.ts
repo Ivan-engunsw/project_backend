@@ -51,7 +51,7 @@ export interface Session {
   state: State;
   atQuestion: number;
   players: Player[];
-  metadata: Quiz;
+  metadata: Omit<Quiz, 'userId'>;
   questionResults: QuestionResult[];
   usersRankedByScore: UserScore[];
   messages: Message[];
@@ -105,6 +105,8 @@ export enum Action {
   GO_TO_ANSWER = 'GO_TO_ANSWER',
   GO_TO_FINAL_RESULTS = 'GO_TO_FINAL_RESULTS',
   END = 'END',
+  OPEN_QUESTION = 'OPEN_QUESTION',
+  CLOSE_QUESTION = 'CLOSE_QUESTION',
 }
 
 export interface Data {
@@ -123,13 +125,10 @@ let data: Data = {
   sessions: [],
 };
 
+const sessionIdtoTimerMap: Map<number, ReturnType<typeof setTimeout>> = new Map();
+
 // Use get() to access the data
 export function getData(): Data {
-  if (fs.existsSync('src/dataStoreSave.json')) {
-    data = JSON.parse(fs.readFileSync('src/dataStoreSave.json', {
-      flag: 'r'
-    }).toString());
-  }
   return data;
 }
 
@@ -139,4 +138,21 @@ export function setData(newData: Data) {
   fs.writeFileSync('src/dataStoreSave.json', JSON.stringify(data), {
     flag: 'w'
   });
+}
+
+export function clearMap() {
+  sessionIdtoTimerMap.forEach((timeout, sessionId) => {
+    clearTimeout(timeout);
+    sessionIdtoTimerMap.delete(sessionId);
+  });
+}
+
+export function mapSet(sessionId: number, timeoutId: ReturnType<typeof setTimeout>) {
+  sessionIdtoTimerMap.set(sessionId, timeoutId);
+}
+
+export function mapDelete(sessionId: number) {
+  const timeoutId = sessionIdtoTimerMap.get(sessionId);
+  clearTimeout(timeoutId);
+  sessionIdtoTimerMap.delete(sessionId);
 }
