@@ -220,7 +220,11 @@ export function updateSessionResults(session: Session) {
   questionResults.playersCorrectList.sort();
 
   // Calculate average answer time from submissions
-  questionResults.averageAnswerTime = Math.round(submissions.reduce((total, submission) => total + (submission.timeSubmitted - questionResults.timeStarted), 0) / submissions.length);
+  if (submissions.length !== 0) {
+    questionResults.averageAnswerTime = Math.round(submissions.reduce((total, submission) => total + (submission.timeSubmitted - questionResults.timeStarted), 0) / submissions.length);
+  } else {
+    questionResults.averageAnswerTime = 0;
+  }
 
   // Calculate percent correct
   questionResults.percentCorrect = Math.round((questionResults.playersCorrectList.length / session.players.length) * 100);
