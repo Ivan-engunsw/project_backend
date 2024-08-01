@@ -1,5 +1,5 @@
 import { Action, State, getData, mapDelete, mapSet, setData } from './dataStore';
-import { findSessionBySessionId, findSessionsByQuizId, generateId, getQuizById } from './helper';
+import { findSessionBySessionId, findSessionsByQuizId, generateId, getQuizById, timeNow, updateSessionResults } from './helper';
 import * as error from './errors';
 import { adminQuizInfo } from './quiz';
 
@@ -89,6 +89,11 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
         throw new Error(error.invalidAction(action));
       }
 
+      // Check session has not reached end of questions
+      if (session.atQuestion === session.metadata.numQuestions) {
+        throw new Error(`${error.invalidAction(action)} as session has reached end of questions`);
+      }
+
       // Create timeout to OPEN_QUESTION
       session.state = State.QUESTION_COUNTDOWN;
       session.atQuestion++;
@@ -117,9 +122,16 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
         throw new Error(error.invalidAction(action));
       }
 
-      // Clear existing timeout and create timeout to CLOSE_QUESTION
+      // Clear existing timeout and create timeout to CLOSE_QUESTION and initialise questionResults
       mapDelete(sessionId);
       session.state = State.QUESTION_OPEN;
+      session.questionResults.push({
+        questionId: session.metadata.questions[session.atQuestion - 1].questionId,
+        playersCorrectList: [],
+        submissions: [],
+        scores: [],
+        timeStarted: timeNow(),
+      });
       const questionDuration = session.metadata.questions[session.atQuestion - 1].duration;
       const timeoutId = setTimeout(() => {
         try {
@@ -140,6 +152,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
       session.state = State.QUESTION_CLOSE;
 
       // Update results
+      updateSessionResults(session);
     },
     [Action.GO_TO_ANSWER]: () => {
       // Check state
@@ -150,6 +163,7 @@ export function adminQuizSessionUpdate(quizId: number, sessionId: number, action
       // Delete CLOSE_QUESTION timeout and update results if coming from QUESTION_OPEN
       if (session.state === State.QUESTION_OPEN) {
         mapDelete(sessionId);
+        updateSessionResults(session);
       }
 
       session.state = State.ANSWER_SHOW;
