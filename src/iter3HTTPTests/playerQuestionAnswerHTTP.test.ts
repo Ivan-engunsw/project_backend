@@ -1,4 +1,3 @@
-import { User } from '../dataStore';
 import * as HTTP from './HTTPHelper';
 
 // CONSTANTS //
@@ -91,118 +90,116 @@ describe('PUT /v1/player/:playerid/question/:questionposition/answer', () => {
       questionposition: 1
     })
     answerId1 = JSON.parse(resInfo1.body.toString()).answers[0].answerId;
-
-    describe('Error Testing', () => {
-      test('player ID does not exist', () => {
-        const res = HTTP.playerQuestionAnswer({
-          playerid: playerId1 + 1,
-          questionposition: 1,
-          answerIds: [answerId1]
-        });
-        expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
-        expect(res.statusCode).toStrictEqual(400);
+  });
+  describe('Error Testing', () => {
+    test('player ID does not exist', () => {
+      const res = HTTP.playerQuestionAnswer({
+        playerid: playerId1 + 1,
+        questionposition: 1,
+        answerIds: [answerId1]
       });
-
-      test('question position is not valid for the session this player is in', () => {
-        const res = HTTP.playerQuestionAnswer({
-          playerid: playerId1,
-          questionposition: 3,
-          answerIds: [answerId1]
-        });
-        expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
-        expect(res.statusCode).toStrictEqual(400);
-      });
-
-      test('session is not in QUESTION_OPEN state', () => {
-        HTTP.adminQuizSessionUpdate({
-          token: token1,
-          quizid: quizId1,
-          sessionid: seshId1,
-          action: "QUESTION_CLOSE"
-        });
-
-        const res = HTTP.playerQuestionAnswer({
-          playerid: playerId1,
-          questionposition: 1,
-          answerIds: [answerId1]
-        });
-        expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
-        expect(res.statusCode).toStrictEqual(400);
-      });
-
-      test('session is not currently on this question', () => {
-        const res = HTTP.playerQuestionAnswer({
-          playerid: playerId1,
-          questionposition: 2,
-          answerIds: [answerId1]
-        });
-        expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
-        expect(res.statusCode).toStrictEqual(400);
-      });
-
-      test('answer IDs are not valid for this particular question', () => {
-        const res = HTTP.playerQuestionAnswer({
-          playerid: playerId1,
-          questionposition: 1,
-          answerIds: [answerId1 + 1]
-        });
-        expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
-        expect(res.statusCode).toStrictEqual(400);
-      });
-
-      test('duplicate answer IDs provided', () => {
-        const res = HTTP.playerQuestionAnswer({
-          playerid: playerId1,
-          questionposition: 1,
-          answerIds: [answerId1, answerId1]
-        });
-        expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
-        expect(res.statusCode).toStrictEqual(400);
-      });
-
-      test('less than 1 answer ID submitted', () => {
-        const res = HTTP.playerQuestionAnswer({
-          playerid: playerId1,
-          questionposition: 1,
-          answerIds: []
-        });
-        expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
-        expect(res.statusCode).toStrictEqual(400);
-      });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
     });
 
-    describe('Functionality Testing', () => {
-      test('correct return type', () => {
-        const res = HTTP.playerQuestionAnswer({
-          playerid: playerId1,
-          questionposition: 1,
-          answerIds: [answerId1]
-        });
-        expect(JSON.parse(res.body.toString())).toStrictEqual({});
+    test('question position is not valid for the session this player is in', () => {
+      const res = HTTP.playerQuestionAnswer({
+        playerid: playerId1,
+        questionposition: 3,
+        answerIds: [answerId1]
+      });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
+
+    test('session is not in QUESTION_OPEN state', () => {
+      HTTP.adminQuizSessionUpdate({
+        token: token1,
+        quizid: quizId1,
+        sessionid: seshId1,
+        action: "QUESTION_CLOSE"
       });
 
-      test('correctly updates answer ids', () => {
-        const res = HTTP.playerQuestionAnswer({
-          playerid: playerId1,
-          questionposition: 1,
-          answerIds: [answerId1]
-        });
+      const res = HTTP.playerQuestionAnswer({
+        playerid: playerId1,
+        questionposition: 1,
+        answerIds: [answerId1]
+      });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
 
-        HTTP.adminQuizSessionUpdate({
-          token: token1,
-          quizid: quizId1,
-          sessionid: seshId1,
-          action: "QUESTION_CLOSE"
-        });
-        
-        const resResults = HTTP.playerQuestionResult({
-          playerid: playerId1,
-          questionposition: 1
-        });
-        const results1 = JSON.parse(resResults.body.toString());
-        expect(results1.playersCorrectList).toStrictEqual([answerId1]);
-      })
+    test('session is not currently on this question', () => {
+      const res = HTTP.playerQuestionAnswer({
+        playerid: playerId1,
+        questionposition: 2,
+        answerIds: [answerId1]
+      });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
+
+    test('answer IDs are not valid for this particular question', () => {
+      const res = HTTP.playerQuestionAnswer({
+        playerid: playerId1,
+        questionposition: 1,
+        answerIds: [answerId1 + 1]
+      });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
+
+    test('duplicate answer IDs provided', () => {
+      const res = HTTP.playerQuestionAnswer({
+        playerid: playerId1,
+        questionposition: 1,
+        answerIds: [answerId1, answerId1]
+      });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
+    });
+
+    test('less than 1 answer ID submitted', () => {
+      const res = HTTP.playerQuestionAnswer({
+        playerid: playerId1,
+        questionposition: 1,
+        answerIds: []
+      });
+      expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
+      expect(res.statusCode).toStrictEqual(400);
     });
   });
 
+  describe('Functionality Testing', () => {
+    test('correct return type', () => {
+      const res = HTTP.playerQuestionAnswer({
+        playerid: playerId1,
+        questionposition: 1,
+        answerIds: [answerId1]
+      });
+      expect(JSON.parse(res.body.toString())).toStrictEqual({});
+    });
+
+    test('correctly updates answer ids', () => {
+      const res = HTTP.playerQuestionAnswer({
+        playerid: playerId1,
+        questionposition: 1,
+        answerIds: [answerId1]
+      });
+
+      HTTP.adminQuizSessionUpdate({
+        token: token1,
+        quizid: quizId1,
+        sessionid: seshId1,
+        action: "QUESTION_CLOSE"
+      });
+      
+      const resResults = HTTP.playerQuestionResult({
+        playerid: playerId1,
+        questionposition: 1
+      });
+      const results1 = JSON.parse(resResults.body.toString());
+      expect(results1.playersCorrectList).toStrictEqual([answerId1]);
+    })
+  });
 });
