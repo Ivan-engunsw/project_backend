@@ -4,7 +4,7 @@ import * as HTTP from './HTTPHelper';
 // CONSTANTS //
 const ERROR = { error: expect.any(String) };
 const stateToAction: { [key in State]: Action } = {
-  [State.LOBBY]: Action.OPEN_QUESTION,
+  [State.LOBBY]: Action.NEXT_QUESTION,
   [State.QUESTION_COUNTDOWN]: Action.SKIP_COUNTDOWN,
   [State.QUESTION_OPEN]: Action.CLOSE_QUESTION, // This should match the next state action
   [State.QUESTION_CLOSE]: Action.GO_TO_ANSWER, // This should match the next state action
@@ -92,10 +92,16 @@ describe('GET /v1/player/{playerid}', () => {
         State.END
       ];
 
-      states.forEach(state => {
-        // Set session state
-        HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: stateToAction[state] });
-
+      states.forEach((state, index) => {
+        // Move to the next state
+        if (index > 0) {
+          HTTP.adminQuizSessionUpdate({
+            token: token,
+            quizid: quizId,
+            sessionid: sessionId,
+            action: stateToAction[states[index - 1]],
+          });
+        }
         const res = HTTP.playerSessionStatus({ playerid: playerId });
         const result = JSON.parse(res.body.toString());
 
