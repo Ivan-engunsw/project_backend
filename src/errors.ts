@@ -109,6 +109,8 @@ export const sessionsNotEnded = () =>
   'Some sessions are not in END state yet';
 export const sessionsNotInFinalResultsState = () =>
   'The session is not in FINAL_RESULTS state yet';
+export const invalidSession = (sessionId: number) =>
+  `The session: ${sessionId} is invalid`;
 
 // players
 export const nameTaken = (name: string) =>
