@@ -129,33 +129,32 @@ describe('/v1/admin/quiz/{quizid}/sessions', () => {
 
     describe('Error testing', () => {
       test('invalid token', () => {
-        const res = HTTP.adminQuizSessionsList({ token: token1 + 1, quizid: quizId});
+        const res = HTTP.adminQuizSessionsList({ token: token1 + 1, quizid: quizId });
         expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
         expect(res.statusCode).toStrictEqual(401);
       });
-  
+
       test('invalid quizId', () => {
-        const res = HTTP.adminQuizSessionsList({ token: token1, quizid: quizId + 1});
+        const res = HTTP.adminQuizSessionsList({ token: token1, quizid: quizId + 1 });
         expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
         expect(res.statusCode).toStrictEqual(403);
       });
-  
+
       test('unauthorised access', () => {
-        const res = HTTP.adminQuizSessionsList({ token: token2, quizid: quizId});
+        const res = HTTP.adminQuizSessionsList({ token: token2, quizid: quizId });
         expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
         expect(res.statusCode).toStrictEqual(403);
       });
     });
 
-    describe('Fucntionality testing', () => {
+    describe('Functionality testing', () => {
       test('correctly returns sessions', () => {
-        const res = HTTP.adminQuizSessionsList({ token: token1, quizid: quizId});
+        const res = HTTP.adminQuizSessionsList({ token: token1, quizid: quizId });
         expect(JSON.parse(res.body.toString())).toStrictEqual({
           activeSessions: [seshId2, seshId4],
           inactiveSessions: [seshId1, seshId3]
         });
-      })
-    })
+      });
+    });
   });
 });
-
