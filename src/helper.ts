@@ -252,11 +252,6 @@ export function updateSessionResults(session: Session) {
   session.usersRankedByScore.sort((a, b) => b.score - a.score);
 }
 
-export function filterFinalResults(questionResult: QuestionResult) {
-  const {submissions, scores, timeStarted, ... filter} = questionResult;
-  return filter;
-};
-
 // player
 export const findPlayerByName = (session: Session, name: string) =>
   session.players.find(player => player.name === name);

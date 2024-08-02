@@ -1152,7 +1152,8 @@ app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request,
 app.get('/v1/player/:playerid/results', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid.toString());
   try {
-    player.playerResult(playerId);
+    const result = player.playerResult(playerId);
+    res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
   }

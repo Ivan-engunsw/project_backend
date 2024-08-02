@@ -1,6 +1,6 @@
-import { Action, EmptyObject, State, UserScore, getData, setData } from './dataStore';
+import { Action, EmptyObject, QuestionResult, State, UserScore, getData, setData } from './dataStore';
 import {
-  timeNow, filterFinalResults, findPlayerByName, findSessionBySessionId, findSessionByPlayerId,
+  timeNow, findPlayerByName, findSessionBySessionId, findSessionByPlayerId,
   findPlayerNameByID, validMessageLength, generateId, validAnswerIds, validPosition
 } from './helper';
 import * as error from './errors';
@@ -155,10 +155,11 @@ export function playerResult(playerId: number): finalResults {
     throw new Error(error.sessionsNotInFinal_ResultsState());
   }
 
-  const { sessionId, autoStartNum, state, atQuestion, players, metadata, messages, ... filtered} = session;
-  let questionResultsFiltered;
-  filtered.usersRankedByScore.forEach((rank) => rank.score = Math.round(rank.score));
-  filtered.questionResults.forEach((questionResult) => questionResultsFiltered.push(filterFinalResults(questionResult)));
-  filtered.questionResults = questionResultsFiltered;
-  return filtered;
+  let finalResults: finalResults = {questionResults: [], usersRankedByScore: []};
+  session.questionResults.forEach((questionResult) => finalResults.questionResults.push({
+    questionId: questionResult.questionId, playersCorrectList: questionResult.playersCorrectList, 
+    averageAnswerTime: questionResult.averageAnswerTime, percentCorrect: questionResult.percentCorrect}));
+  finalResults.usersRankedByScore = session.usersRankedByScore;
+  finalResults.usersRankedByScore.forEach((rank) => rank.score = Math.round(rank.score));
+  return finalResults;
 }
