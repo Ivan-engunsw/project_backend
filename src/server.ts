@@ -1136,6 +1136,18 @@ app.post('/v1/player/join', (req: Request, res: Response) => {
   }
 });
 
+// Get player status
+app.get('/v1/player/:playerid', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid.toString());
+
+  try {
+    const result = player.playerStatusStatus(playerId);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request, res: Response) => {
   const playerid = parseInt(req.params.playerid.toString());
   const questionposition = parseInt(req.params.questionposition.toString());

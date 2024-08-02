@@ -94,6 +94,23 @@ export function playerSessionJoin(sessionId: number, name: string) {
   return { playerId: playerId };
 }
 
+// Function to get player status
+export function playerStatusStatus(playerId: number) {
+  // const data = getData();
+
+  const session = findSessionByPlayerId(playerId);
+  if (!session) {
+    throw new Error(error.playerIdNotFound(playerId));
+  }
+
+  // Return player status
+  return {
+    state: session.state,
+    numQuestions: session.metadata.questions.length, // assuming session.metadata contains the quiz questions
+    atQuestion: ['LOBBY', 'FINAL_RESULTS', 'END'].includes(session.state) ? 0 : session.atQuestion
+  };
+}
+
 export function playerQuestionAnswer
 (playerid: number, questionposition: number, answerIds: number[]): EmptyObject {
   questionposition--;
