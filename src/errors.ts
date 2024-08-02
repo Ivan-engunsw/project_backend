@@ -51,6 +51,10 @@ export const InvalidToken = (token: string) =>
 // question
 export const invalidQuestion = (question: string) =>
   `The question: '${question}' is invalid`;
+export const invalidPosition = (position: number) =>
+  `The position '${position}' is invalid`;
+export const incorrectPosition = (quizId: number, position: number) =>
+  `The quiz '${quizId}' is not at question '${position}'`;
 export const invalidNewPosition = (newPosition: number) =>
   `The new position '${newPosition}' is invalid`;
 
@@ -63,6 +67,14 @@ export const duplicateAnswer = (answer: string) =>
   `The answer: '${answer}' has been duplicated`;
 export const noCorrectAnswer = () =>
   'There are no correct answers';
+
+// answer ids
+export const invalidAnswerIds = () =>
+  'At least one of the given answer ids is invalid';
+export const duplicateAnswerIds = () =>
+  'There are duplicate answer ids';
+export const noAnswerIds = () =>
+  'No answer ids provided';
 
 // duration
 export const invalidDuration = (duration: number) =>

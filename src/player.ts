@@ -1,7 +1,43 @@
-import { Action, State, getData, setData } from './dataStore';
-import { findPlayerByName, findSessionBySessionId, generateId, findSessionByPlayerId } from './helper';
+import { Action, EmptyObject, State, getData, setData } from './dataStore';
+import {
+  timeNow, findPlayerByName, findSessionBySessionId, findSessionByPlayerId,
+  findPlayerNameByID, validMessageLength, generateId, validAnswerIds, validPosition
+} from './helper';
 import * as error from './errors';
 import { adminQuizSessionUpdate } from './session';
+
+export interface body {
+  message: {
+    messageBody: string;
+  }
+}
+
+export function playerChatSend(playerid: number, body: body) {
+  const data = getData();
+
+  const session = findSessionByPlayerId(playerid);
+  if (!session) {
+    throw new Error(error.playerIdNotFound(playerid));
+  }
+
+  if (!validMessageLength(body.message.messageBody)) {
+    throw new Error(error.invalidMessageLength());
+  }
+
+  const name = findPlayerNameByID(playerid);
+  const time = timeNow();
+
+  session.messages.push({
+    messageBody: body.message.messageBody,
+    playerId: playerid,
+    playerName: name,
+    timeSent: time
+  });
+
+  setData(data);
+
+  return {};
+}
 
 export function playerSessionJoin(sessionId: number, name: string) {
   const data = getData();
@@ -48,9 +84,9 @@ export function playerSessionJoin(sessionId: number, name: string) {
 
 // Function to get player status
 export function playerStatusStatus(playerId: number) {
-  const data = getData();
+  // const data = getData();
 
-  const session = findSessionByPlayerId(data, playerId);
+  const session = findSessionByPlayerId(playerId);
   if (!session) {
     throw new Error(error.playerIdNotFound(playerId));
   }
@@ -61,4 +97,50 @@ export function playerStatusStatus(playerId: number) {
     numQuestions: session.metadata.questions.length, // assuming session.metadata contains the quiz questions
     atQuestion: ['LOBBY', 'FINAL_RESULTS', 'END'].includes(session.state) ? 0 : session.atQuestion
   };
+}
+
+export function playerQuestionAnswer
+(playerid: number, questionposition: number, answerIds: number[]): EmptyObject {
+  questionposition--;
+
+  if (!answerIds.length) throw new Error(error.noAnswerIds());
+
+  const session = findSessionByPlayerId(playerid);
+  if (!session) throw new Error(error.playerIdNotFound(playerid));
+
+  const validPos = validPosition(session.metadata, questionposition);
+  if (!validPos) throw new Error(error.invalidPosition(questionposition));
+
+  const correctState = (session.state === 'QUESTION_OPEN');
+  if (!correctState) throw new Error(error.invalidState(session.state));
+
+  const correctPos = ((session.atQuestion - 1) === questionposition);
+  if (!correctPos) {
+    throw new
+    Error(error.incorrectPosition(session.metadata.quizId, questionposition));
+  }
+
+  const duplicateAnsIds = new Set(answerIds).size !== answerIds.length;
+  if (duplicateAnsIds) throw new Error(error.duplicateAnswerIds());
+
+  const validAnsIds = validAnswerIds(session.metadata, questionposition, answerIds);
+  if (!validAnsIds) throw new Error(error.invalidAnswerIds());
+
+  session.questionResults[questionposition].submissions.push({
+    name: session.players.find(player => player.playerId === playerid).name,
+    answers: answerIds,
+    timeSubmitted: timeNow()
+  });
+
+  return {};
+}
+
+export function playerChatView(playerid: number) {
+  const session = findSessionByPlayerId(playerid);
+  if (!session) {
+    throw new Error(error.playerIdNotFound(playerid));
+  }
+
+  const messages = session.messages;
+  return { messages };
 }
