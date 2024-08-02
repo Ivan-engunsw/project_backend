@@ -1,7 +1,43 @@
 import { Action, State, getData, setData } from './dataStore';
-import { findPlayerByName, findSessionBySessionId, generateId } from './helper';
+import {
+  timeNow, findPlayerByName, findSessionBySessionId, findSessionByPlayerId,
+  findPlayerNameByID, validMessageLength, generateId
+} from './helper';
 import * as error from './errors';
 import { adminQuizSessionUpdate } from './session';
+
+export interface body {
+  message: {
+    messageBody: string;
+  }
+}
+
+export function playerChatSend(playerid: number, body: body) {
+  const data = getData();
+
+  const session = findSessionByPlayerId(playerid);
+  if (!session) {
+    throw new Error(error.playerIdNotFound(playerid));
+  }
+
+  if (!validMessageLength(body.message.messageBody)) {
+    throw new Error(error.invalidMessageLength());
+  }
+
+  const name = findPlayerNameByID(playerid);
+  const time = timeNow();
+
+  session.messages.push({
+    messageBody: body.message.messageBody,
+    playerId: playerid,
+    playerName: name,
+    timeSent: time
+  });
+
+  setData(data);
+
+  return {};
+}
 
 export function playerSessionJoin(sessionId: number, name: string) {
   const data = getData();
@@ -44,4 +80,14 @@ export function playerSessionJoin(sessionId: number, name: string) {
   setData(data);
 
   return { playerId: playerId };
+}
+
+export function playerChatView(playerid: number) {
+  const session = findSessionByPlayerId(playerid);
+  if (!session) {
+    throw new Error(error.playerIdNotFound(playerid));
+  }
+
+  const messages = session.messages;
+  return { messages };
 }

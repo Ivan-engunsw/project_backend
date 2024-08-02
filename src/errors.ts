@@ -99,3 +99,8 @@ export const sessionsNotEnded = () =>
 // players
 export const nameTaken = (name: string) =>
   `The name: ${name} is already taken by another player`;
+export const playerIdNotFound = (playerId: number) =>
+  `The playerId: ${playerId} does not exist`;
+
+export const invalidMessageLength = () =>
+  'The message needs to be at least 1 character and no more than 100 characters';
