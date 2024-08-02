@@ -48,13 +48,13 @@ describe('GET /v1/player/{playerid}/question/{questionposition}', () => {
 
   describe('error testing', () => {
     test('returns an error for an invalid playerId', () => {
-      const res = HTTP.playerQuestionStatus({ playerid: playerId + 1, questionposition: 1 });
+      const res = HTTP.playerQuestionInfo({ playerid: playerId + 1, questionposition: 1 });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
 
     test('returns an error for an invalid question position', () => {
-      const res = HTTP.playerQuestionStatus({ playerid: playerId, questionposition: 0 });
+      const res = HTTP.playerQuestionInfo({ playerid: playerId, questionposition: 0 });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
@@ -62,7 +62,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}', () => {
     test('returns an error if session is in an invalid state', () => {
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.END });
 
-      const res = HTTP.playerQuestionStatus({ playerid: playerId, questionposition: 1 });
+      const res = HTTP.playerQuestionInfo({ playerid: playerId, questionposition: 1 });
       expect(JSON.parse(res.body.toString())).toStrictEqual(ERROR);
       expect(res.statusCode).toStrictEqual(400);
     });
@@ -74,7 +74,7 @@ describe('GET /v1/player/{playerid}/question/{questionposition}', () => {
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.NEXT_QUESTION });
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: Action.SKIP_COUNTDOWN });
 
-      const res = HTTP.playerQuestionStatus({ playerid: playerId, questionposition: 1 });
+      const res = HTTP.playerQuestionInfo({ playerid: playerId, questionposition: 1 });
       const result = JSON.parse(res.body.toString());
 
       expect(result).toHaveProperty('questionId', expect.any(Number));
