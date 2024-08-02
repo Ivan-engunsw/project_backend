@@ -1167,7 +1167,20 @@ app.get('/v1/player/:playerid', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid.toString());
 
   try {
-    const result = player.playerStatusStatus(playerId);
+    const result = player.playerSessionStatus(playerId);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// Get the current infomartion of the question the player is on
+app.get('/v1/player/:playerid/question/:questionposition', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid.toString());
+  const questionPosition = parseInt(req.params.questionposition.toString());
+
+  try {
+    const result = player.playerQuestionInfo(playerId, questionPosition);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');

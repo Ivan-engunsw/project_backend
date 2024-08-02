@@ -94,8 +94,13 @@ export function playerSessionJoin(sessionId: number, name: string) {
   return { playerId: playerId };
 }
 
-// Function to get player status
-export function playerStatusStatus(playerId: number) {
+/**
+ * Gets the session status of the player is in
+ *
+ * @param playerId - number
+ * @returns the state of the session, questionPosition, and number of questions
+ */
+export function playerSessionStatus(playerId: number) {
   // const data = getData();
 
   const session = findSessionByPlayerId(playerId);
@@ -108,6 +113,49 @@ export function playerStatusStatus(playerId: number) {
     state: session.state,
     numQuestions: session.metadata.questions.length, // assuming session.metadata contains the quiz questions
     atQuestion: ['LOBBY', 'FINAL_RESULTS', 'END'].includes(session.state) ? 0 : session.atQuestion
+  };
+}
+
+/**
+ * Get the info of the question the player is on
+ *
+ * @param playerId - number
+ * @param questionPosition - number
+ * @returns Info about the current question the player is on
+ */
+export function playerQuestionInfo(playerId: number, questionPosition: number) {
+  const session = findSessionByPlayerId(playerId);
+  if (!session) {
+    throw new Error(error.playerIdNotFound(playerId));
+  }
+
+  if (['LOBBY', 'QUESTION_COUNTDOWN', 'FINAL_RESULTS', 'END'].includes(session.state)) {
+    throw new Error(error.invalidState(session.state));
+  }
+
+  questionPosition--;
+
+  if (!validPosition(session.metadata, questionPosition)) {
+    throw new Error(error.invalidPosition(questionPosition + 1));
+  }
+
+  if (session.atQuestion - 1 !== questionPosition) {
+    throw new Error(error.incorrectPosition(session.metadata.quizId, questionPosition + 1));
+  }
+
+  const question = session.metadata.questions[questionPosition];
+
+  return {
+    questionId: question.questionId,
+    question: question.question,
+    duration: question.duration,
+    thumbnailUrl: question.thumbnailUrl,
+    points: question.points,
+    answers: question.answers.map(answer => ({
+      answerId: answer.answerId,
+      answer: answer.answer,
+      colour: answer.colour
+    }))
   };
 }
 
