@@ -2,6 +2,7 @@ import { Action, State, getData, mapDelete, mapSet, setData } from './dataStore'
 import { findSessionBySessionId, findSessionsByQuizId, generateId, getQuizById, timeNow, updateSessionResults } from './helper';
 import * as error from './errors';
 import { adminQuizInfo } from './quiz';
+import { finalResults } from './player';
 
 // CONSTANTS //
 const COUNTDOWN = 3;
@@ -227,3 +228,32 @@ export function adminQuizSessionStatus(quizId: number, sessionId: number) {
     metadata: session.metadata,
   };
 }
+
+/**
+ * 
+ * @param quiId - number
+ * @param sessionId1 - number
+ * @returns {{finalResults}} - object containing ranks of users and results of each question
+ */
+export function adminQuizSessionResult(sessionid: number): finalResults {
+  const data = getData();
+  const session = findSessionBySessionId(data, sessionid);
+  if (session === undefined) {
+    throw new Error(error.invalidSession(sessionid));
+  }
+
+  if (session.state !== State.FINAL_RESULTS) {
+    throw new Error(error.sessionsNotInFinalResultsState());
+  }
+
+  const finalResults: finalResults = { questionResults: [], usersRankedByScore: [] };
+  session.questionResults.forEach((questionResult) => finalResults.questionResults.push({
+    questionId: questionResult.questionId,
+    playersCorrectList: questionResult.playersCorrectList,
+    averageAnswerTime: questionResult.averageAnswerTime,
+    percentCorrect: questionResult.percentCorrect
+  }));
+  session.usersRankedByScore.forEach((rank) => finalResults.usersRankedByScore.push({ name: rank.name, score: Math.round(rank.score) }));
+  return finalResults;
+}
+
