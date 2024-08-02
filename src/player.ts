@@ -111,7 +111,7 @@ export function playerSessionStatus(playerId: number) {
  * @param questionPosition - number
  * @returns Info about the current question the player is on
  */
-export function getPlayerQuestion(playerId: number, questionPosition: number) {
+export function playerQuestionInfo(playerId: number, questionPosition: number) {
   const session = findSessionByPlayerId(playerId);
   if (!session) {
     throw new Error(error.playerIdNotFound(playerId));
