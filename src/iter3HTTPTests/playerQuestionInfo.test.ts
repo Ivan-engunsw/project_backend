@@ -1,4 +1,4 @@
-import { Action, State } from '../dataStore';
+import { Action } from '../dataStore';
 import * as HTTP from './HTTPHelper';
 
 // CONSTANTS //
