@@ -83,8 +83,7 @@ export function playerSessionJoin(sessionId: number, name: string) {
 }
 
 export function playerQuestionAnswer
-(playerid: number, questionposition: number, answerIds: number[]): EmptyObject
-{
+(playerid: number, questionposition: number, answerIds: number[]): EmptyObject {
   questionposition--;
 
   if (!answerIds.length) throw new Error(error.noAnswerIds());
@@ -95,12 +94,14 @@ export function playerQuestionAnswer
   const validPos = validPosition(session.metadata, questionposition);
   if (!validPos) throw new Error(error.invalidPosition(questionposition));
 
-  const correctState = (session.state === "QUESTION_OPEN");
+  const correctState = (session.state === 'QUESTION_OPEN');
   if (!correctState) throw new Error(error.invalidState(session.state));
 
   const correctPos = ((session.atQuestion - 1) === questionposition);
-  if (!correctPos) throw new
+  if (!correctPos) {
+    throw new
     Error(error.incorrectPosition(session.metadata.quizId, questionposition));
+  }
 
   const duplicateAnsIds = new Set(answerIds).size !== answerIds.length;
   if (duplicateAnsIds) throw new Error(error.duplicateAnswerIds());
@@ -112,7 +113,7 @@ export function playerQuestionAnswer
     name: session.players.find(player => player.playerId === playerid).name,
     answers: answerIds,
     timeSubmitted: timeNow()
-  })
+  });
 
   return {};
 }

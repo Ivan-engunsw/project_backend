@@ -8,7 +8,7 @@ const USER1 = {
   password: 'authone1',
   nameFirst: 'auth',
   nameLast: 'one'
-}
+};
 const QUEST1 = {
   question: 'Who is the Monarch of England?',
   duration: 4,
@@ -43,11 +43,9 @@ afterEach(() => {
 describe('PUT /v1/player/:playerid/question/:questionposition/answer', () => {
   let token1: string;
   let quizId1: number;
-  let questId1: number;
-  let questId2: number;
   let seshId1: number;
   let playerId1: number;
-  let answerId1: number;
+
   beforeEach(() => {
     const resUser1 = HTTP.adminAuthRegister(USER1);
     token1 = JSON.parse(resUser1.body.toString()).token;
@@ -59,31 +57,29 @@ describe('PUT /v1/player/:playerid/question/:questionposition/answer', () => {
     });
     quizId1 = JSON.parse(resQuiz1.body.toString()).quizId;
 
-    const resQuest1 = HTTP.adminQuizQuestionCreate({
+    HTTP.adminQuizQuestionCreate({
       token: token1,
       quizid: quizId1,
       questionBody: QUEST1
     });
-    questId1 = JSON.parse(resQuest1.body.toString()).questionId;
 
-    const resQuest2 = HTTP.adminQuizQuestionCreate({
+    HTTP.adminQuizQuestionCreate({
       token: token1,
       quizid: quizId1,
       questionBody: QUEST2
     });
-    questId2 = JSON.parse(resQuest2.body.toString()).questionId;
 
     const resSesh1 = HTTP.adminQuizSessionStart({
       token: token1,
       quizid: quizId1,
       autoStartNum: 5
     });
-    seshId1 = JSON.parse(resSesh1.body.toString()).sessionId
+    seshId1 = JSON.parse(resSesh1.body.toString()).sessionId;
 
     const resPlayer1 = HTTP.playerSessionJoin({
       sessionId: seshId1,
-      name: "john"
-    })
+      name: 'john'
+    });
     playerId1 = JSON.parse(resPlayer1.body.toString()).playerId;
 
     HTTP.adminQuizSessionUpdate({
@@ -100,8 +96,6 @@ describe('PUT /v1/player/:playerid/question/:questionposition/answer', () => {
       action: Action.SKIP_COUNTDOWN
     });
   });
-
-  
 
   describe('Error Testing', () => {
     test('player ID does not exist', () => {
@@ -204,15 +198,15 @@ describe('PUT /v1/player/:playerid/question/:questionposition/answer', () => {
         token: token1,
         quizid: quizId1,
         sessionid: seshId1,
-        action: "QUESTION_CLOSE"
+        action: 'QUESTION_CLOSE'
       });
-      
+
       const resResults = HTTP.playerQuestionResult({
         playerid: playerId1,
         questionposition: 1
       });
       const results1 = JSON.parse(resResults.body.toString());
       expect(results1.playersCorrectList).toStrictEqual([0]);
-    })
+    });
   });
 });

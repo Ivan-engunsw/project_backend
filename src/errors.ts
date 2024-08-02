@@ -74,7 +74,7 @@ export const invalidAnswerIds = () =>
 export const duplicateAnswerIds = () =>
   'There are duplicate answer ids';
 export const noAnswerIds = () =>
-  'No answer ids provided'
+  'No answer ids provided';
 
 // duration
 export const invalidDuration = (duration: number) =>
