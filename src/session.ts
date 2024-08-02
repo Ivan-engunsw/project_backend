@@ -7,6 +7,20 @@ import { finalResults } from './player';
 // CONSTANTS //
 const COUNTDOWN = 3;
 
+export function adminQuizSessionsList(quizId: number) {
+  const sessions = findSessionsByQuizId(getData(), quizId);
+  const active: number[] = [];
+  const inactive: number[] = [];
+
+  sessions.forEach(s =>
+    (s.state === State.END) ? inactive.push(s.sessionId) : active.push(s.sessionId));
+
+  return {
+    activeSessions: active.sort((a, b) => a - b),
+    inactiveSessions: inactive.sort((a, b) => a - b)
+  };
+}
+
 /**
  * Starts a new session with the given quizId
  *
