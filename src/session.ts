@@ -17,7 +17,7 @@ export function adminQuizSessionsList(quizId: number) {
   return {
     activeSessions: active.sort((a, b) => a - b),
     inactiveSessions: inactive.sort((a, b) => a - b)
-  }
+  };
 }
 
 /**
