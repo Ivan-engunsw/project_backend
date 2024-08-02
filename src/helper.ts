@@ -256,3 +256,15 @@ export const findPlayerByName = (session: Session, name: string) =>
   session.players.find(player => player.name === name);
 export const validAnswerIds = (quiz: Omit<Quiz, "userId">, position: number, answerIds: number[]) =>
   answerIds.every(id => quiz.questions[position].answers.some(ans => ans.answerId === id));
+export const findPlayerNameByID = (playerId: number) => {
+  for (const session of getData().sessions) {
+    for (const player of session.players) {
+      if (player.playerId === playerId) {
+        return player.name;
+      }
+    }
+  }
+};
+
+export const validMessageLength = (message: string) =>
+  message.length >= 1 && message.length <= 100;
