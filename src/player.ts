@@ -1,7 +1,16 @@
-import { Action, State, UserScore, getData, setData } from './dataStore';
-import { filterFinalResults, findPlayerByName, findSessionByPlayerId, findSessionBySessionId, generateId } from './helper';
+import { Action, EmptyObject, State, UserScore, getData, setData } from './dataStore';
+import {
+  timeNow, filterFinalResults, findPlayerByName, findSessionBySessionId, findSessionByPlayerId,
+  findPlayerNameByID, validMessageLength, generateId, validAnswerIds, validPosition
+} from './helper';
 import * as error from './errors';
 import { adminQuizSessionUpdate } from './session';
+
+export interface body {
+  message: {
+    messageBody: string;
+  }
+}
 
 interface questionResult {
   questionId: number;
@@ -13,6 +22,33 @@ interface questionResult {
 export interface finalResults {
   usersRankedByScore: UserScore[];
   questionResults: questionResult[];
+}
+
+export function playerChatSend(playerid: number, body: body) {
+  const data = getData();
+
+  const session = findSessionByPlayerId(playerid);
+  if (!session) {
+    throw new Error(error.playerIdNotFound(playerid));
+  }
+
+  if (!validMessageLength(body.message.messageBody)) {
+    throw new Error(error.invalidMessageLength());
+  }
+
+  const name = findPlayerNameByID(playerid);
+  const time = timeNow();
+
+  session.messages.push({
+    messageBody: body.message.messageBody,
+    playerId: playerid,
+    playerName: name,
+    timeSent: time
+  });
+
+  setData(data);
+
+  return {};
 }
 
 export function playerSessionJoin(sessionId: number, name: string) {
@@ -58,18 +94,63 @@ export function playerSessionJoin(sessionId: number, name: string) {
   return { playerId: playerId };
 }
 
+export function playerQuestionAnswer
+(playerid: number, questionposition: number, answerIds: number[]): EmptyObject {
+  questionposition--;
+
+  if (!answerIds.length) throw new Error(error.noAnswerIds());
+
+  const session = findSessionByPlayerId(playerid);
+  if (!session) throw new Error(error.playerIdNotFound(playerid));
+
+  const validPos = validPosition(session.metadata, questionposition);
+  if (!validPos) throw new Error(error.invalidPosition(questionposition));
+
+  const correctState = (session.state === 'QUESTION_OPEN');
+  if (!correctState) throw new Error(error.invalidState(session.state));
+
+  const correctPos = ((session.atQuestion - 1) === questionposition);
+  if (!correctPos) {
+    throw new
+    Error(error.incorrectPosition(session.metadata.quizId, questionposition));
+  }
+
+  const duplicateAnsIds = new Set(answerIds).size !== answerIds.length;
+  if (duplicateAnsIds) throw new Error(error.duplicateAnswerIds());
+
+  const validAnsIds = validAnswerIds(session.metadata, questionposition, answerIds);
+  if (!validAnsIds) throw new Error(error.invalidAnswerIds());
+
+  session.questionResults[questionposition].submissions.push({
+    name: session.players.find(player => player.playerId === playerid).name,
+    answers: answerIds,
+    timeSubmitted: timeNow()
+  });
+
+  return {};
+}
+
+export function playerChatView(playerid: number) {
+  const session = findSessionByPlayerId(playerid);
+  if (!session) {
+    throw new Error(error.playerIdNotFound(playerid));
+  }
+
+  const messages = session.messages;
+  return { messages };
+}
+
 /**
  * 
  * @param playerId - the id of a player
  * @returns {{finalResults}} - object containing ranks of users and results of each question
  */
 export function playerResult(playerId: number): finalResults {
-  const data = getData();
-  if (!findSessionByPlayerId(data, playerId)) {
+  if (!findSessionByPlayerId(playerId)) {
     throw new Error(error.invalidPlayer(playerId));
   }
 
-  const session = findSessionByPlayerId(data, playerId);
+  const session = findSessionByPlayerId(playerId);
   if (session.state !== State.FINAL_RESULTS) {
     throw new Error(error.sessionsNotInFinal_ResultsState());
   }

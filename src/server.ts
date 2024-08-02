@@ -1136,10 +1136,46 @@ app.post('/v1/player/join', (req: Request, res: Response) => {
   }
 });
 
+app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request, res: Response) => {
+  const playerid = parseInt(req.params.playerid.toString());
+  const questionposition = parseInt(req.params.questionposition.toString());
+  const answerIds = req.body.answerIds;
+
+  try {
+    const result = player.playerQuestionAnswer(playerid, questionposition, answerIds);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 app.get('/v1/player/:playerid/results', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid.toString());
   try {
     player.playerResult(playerId);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+app.post('/v1/player/:playerid/chat', (req: Request, res: Response) => {
+  const message = req.body.message;
+  const playerId = parseInt(req.params.playerid.toString());
+
+  try {
+    const result = player.playerChatSend(playerId, { message: message });
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+app.get('/v1/player/:playerid/chat', (req: Request, res: Response) => {
+  const playerid = parseInt(req.params.playerid as string);
+
+  try {
+    const result = player.playerChatView(playerid);
+    res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
   }
