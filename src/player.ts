@@ -47,7 +47,7 @@ export function playerSessionJoin(sessionId: number, name: string) {
 }
 
 // Function to get player status
-export function playerStatus(playerId: number) {
+export function playerStatusStatus(playerId: number) {
   const data = getData();
 
   // Find session
