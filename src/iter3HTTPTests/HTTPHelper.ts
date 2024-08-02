@@ -554,7 +554,7 @@ export const playerQuestionAnswer = (
     answerIds: number[],
   }
 ) => {
-  return request('PUT', SERVER_URL + `v1/player/${payload.playerid}/question/${payload.questionposition}/answer`, {
+  return request('PUT', SERVER_URL + `/v1/player/${payload.playerid}/question/${payload.questionposition}/answer`, {
     json: {
       answerIds: payload.answerIds
     },
@@ -568,7 +568,7 @@ export const playerQuestionResult = (
     questionposition: number,
   }
 ) => {
-  return request('GET', SERVER_URL + `v1/player/${payload.playerid}/question/${payload.questionposition}/results`, {
+  return request('GET', SERVER_URL + `/v1/player/${payload.playerid}/question/${payload.questionposition}/results`, {
     timeout: TIMEOUT_MS
   });
 };
@@ -578,7 +578,7 @@ export const playerResult = (
     playerid: number,
   }
 ) => {
-  return request('GET', SERVER_URL + `v1/player/${payload.playerid}/results`, {
+  return request('GET', SERVER_URL + `/v1/player/${payload.playerid}/results`, {
     timeout: TIMEOUT_MS
   });
 };

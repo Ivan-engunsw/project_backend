@@ -143,6 +143,8 @@ export const generateQuestionId = (quizId: number) => {
 
 export const getQuestionById = (quiz: Quiz, id: number) =>
   quiz.questions.find(question => id === question.questionId);
+export const validPosition = (quiz: Omit<Quiz, 'userId'>, position: number) =>
+  (position >= 0 && position < quiz.questions.length);
 export const validNewPosition = (quiz: Quiz, position: number, currentPosition: number) =>
   (position >= 0 && position < quiz.questions.length && position !== currentPosition);
 
@@ -184,6 +186,9 @@ export const findSessionsByQuizId = (data: Data, quizId: number) =>
   data.sessions.filter(session => session.metadata.quizId === quizId);
 export const findSessionBySessionId = (data: Data, sessionId: number) =>
   data.sessions.find(session => session.sessionId === sessionId);
+export const findSessionByPlayerId = (playerId: number) =>
+  getData().sessions.find(session =>
+    session.players.some(player => player.playerId === playerId));
 
 export function updateSessionResults(session: Session) {
   // Sort submissions by timesubmitted
@@ -249,20 +254,8 @@ export function updateSessionResults(session: Session) {
 // player
 export const findPlayerByName = (session: Session, name: string) =>
   session.players.find(player => player.name === name);
-
-export const findSessionByPlayerId = (playerId: number) => {
-/*
-  for (const session of getData().sessions) {
-    for (const player of session.players) {
-      if (player.playerId === playerId) {
-        return session;
-      }
-    }
-  }
-*/
-  return getData().sessions.find(session => session.players.some(player => player.playerId === playerId));
-};
-
+export const validAnswerIds = (quiz: Omit<Quiz, 'userId'>, position: number, answerIds: number[]) =>
+  answerIds.every(id => quiz.questions[position].answers.some(ans => ans.answerId === id));
 export const findPlayerNameByID = (playerId: number) => {
   for (const session of getData().sessions) {
     for (const player of session.players) {
