@@ -1141,7 +1141,7 @@ app.get('/v1/player/:playerid', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid.toString());
 
   try {
-    const result = player.playerStatus(playerId);
+    const result = player.playerStatusStatus(playerId);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
