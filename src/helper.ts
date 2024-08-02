@@ -184,8 +184,18 @@ export const findSessionsByQuizId = (data: Data, quizId: number) =>
   data.sessions.filter(session => session.metadata.quizId === quizId);
 export const findSessionBySessionId = (data: Data, sessionId: number) =>
   data.sessions.find(session => session.sessionId === sessionId);
-export const findSessionByPlayerId = (data: Data, playerId: number) =>
-  data.sessions.find(session => session.players.find(player => player.playerId === playerId));
+export const findSessionByPlayerId = (data: Data, playerId: number) => {
+  /*
+  for (const session of getData().sessions) {
+    for (const player of session.players) {
+      if (player.playerId === playerId) {
+        return session;
+      }
+    }
+  }
+*/
+  return getData().sessions.find(session => session.players.some(player => player.playerId === playerId));
+};
 
 export function updateSessionResults(session: Session) {
   // Sort submissions by timesubmitted
