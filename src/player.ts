@@ -2,7 +2,6 @@ import { Action, EmptyObject, State, UserScore, getData, setData } from './dataS
 import {
   timeNow, findPlayerByName, findSessionBySessionId, findSessionByPlayerId,
   findPlayerNameByID, validMessageLength, generateId, validAnswerIds, validPosition,
-  findPlayerByPlayerId
 } from './helper';
 import * as error from './errors';
 import { adminQuizSessionUpdate } from './session';
@@ -159,7 +158,7 @@ export function playerChatView(playerid: number) {
 }
 
 /**
- * 
+ *
  * @param playerId - the id of a player
  * @param questionposition - the position of the question in the quiz
  * @returns {{questionResult}} - object containing the results for the particular question
@@ -189,7 +188,7 @@ export function playerQuestionResult(playerId: number, questionposition: number)
     playersCorrectList: session.questionResults[questionposition].playersCorrectList,
     averageAnswerTime: session.questionResults[questionposition].averageAnswerTime,
     percentCorrect: session.questionResults[questionposition].percentCorrect
-  }
+  };
   return finalResults;
 }
 
