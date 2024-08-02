@@ -125,11 +125,6 @@ describe('GET /v1/player/:playerid/question/:questionposition/results', () => {
       HTTP.playerQuestionAnswer({ playerid: playerId1, questionposition: 1, answerIds: [0] });
       HTTP.playerQuestionAnswer({ playerid: playerId2, questionposition: 1, answerIds: [0] });
       slync(1 * 1000);
-      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'NEXT_QUESTION' });
-      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'SKIP_COUNTDOWN' });
-      HTTP.playerQuestionAnswer({ playerid: playerId1, questionposition: 2, answerIds: [1] });
-      HTTP.playerQuestionAnswer({ playerid: playerId2, questionposition: 2, answerIds: [0] });
-      slync(1 * 1000);
       HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'GO_TO_ANSWER' });
       const resResults1 = HTTP.playerQuestionResult({ playerid: playerId1, questionposition: 1});
       expect(JSON.parse(resResults1.body.toString())).toStrictEqual({
@@ -138,6 +133,12 @@ describe('GET /v1/player/:playerid/question/:questionposition/results', () => {
           averageAnswerTime: expect.any(Number),
           percentCorrect: expect.any(Number)
       });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'NEXT_QUESTION' });
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'SKIP_COUNTDOWN' });
+      HTTP.playerQuestionAnswer({ playerid: playerId1, questionposition: 2, answerIds: [1] });
+      HTTP.playerQuestionAnswer({ playerid: playerId2, questionposition: 2, answerIds: [0] });
+      slync(1 * 1000);
+      HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'GO_TO_ANSWER' });
       const resResults2 = HTTP.playerQuestionResult({ playerid: playerId1, questionposition: 2});
       expect(JSON.parse(resResults2.body.toString())).toStrictEqual({
           questionId: questionId2,

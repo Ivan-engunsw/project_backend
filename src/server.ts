@@ -1187,6 +1187,18 @@ app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request,
   }
 });
 
+app.get('/v1/player/:playerid/question/:questionposition/results', (req: Request, res: Response) => {
+  const playerid = parseInt(req.params.playerid.toString());
+  const questionposition = parseInt(req.params.questionposition.toString());
+
+  try {
+    const result = player.playerQuestionResult(playerid, questionposition);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 app.get('/v1/player/:playerid/results', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid.toString());
   try {
