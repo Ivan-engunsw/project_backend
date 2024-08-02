@@ -249,3 +249,5 @@ export function updateSessionResults(session: Session) {
 // player
 export const findPlayerByName = (session: Session, name: string) =>
   session.players.find(player => player.name === name);
+export const findPlayerByPlayerId = (session: Session, playerId: number) =>
+  session.players.find(player => player.playerId === playerId);
