@@ -1,7 +1,7 @@
 import { Action, EmptyObject, State, UserScore, getData, setData } from './dataStore';
 import {
   timeNow, findPlayerByName, findSessionBySessionId, findSessionByPlayerId,
-  findPlayerNameByID, validMessageLength, generateId, validAnswerIds, validPosition
+  findPlayerNameByID, validMessageLength, generateId, validAnswerIds, validPosition,
 } from './helper';
 import * as error from './errors';
 import { adminQuizSessionUpdate } from './session';
@@ -203,6 +203,41 @@ export function playerChatView(playerid: number) {
 
   const messages = session.messages;
   return { messages };
+}
+
+/**
+ *
+ * @param playerId - the id of a player
+ * @param questionposition - the position of the question in the quiz
+ * @returns {{questionResult}} - object containing the results for the particular question
+ */
+export function playerQuestionResult(playerId: number, questionposition: number): questionResult {
+  questionposition--;
+  const session = findSessionByPlayerId(playerId);
+  if (!session) {
+    throw new Error(error.playerIdNotFound(playerId));
+  }
+
+  const validPos = validPosition(session.metadata, questionposition);
+  if (!validPos) throw new Error(error.invalidPosition(questionposition));
+
+  if (session.state !== State.ANSWER_SHOW) {
+    throw new Error(error.sessionsNotInAnswerShowState());
+  }
+
+  const correctPos = ((session.atQuestion - 1) === questionposition);
+  if (!correctPos) {
+    throw new
+    Error(error.incorrectPosition(session.metadata.quizId, questionposition));
+  }
+
+  const finalResults = {
+    questionId: session.questionResults[questionposition].questionId,
+    playersCorrectList: session.questionResults[questionposition].playersCorrectList,
+    averageAnswerTime: session.questionResults[questionposition].averageAnswerTime,
+    percentCorrect: session.questionResults[questionposition].percentCorrect
+  };
+  return finalResults;
 }
 
 /**
