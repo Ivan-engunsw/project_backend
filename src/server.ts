@@ -1148,6 +1148,32 @@ app.get('/v1/admin/quiz/:quizid/session/:sessionid', (req: Request, res: Respons
   }
 });
 
+app.get('/v1/admin/quiz/:quizid/session/:sessionid/results', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid as string);
+  const sessionId = parseInt(req.params.sessionid as string);
+  const token = req.headers.token as string;
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId);
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = session.adminQuizSessionResult(sessionId);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // PLAYER REQUESTS //
 // Player join
 app.post('/v1/player/join', (req: Request, res: Response) => {
@@ -1161,6 +1187,31 @@ app.post('/v1/player/join', (req: Request, res: Response) => {
   }
 });
 
+// Get player status
+app.get('/v1/player/:playerid', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid.toString());
+
+  try {
+    const result = player.playerSessionStatus(playerId);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// Get the current infomartion of the question the player is on
+app.get('/v1/player/:playerid/question/:questionposition', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid.toString());
+  const questionPosition = parseInt(req.params.questionposition.toString());
+
+  try {
+    const result = player.playerQuestionInfo(playerId, questionPosition);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request, res: Response) => {
   const playerid = parseInt(req.params.playerid.toString());
   const questionposition = parseInt(req.params.questionposition.toString());
@@ -1168,6 +1219,16 @@ app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request,
 
   try {
     const result = player.playerQuestionAnswer(playerid, questionposition, answerIds);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+app.get('/v1/player/:playerid/results', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid.toString());
+  try {
+    const result = player.playerResult(playerId);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');

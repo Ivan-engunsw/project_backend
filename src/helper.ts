@@ -254,6 +254,9 @@ export function updateSessionResults(session: Session) {
 // player
 export const findPlayerByName = (session: Session, name: string) =>
   session.players.find(player => player.name === name);
+export const findPlayerByPlayerId = (session: Session, playerId: number) =>
+  session.players.find(player => player.playerId === playerId);
+
 export const validAnswerIds = (quiz: Omit<Quiz, 'userId'>, position: number, answerIds: number[]) =>
   answerIds.every(id => quiz.questions[position].answers.some(ans => ans.answerId === id));
 export const findPlayerNameByID = (playerId: number) => {
