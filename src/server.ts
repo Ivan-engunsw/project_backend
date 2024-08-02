@@ -1138,7 +1138,7 @@ app.post('/v1/player/join', (req: Request, res: Response) => {
 
 app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request, res: Response) => {
   const playerid = parseInt(req.params.playerid.toString());
-  const questionposition = parseInt(req.params.playerid.toString());
+  const questionposition = parseInt(req.params.questionposition.toString());
   const answerIds = req.body.answerIds;
 
   try {
