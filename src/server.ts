@@ -1149,7 +1149,6 @@ app.get('/v1/admin/quiz/:quizid/session/:sessionid/results', (req: Request, res:
   }
 });
 
-
 // PLAYER REQUESTS //
 // Player join
 app.post('/v1/player/join', (req: Request, res: Response) => {

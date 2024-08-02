@@ -230,7 +230,7 @@ export function adminQuizSessionStatus(quizId: number, sessionId: number) {
 }
 
 /**
- * 
+ *
  * @param quiId - number
  * @param sessionId1 - number
  * @returns {{finalResults}} - object containing ranks of users and results of each question
@@ -256,4 +256,3 @@ export function adminQuizSessionResult(sessionid: number): finalResults {
   session.usersRankedByScore.forEach((rank) => finalResults.usersRankedByScore.push({ name: rank.name, score: Math.round(rank.score) }));
   return finalResults;
 }
-
