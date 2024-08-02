@@ -1161,6 +1161,16 @@ app.put('/v1/player/:playerid/question/:questionposition/answer', (req: Request,
   }
 });
 
+app.get('/v1/player/:playerid/results', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid.toString());
+  try {
+    const result = player.playerResult(playerId);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 app.post('/v1/player/:playerid/chat', (req: Request, res: Response) => {
   const message = req.body.message;
   const playerId = parseInt(req.params.playerid.toString());
