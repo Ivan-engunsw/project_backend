@@ -1,5 +1,5 @@
 import { Action, State, getData, setData } from './dataStore';
-import { findPlayerByName, findSessionBySessionId, generateId } from './helper';
+import { findPlayerByName, findSessionBySessionId, generateId, findPlayerByPlayerId } from './helper';
 import * as error from './errors';
 import { adminQuizSessionUpdate } from './session';
 
@@ -44,4 +44,28 @@ export function playerSessionJoin(sessionId: number, name: string) {
   setData(data);
 
   return { playerId: playerId };
+}
+
+// Function to get player status
+export function playerStatus(playerId: number) {
+  const data = getData();
+
+  // Find session
+  const session = findSessionBySessionId(data, playerId);
+  if (!session) {
+    return { error: 'Session not found for this player' };
+  }
+
+  // Find player
+  const player = findPlayerByPlayerId(session, playerId);
+  if (!player) {
+    return { error: 'Player ID does not exist' };
+  }
+
+  // Return player status
+  return {
+    state: session.state,
+    numQuestions: session.metadata.questions.length, // assuming session.metadata contains the quiz questions
+    atQuestion: ['LOBBY', 'FINAL_RESULTS', 'END'].includes(session.state) ? 0 : session.atQuestion
+  };
 }
