@@ -1178,7 +1178,11 @@ app.get('/v1/player/:playerid/chat', (req: Request, res: Response) => {
 
   try {
     const result = player.playerChatView(playerid);
-   
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
 
 // ====================================================================
 //  ================= WORK IS DONE ABOVE THIS LINE ===================
