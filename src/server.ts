@@ -53,6 +53,21 @@ app.use('/docs', sui.serve, sui.setup(YAML.parse(file), {
 const PORT: number = parseInt(process.env.PORT || config.port);
 const HOST: string = process.env.IP || '127.0.0.1';
 
+import { createClient } from '@vercel/kv';
+
+// Replace this with your KV_REST_API_URL
+// E.g. https://large-poodle-44208.kv.vercel-storage.com
+const KV_REST_API_URL="https://darling-hound-45073.upstash.io";
+// Replace this with your KV_REST_API_TOKEN
+// E.g. AaywASQgOWE4MTVkN2UtODZh...
+const KV_REST_API_TOKEN="AbARAAIjcDFkNTQ0M2VhYjU0YTU0NjEwOGVjZWFmYTQ5ZThlZGVlN3AxMA";
+
+const database = createClient({
+  url: KV_REST_API_URL,
+  token: KV_REST_API_TOKEN,
+});
+
+
 // ====================================================================
 //  ================= WORK IS DONE BELOW THIS LINE ===================
 // ====================================================================
@@ -1268,6 +1283,17 @@ app.get('/v1/player/:playerid/chat', (req: Request, res: Response) => {
   } catch (error) {
     return setError(res, error, 'p');
   }
+});
+
+app.get('/data', async (req: Request, res: Response) => {
+  const data = await database.hgetall("data:dataStore");
+  res.status(200).json(data);
+});
+
+app.put('/data', async (req: Request, res: Response) => {
+  const { data } = req.body;
+  await database.hset("data:dataStore", { data });
+  return res.status(200).json({});
 });
 
 // ====================================================================
