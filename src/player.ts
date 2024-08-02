@@ -1,5 +1,5 @@
 import { Action, State, getData, setData } from './dataStore';
-import { findPlayerByName, findSessionBySessionId, generateId, findPlayerByPlayerId } from './helper';
+import { findPlayerByName, findSessionBySessionId, generateId, findSessionByPlayerId } from './helper';
 import * as error from './errors';
 import { adminQuizSessionUpdate } from './session';
 
@@ -50,16 +50,9 @@ export function playerSessionJoin(sessionId: number, name: string) {
 export function playerStatusStatus(playerId: number) {
   const data = getData();
 
-  // Find session
-  const session = findSessionBySessionId(data, playerId);
+  const session = findSessionByPlayerId(data, playerId);
   if (!session) {
-    return { error: 'Session not found for this player' };
-  }
-
-  // Find player
-  const player = findPlayerByPlayerId(session, playerId);
-  if (!player) {
-    return { error: 'Player ID does not exist' };
+    throw new Error(error.playerIdNotFound(playerId));
   }
 
   // Return player status
