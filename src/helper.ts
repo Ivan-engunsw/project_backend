@@ -270,8 +270,5 @@ export const findPlayerNameByID = (playerId: number) => {
   }
 };
 
-export const findPlayerByPlayerId = (session: Session, playerId: number) =>
-  session.players.find(player => player.playerId === playerId);
-
 export const validMessageLength = (message: string) =>
   message.length >= 1 && message.length <= 100;
