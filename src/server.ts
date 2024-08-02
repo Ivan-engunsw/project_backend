@@ -1041,6 +1041,31 @@ app.post('/v2/admin/quiz/:quizid/question/:questionid/duplicate', (req: Request,
 });
 
 // SESSION REQUESTS //
+app.get('/v1/admin/quiz/:quizid/sessions', (req: Request, res: Response) => {
+  const quizId = parseInt(req.params.quizid.toString());
+  const token = req.headers.token.toString();
+
+  let user;
+  try {
+    user = validToken(token);
+  } catch (error) {
+    return setError(res, error, 't');
+  }
+
+  try {
+    validQuiz(quizId, user.authUserId, { trash: true });
+  } catch (error) {
+    return setError(res, error, 'q');
+  }
+
+  try {
+    const result = session.adminQuizSessionsList(quizId);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
 // Session start
 app.post('/v1/admin/quiz/:quizid/session/start', (req: Request, res: Response) => {
   const quizId = parseInt(req.params.quizid.toString());
@@ -1167,7 +1192,20 @@ app.get('/v1/player/:playerid', (req: Request, res: Response) => {
   const playerId = parseInt(req.params.playerid.toString());
 
   try {
-    const result = player.playerStatusStatus(playerId);
+    const result = player.playerSessionStatus(playerId);
+    res.json(result);
+  } catch (error) {
+    return setError(res, error, 'p');
+  }
+});
+
+// Get the current infomartion of the question the player is on
+app.get('/v1/player/:playerid/question/:questionposition', (req: Request, res: Response) => {
+  const playerId = parseInt(req.params.playerid.toString());
+  const questionPosition = parseInt(req.params.questionposition.toString());
+
+  try {
+    const result = player.playerQuestionInfo(playerId, questionPosition);
     res.json(result);
   } catch (error) {
     return setError(res, error, 'p');
