@@ -95,7 +95,7 @@ export function playerSessionJoin(sessionId: number, name: string) {
 }
 
 /**
- * Updates the quiz with the given thumbnail url
+ * Gets the session status of the player is in
  *
  * @param playerId - number
  * @returns the state of the session, questionPosition, and number of questions
@@ -117,7 +117,7 @@ export function playerSessionStatus(playerId: number) {
 }
 
 /**
- * Updates the quiz with the given thumbnail url
+ * Get the info of the question the player is on
  *
  * @param playerId - number
  * @param questionPosition - number
