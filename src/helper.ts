@@ -2,7 +2,6 @@ import isEmail from 'validator/lib/isEmail';
 import {
   Data,
   EmptyObject,
-  QuestionResult,
   Quiz,
   Session,
   getData

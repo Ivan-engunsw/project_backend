@@ -1,4 +1,4 @@
-import { Action, EmptyObject, QuestionResult, State, UserScore, getData, setData } from './dataStore';
+import { Action, EmptyObject, State, UserScore, getData, setData } from './dataStore';
 import {
   timeNow, findPlayerByName, findSessionBySessionId, findSessionByPlayerId,
   findPlayerNameByID, validMessageLength, generateId, validAnswerIds, validPosition
@@ -158,7 +158,7 @@ export function playerChatView(playerid: number) {
 }
 
 /**
- * 
+ *
  * @param playerId - the id of a player
  * @returns {{finalResults}} - object containing ranks of users and results of each question
  */
@@ -169,14 +169,16 @@ export function playerResult(playerId: number): finalResults {
 
   const session = findSessionByPlayerId(playerId);
   if (session.state !== State.FINAL_RESULTS) {
-    throw new Error(error.sessionsNotInFinal_ResultsState());
+    throw new Error(error.sessionsNotInFinalResultsState());
   }
 
-  let finalResults: finalResults = {questionResults: [], usersRankedByScore: []};
+  const finalResults: finalResults = { questionResults: [], usersRankedByScore: [] };
   session.questionResults.forEach((questionResult) => finalResults.questionResults.push({
-    questionId: questionResult.questionId, playersCorrectList: questionResult.playersCorrectList, 
-    averageAnswerTime: questionResult.averageAnswerTime, percentCorrect: questionResult.percentCorrect}));
-  finalResults.usersRankedByScore = session.usersRankedByScore;
-  finalResults.usersRankedByScore.forEach((rank) => rank.score = Math.round(rank.score));
+    questionId: questionResult.questionId,
+    playersCorrectList: questionResult.playersCorrectList,
+    averageAnswerTime: questionResult.averageAnswerTime,
+    percentCorrect: questionResult.percentCorrect
+  }));
+  session.usersRankedByScore.forEach((rank) => finalResults.usersRankedByScore.push({ name: rank.name, score: Math.round(rank.score) }));
   return finalResults;
 }

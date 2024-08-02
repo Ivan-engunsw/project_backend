@@ -107,7 +107,7 @@ export const invalidSessionIdforQuizId = (quizId: number, sessionId: number) =>
   `The sessionId: ${sessionId} is not for the quizId: ${quizId}`;
 export const sessionsNotEnded = () =>
   'Some sessions are not in END state yet';
-export const sessionsNotInFinal_ResultsState = () =>
+export const sessionsNotInFinalResultsState = () =>
   'The session is not in FINAL_RESULTS state yet';
 
 // players
