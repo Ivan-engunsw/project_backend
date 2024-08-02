@@ -31,7 +31,7 @@ describe('GET /v1/player/:playerid/results', () => {
     quizId = JSON.parse(resQuiz.body.toString()).quizId;
     const inputQuestion = {
       question: 'Who is the Monarch of England?',
-      duration: 3,
+      duration: 1,
       points: 5,
       answers: [
         {
@@ -73,7 +73,7 @@ describe('GET /v1/player/:playerid/results', () => {
     test('returns the correct output', () => {
         HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'NEXT_QUESTION'});
         HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'SKIP_COUNTDOWN'});
-        HTTP.playerQuestionAnswer({ answerIds: [0], playerid: playerId1, questionposition: 1 });
+        HTTP.playerQuestionAnswer({ playerid: playerId1, questionposition: 1, answerIds: [0] });
         slync(3 * 1000);
         HTTP.adminQuizSessionUpdate({ token: token, quizid: quizId, sessionid: sessionId, action: 'GO_TO_FINAL_RESULTS'});
         const resResults = HTTP.playerResult({playerid: playerId1});
@@ -101,7 +101,7 @@ describe('GET /v1/player/:playerid/results', () => {
 
         const inputQuestion2 = {
           question: 'Who is Ronaldo?',
-          duration: 3,
+          duration: 1,
           points: 3,
           answers: [
             {
